@@ -1,0 +1,31 @@
+{
+    "is_dev": true,
+    "idc": "dev",
+
+    "log": {
+        "level": 1
+    },
+
+    "pprof": {
+        "online_enable_host": "${HOSTNAME}",
+        "port": "${PPROF_PORT}"
+    },
+
+    "api_http": {
+        "http_domain": "${API_HTTP_DOMAIN}",
+        "gohttp_port": "${API_GOHTTP_PORT}"
+    },
+
+    "redis": {
+        "host": "127.0.0.1",
+        "pass": "123",
+        "port": "6379"
+    },
+
+    "mysql": {
+        "host": "127.0.0.1",
+        "user": "root",
+        "pass": "123",
+        "port": "3306"
+    }
+}

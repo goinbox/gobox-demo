@@ -1,0 +1,40 @@
+{
+    "PRJ_NAME" : "gdemo",
+    "PRJ_HOME": "__ARG__(prj_home)",
+    "RIGGER_TPL_ROOT": "${PRJ_HOME}/conf/rigger/tpl",
+
+    "SERVER_CONF_TPL": "${RIGGER_TPL_ROOT}/tpl_server_conf_rewrite.json",
+    "SERVER_CONF_DST": "${PRJ_HOME}/conf/server/${USER}_server_conf_rewrite.json",
+    "SERVER_CONF_LN": "${PRJ_HOME}/conf/server_conf_rewrite.json",
+
+    "NGX_HTTP_PORT": "80",
+    "NGX_HTTPS_PORT": "443",
+    "NGX_ACCESS_LOG_BUFFER": "1",
+
+    "NGX_DATA_ROOT": {
+        "ligang": "/data/nginx",
+        "default": "/usr/local/nginx"
+    },
+    "NGX_LOG_ROOT": {
+        "ligang": "${NGX_DATA_ROOT}/logs",
+        "default": "/usr/local/nginx/logs"
+    },
+    "NGX_EXEC_PREFIX": {
+        "ligang": "/usr/local/bin/dexec nginx",
+        "default": "sudo /usr/local/nginx/sbin/nginx"
+    },
+
+    "API_HTTP_DOMAIN": "${USER}.gdemo.com",
+    "API_HTTPS_DOMAIN": "${USER}.gdemo.com",
+    "API_UPSTREAM": "gdemogolang_${USER}",
+    "API_GOHTTP_PORT": "__MATH__(6000+${UID})",
+    "PPROF_PORT": "__MATH__(6060+${UID})",
+
+    "API_HTTP_ACCESS_LOG": "${API_HTTP_DOMAIN}.log",
+    "API_HTTPS_ACCESS_LOG": "${API_HTTPS_DOMAIN}.log",
+    "API_HTTP_ERROR_LOG": "${API_HTTP_DOMAIN}.log.err",
+    "API_HTTPS_ERROR_LOG": "${API_HTTPS_DOMAIN}.log.err",
+    "API_HTTP_CONF_TPL": "${RIGGER_TPL_ROOT}/tpl_api_http.conf.ngx",
+    "API_HTTP_CONF_DST": "${PRJ_HOME}/conf/http/${USER}_api_http.conf.ngx",
+    "API_HTTP_CONF_LN": "${NGX_DATA_ROOT}/conf/include/${API_HTTP_DOMAIN}.conf"
+}
