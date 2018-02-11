@@ -5,8 +5,8 @@ import (
 
 	"github.com/goinbox/encoding"
 	"github.com/goinbox/gohttp/controller"
-	gmisc "github.com/goinbox/gomisc"
 	"github.com/goinbox/golog"
+	gmisc "github.com/goinbox/gomisc"
 
 	"net/http"
 	"net/url"
@@ -38,37 +38,37 @@ type BaseContext struct {
 	ErrorLogger golog.ILogger
 }
 
-func (this *BaseContext) Request() *http.Request {
-	return this.Req
+func (b *BaseContext) Request() *http.Request {
+	return b.Req
 }
 
-func (this *BaseContext) ResponseWriter() http.ResponseWriter {
-	return this.RespWriter
+func (b *BaseContext) ResponseWriter() http.ResponseWriter {
+	return b.RespWriter
 }
 
-func (this *BaseContext) ResponseBody() []byte {
-	return this.RespBody
+func (b *BaseContext) ResponseBody() []byte {
+	return b.RespBody
 }
 
-func (this *BaseContext) BeforeAction() {
+func (b *BaseContext) BeforeAction() {
 }
 
-func (this *BaseContext) AfterAction() {
+func (b *BaseContext) AfterAction() {
 }
 
-func (this *BaseContext) Destruct() {
-	this.RespBody = nil
-	this.QueryValues = nil
-	this.Rid = nil
+func (b *BaseContext) Destruct() {
+	b.RespBody = nil
+	b.QueryValues = nil
+	b.Rid = nil
 
-	this.ErrorLogger.Free()
-	this.LogFormater = nil
+	b.ErrorLogger.Free()
+	b.LogFormater = nil
 }
 
 type BaseController struct {
 }
 
-func (this *BaseController) NewActionContext(req *http.Request, respWriter http.ResponseWriter) controller.ActionContext {
+func (b *BaseController) NewActionContext(req *http.Request, respWriter http.ResponseWriter) controller.ActionContext {
 	context := &BaseContext{
 		Req:        req,
 		RespWriter: respWriter,
@@ -77,7 +77,7 @@ func (this *BaseController) NewActionContext(req *http.Request, respWriter http.
 	req.ParseForm()
 	context.QueryValues = req.Form
 
-	context.RemoteRealAddr.Ip, context.RemoteRealAddr.Port = this.parseRemoteAddr(req)
+	context.RemoteRealAddr.Ip, context.RemoteRealAddr.Port = b.parseRemoteAddr(req)
 
 	now := time.Now()
 	timeInt := now.UnixNano()
@@ -93,7 +93,7 @@ func (this *BaseController) NewActionContext(req *http.Request, respWriter http.
 	return context
 }
 
-func (this *BaseController) parseRemoteAddr(req *http.Request) (string, string) {
+func (b *BaseController) parseRemoteAddr(req *http.Request) (string, string) {
 	rs := strings.Split(req.RemoteAddr, ":")
 	if rs[0] == DOWNSTREAM_SERVER_IP {
 		ip := strings.TrimSpace(req.Header.Get(REMOTE_REAL_IP_HEADER_KEY))

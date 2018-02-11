@@ -10,8 +10,8 @@ import (
 
 	"github.com/goinbox/exception"
 	gcontroller "github.com/goinbox/gohttp/controller"
-	"github.com/goinbox/redis"
 	"github.com/goinbox/golog"
+	"github.com/goinbox/redis"
 
 	"html"
 	"net/http"
@@ -34,63 +34,63 @@ type ApiContext struct {
 	RedisLogger golog.ILogger
 }
 
-func (this *ApiContext) BeforeAction() {
-	this.BaseContext.BeforeAction()
+func (a *ApiContext) BeforeAction() {
+	a.BaseContext.BeforeAction()
 
 	var err error
-	this.MysqlClient, err = gvalue.NewMysqlClient()
+	a.MysqlClient, err = gvalue.NewMysqlClient()
 	if err != nil {
-		this.ApiData.Err = exception.New(errno.E_SYS_MYSQL_ERROR, err.Error())
+		a.ApiData.Err = exception.New(errno.E_SYS_MYSQL_ERROR, err.Error())
 		system.JumpOutAction(JumpToApiError)
 	}
-	this.MysqlLogger = gvalue.NewAsyncLogger(gvalue.MysqlLogWriter, this.LogFormater)
-	this.MysqlClient.SetLogger(this.MysqlLogger)
+	a.MysqlLogger = gvalue.NewAsyncLogger(gvalue.MysqlLogWriter, a.LogFormater)
+	a.MysqlClient.SetLogger(a.MysqlLogger)
 
-	this.RedisPool = gvalue.RedisClientPool
-	this.RedisClient, err = this.RedisPool.Get()
+	a.RedisPool = gvalue.RedisClientPool
+	a.RedisClient, err = a.RedisPool.Get()
 	if err != nil {
-		this.ApiData.Err = exception.New(errno.E_SYS_REDIS_ERROR, err.Error())
+		a.ApiData.Err = exception.New(errno.E_SYS_REDIS_ERROR, err.Error())
 		system.JumpOutAction(JumpToApiError)
 	}
-	this.RedisLogger = gvalue.NewAsyncLogger(gvalue.RedisLogWriter, this.LogFormater)
-	this.RedisClient.SetLogger(this.RedisLogger)
+	a.RedisLogger = gvalue.NewAsyncLogger(gvalue.RedisLogWriter, a.LogFormater)
+	a.RedisClient.SetLogger(a.RedisLogger)
 }
 
-func (this *ApiContext) AfterAction() {
-	f := this.QueryValues.Get("fmt")
+func (a *ApiContext) AfterAction() {
+	f := a.QueryValues.Get("fmt")
 	if f == "jsonp" {
-		callback := this.QueryValues.Get("_callback")
+		callback := a.QueryValues.Get("_callback")
 		if callback != "" {
-			this.RespBody = misc.ApiJsonp(this.ApiData.V, this.ApiData.Data, this.ApiData.Err, html.EscapeString(callback))
+			a.RespBody = misc.ApiJsonp(a.ApiData.V, a.ApiData.Data, a.ApiData.Err, html.EscapeString(callback))
 			return
 		}
 	}
 
-	this.RespBody = misc.ApiJson(this.ApiData.V, this.ApiData.Data, this.ApiData.Err)
+	a.RespBody = misc.ApiJson(a.ApiData.V, a.ApiData.Data, a.ApiData.Err)
 
-	this.BaseContext.AfterAction()
+	a.BaseContext.AfterAction()
 }
 
-func (this *ApiContext) Destruct() {
-	this.MysqlClient.Free()
-	this.MysqlLogger.Free()
+func (a *ApiContext) Destruct() {
+	a.MysqlClient.Free()
+	a.MysqlLogger.Free()
 
-	if this.RedisClient.Connected() {
-		this.RedisClient.SetLogger(gvalue.NoopLogger)
-		this.RedisPool.Put(this.RedisClient)
+	if a.RedisClient.Connected() {
+		a.RedisClient.SetLogger(gvalue.NoopLogger)
+		a.RedisPool.Put(a.RedisClient)
 	}
-	this.RedisLogger.Free()
+	a.RedisLogger.Free()
 
-	this.BaseContext.Destruct()
+	a.BaseContext.Destruct()
 }
 
 type BaseController struct {
 	controller.BaseController
 }
 
-func (this *BaseController) NewActionContext(req *http.Request, respWriter http.ResponseWriter) gcontroller.ActionContext {
+func (b *BaseController) NewActionContext(req *http.Request, respWriter http.ResponseWriter) gcontroller.ActionContext {
 	context := new(ApiContext)
-	context.BaseContext = this.BaseController.NewActionContext(req, respWriter).(*controller.BaseContext)
+	context.BaseContext = b.BaseController.NewActionContext(req, respWriter).(*controller.BaseContext)
 
 	return context
 }

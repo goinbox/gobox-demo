@@ -20,28 +20,28 @@
   version = "v1.0.0"
 
 [[projects]]
-  branch = "master"
   name = "github.com/goinbox/encoding"
   packages = ["."]
   revision = "4ce5cac4f174809a1e26c02dca3831da1047069e"
+  version = "v1.0.0"
 
 [[projects]]
   name = "github.com/goinbox/exception"
   packages = ["."]
-  revision = "cee8abd2201bc109bf41075ec8a6e446bdcc77de"
-  version = "v1.0.0"
+  revision = "e0c2f3dfc942a2698fa8f184558ab497304e1891"
+  version = "v1.0.1"
 
 [[projects]]
   name = "github.com/goinbox/gohttp"
   packages = ["controller","gracehttp","query","router","system"]
-  revision = "7c9390d03e8eba11f38b056663d64dd49c1a8d6c"
-  version = "v1.0.0"
+  revision = "e544f6aab0e1ff3bc7c32784a9b1c3038e499d28"
+  version = "v1.0.1"
 
 [[projects]]
   name = "github.com/goinbox/golog"
   packages = ["."]
-  revision = "0be082c49fdd13219d0d3ea64d9fb1d65111654b"
-  version = "v1.1.0"
+  revision = "062fa2ca77337de83477942062ec3ddff7f68f32"
+  version = "v1.2.0"
 
 [[projects]]
   name = "github.com/goinbox/gomisc"
@@ -52,30 +52,30 @@
 [[projects]]
   name = "github.com/goinbox/mysql"
   packages = ["."]
-  revision = "40b68b3b84864079970000c23cbb247c9bb84661"
-  version = "v1.0.0"
+  revision = "fff146bf799e6403909732dbfb714a7f1d92f8ff"
+  version = "v1.0.1"
 
 [[projects]]
   name = "github.com/goinbox/pidfile"
   packages = ["."]
   revision = "5b7189680797ce9bc03a824b85dd0b53f5f5343b"
-  version = "v1.0.0"
+  version = "v1.0.1"
 
 [[projects]]
   name = "github.com/goinbox/pool"
   packages = ["."]
-  revision = "b7035f423e0e366b3d9bc07df118b71474a5f855"
-  version = "v1.0.0"
+  revision = "6074e4a026e3a495c9f4995b991da53002f8b8eb"
+  version = "v1.0.1"
 
 [[projects]]
   name = "github.com/goinbox/redis"
   packages = ["."]
-  revision = "2af4774f0f279b67f2e5267134f44cb47a506525"
-  version = "v1.0.0"
+  revision = "f14bf2df06824e697ed4f55648714367c63d9d7c"
+  version = "v1.0.1"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9a7c0fb2b7892036b37c6965a940d08c558157bef907e78148ff5c7f1ef43f3d"
+  inputs-digest = "55eb76090f8ab8c25e538f623a874f2ef74d09feb8d48c5e50e88a0922644322"
   solver-name = "gps-cdcl"
   solver-version = 1

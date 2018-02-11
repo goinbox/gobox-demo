@@ -16,14 +16,14 @@ type DemoContext struct {
 	demoSvc *svc.DemoSvc
 }
 
-func (this *DemoContext) BeforeAction() {
-	this.ApiContext.BeforeAction()
+func (d *DemoContext) BeforeAction() {
+	d.ApiContext.BeforeAction()
 
-	this.demoSvc = svc.NewDemoSvc(
-		this.ErrorLogger,
-		this.MysqlClient,
+	d.demoSvc = svc.NewDemoSvc(
+		d.ErrorLogger,
+		d.MysqlClient,
 		conf.BaseConf.PrjName,
-		this.RedisClient,
+		d.RedisClient,
 	)
 }
 
@@ -31,9 +31,9 @@ type DemoController struct {
 	api.BaseController
 }
 
-func (this *DemoController) NewActionContext(req *http.Request, respWriter http.ResponseWriter) gcontroller.ActionContext {
+func (d *DemoController) NewActionContext(req *http.Request, respWriter http.ResponseWriter) gcontroller.ActionContext {
 	context := new(DemoContext)
-	context.ApiContext = this.BaseController.NewActionContext(req, respWriter).(*api.ApiContext)
+	context.ApiContext = d.BaseController.NewActionContext(req, respWriter).(*api.ApiContext)
 
 	return context
 }

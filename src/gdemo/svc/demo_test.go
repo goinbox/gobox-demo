@@ -3,7 +3,7 @@ package svc
 import (
 	"gdemo/misc"
 
-	gmisc "github.com/goinbox/gomisc"
+	"github.com/goinbox/gomisc"
 
 	"gdemo/dao"
 	"testing"
@@ -36,7 +36,7 @@ func TestDemoSvc(t *testing.T) {
 		t.Log(deleted, err)
 	}
 
-	baseEntity := SqlBaseEntity{AddTime: time.Now().Format(gmisc.TimeGeneralLayout())}
+	baseEntity := SqlBaseEntity{AddTime: time.Now().Format(gomisc.TimeGeneralLayout())}
 	demoSvc.UpdateById(1, &DemoEntity{SqlBaseEntity: baseEntity, Name: "aa", Status: 1}, map[string]bool{"add_time": true, "name": true})
 
 	entities, err := demoSvc.ListByIds(1, 10, 11)

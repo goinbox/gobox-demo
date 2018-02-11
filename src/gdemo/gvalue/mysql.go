@@ -1,8 +1,8 @@
 package gvalue
 
 import (
-	"github.com/goinbox/mysql"
 	"github.com/goinbox/golog"
+	"github.com/goinbox/mysql"
 
 	"gdemo/conf"
 )

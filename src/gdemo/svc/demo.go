@@ -1,9 +1,9 @@
 package svc
 
 import (
+	"github.com/goinbox/golog"
 	"github.com/goinbox/mysql"
 	"github.com/goinbox/redis"
-	"github.com/goinbox/golog"
 
 	"reflect"
 )
@@ -41,19 +41,19 @@ func NewDemoSvc(elogger golog.ILogger, mclient *mysql.Client, redisKeyPrefix str
 	}
 }
 
-func (this *DemoSvc) Insert(entities ...*DemoEntity) ([]int64, error) {
+func (d *DemoSvc) Insert(entities ...*DemoEntity) ([]int64, error) {
 	is := make([]interface{}, len(entities))
 	for i, entity := range entities {
 		is[i] = entity
 	}
 
-	return this.SqlRedisBindSvc.Insert(this.entityName, demoColNames, DEF_DEMO_ENTITY_CACHE_EXPIRE_SECONDS, is...)
+	return d.SqlRedisBindSvc.Insert(d.entityName, demoColNames, DEF_DEMO_ENTITY_CACHE_EXPIRE_SECONDS, is...)
 }
 
-func (this *DemoSvc) GetById(id int64) (*DemoEntity, error) {
+func (d *DemoSvc) GetById(id int64) (*DemoEntity, error) {
 	entity := new(DemoEntity)
 
-	find, err := this.SqlRedisBindSvc.GetById(this.entityName, id, DEF_DEMO_ENTITY_CACHE_EXPIRE_SECONDS, entity)
+	find, err := d.SqlRedisBindSvc.GetById(d.entityName, id, DEF_DEMO_ENTITY_CACHE_EXPIRE_SECONDS, entity)
 	if err != nil {
 		return nil, err
 	}
@@ -64,18 +64,18 @@ func (this *DemoSvc) GetById(id int64) (*DemoEntity, error) {
 	return entity, nil
 }
 
-func (this *DemoSvc) DeleteById(id int64) (bool, error) {
-	return this.SqlRedisBindSvc.DeleteById(this.entityName, id)
+func (d *DemoSvc) DeleteById(id int64) (bool, error) {
+	return d.SqlRedisBindSvc.DeleteById(d.entityName, id)
 }
 
-func (this *DemoSvc) UpdateById(id int64, newEntity *DemoEntity, updateFields map[string]bool) (bool, error) {
-	return this.SqlRedisBindSvc.UpdateById(this.entityName, id, newEntity, updateFields, DEF_DEMO_ENTITY_CACHE_EXPIRE_SECONDS)
+func (d *DemoSvc) UpdateById(id int64, newEntity *DemoEntity, updateFields map[string]bool) (bool, error) {
+	return d.SqlRedisBindSvc.UpdateById(d.entityName, id, newEntity, updateFields, DEF_DEMO_ENTITY_CACHE_EXPIRE_SECONDS)
 }
 
-func (this *DemoSvc) ListByIds(ids ...int64) ([]*DemoEntity, error) {
+func (d *DemoSvc) ListByIds(ids ...int64) ([]*DemoEntity, error) {
 	var entities []*DemoEntity
 
-	err := this.SqlBaseSvc.ListByIds(this.entityName, ids, "id desc", demoEntityType, &entities)
+	err := d.SqlBaseSvc.ListByIds(d.entityName, ids, "id desc", demoEntityType, &entities)
 	if err != nil {
 		return nil, err
 	}
@@ -83,10 +83,10 @@ func (this *DemoSvc) ListByIds(ids ...int64) ([]*DemoEntity, error) {
 	return entities, nil
 }
 
-func (this *DemoSvc) SimpleQueryAnd(sqp *SqlQueryParams) ([]*DemoEntity, error) {
+func (d *DemoSvc) SimpleQueryAnd(sqp *SqlQueryParams) ([]*DemoEntity, error) {
 	var entities []*DemoEntity
 
-	err := this.SqlBaseSvc.SimpleQueryAnd(this.entityName, sqp, demoEntityType, &entities)
+	err := d.SqlBaseSvc.SimpleQueryAnd(d.entityName, sqp, demoEntityType, &entities)
 	if err != nil {
 		return nil, err
 	}

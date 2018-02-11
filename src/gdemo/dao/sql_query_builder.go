@@ -37,218 +37,218 @@ type SqlQueryBuilder struct {
 	args  []interface{}
 }
 
-func (this *SqlQueryBuilder) Query() string {
-	return this.query
+func (s *SqlQueryBuilder) Query() string {
+	return s.query
 }
 
-func (this *SqlQueryBuilder) Args() []interface{} {
-	return this.args
+func (s *SqlQueryBuilder) Args() []interface{} {
+	return s.args
 }
 
-func (this *SqlQueryBuilder) Insert(tableName string, colNames ...string) *SqlQueryBuilder {
-	this.args = nil
+func (s *SqlQueryBuilder) Insert(tableName string, colNames ...string) *SqlQueryBuilder {
+	s.args = nil
 
-	this.query = "INSERT INTO " + tableName + " ("
-	this.query += strings.Join(colNames, ", ") + ")"
+	s.query = "INSERT INTO " + tableName + " ("
+	s.query += strings.Join(colNames, ", ") + ")"
 
-	return this
+	return s
 }
 
-func (this *SqlQueryBuilder) Values(colsValues ...[]interface{}) *SqlQueryBuilder {
+func (s *SqlQueryBuilder) Values(colsValues ...[]interface{}) *SqlQueryBuilder {
 	l := len(colsValues) - 1
 	if l == -1 {
-		return this
+		return s
 	}
 
-	this.query += " VALUES "
+	s.query += " VALUES "
 	for i := 0; i < l; i++ {
-		this.buildColValues(colsValues[i])
-		this.query += ", "
+		s.buildColValues(colsValues[i])
+		s.query += ", "
 	}
-	this.buildColValues(colsValues[l])
+	s.buildColValues(colsValues[l])
 
-	return this
+	return s
 }
 
-func (this *SqlQueryBuilder) Delete(tableName string) *SqlQueryBuilder {
-	this.args = nil
+func (s *SqlQueryBuilder) Delete(tableName string) *SqlQueryBuilder {
+	s.args = nil
 
-	this.query = "DELETE FROM " + tableName
+	s.query = "DELETE FROM " + tableName
 
-	return this
+	return s
 }
 
-func (this *SqlQueryBuilder) Update(tableName string) *SqlQueryBuilder {
-	this.args = nil
+func (s *SqlQueryBuilder) Update(tableName string) *SqlQueryBuilder {
+	s.args = nil
 
-	this.query = "UPDATE " + tableName
+	s.query = "UPDATE " + tableName
 
-	return this
+	return s
 }
 
-func (this *SqlQueryBuilder) Set(setItems ...*SqlColQueryItem) *SqlQueryBuilder {
+func (s *SqlQueryBuilder) Set(setItems ...*SqlColQueryItem) *SqlQueryBuilder {
 	l := len(setItems) - 1
 	if l == -1 {
-		return this
+		return s
 	}
 
-	this.query += " SET "
+	s.query += " SET "
 	for i := 0; i < l; i++ {
-		this.query += setItems[i].Name + " = ?, "
-		this.args = append(this.args, setItems[i].Value)
+		s.query += setItems[i].Name + " = ?, "
+		s.args = append(s.args, setItems[i].Value)
 	}
-	this.query += setItems[l].Name + " = ? "
-	this.args = append(this.args, setItems[l].Value)
+	s.query += setItems[l].Name + " = ? "
+	s.args = append(s.args, setItems[l].Value)
 
-	return this
+	return s
 }
 
-func (this *SqlQueryBuilder) Select(what, tableName string) *SqlQueryBuilder {
-	this.args = nil
+func (s *SqlQueryBuilder) Select(what, tableName string) *SqlQueryBuilder {
+	s.args = nil
 
-	this.query = "SELECT " + what + " FROM " + tableName
+	s.query = "SELECT " + what + " FROM " + tableName
 
-	return this
+	return s
 }
 
-func (this *SqlQueryBuilder) WhereConditionAnd(condItems ...*SqlColQueryItem) *SqlQueryBuilder {
+func (s *SqlQueryBuilder) WhereConditionAnd(condItems ...*SqlColQueryItem) *SqlQueryBuilder {
 	if len(condItems) == 0 {
-		return this
+		return s
 	}
 
-	this.query += " WHERE "
+	s.query += " WHERE "
 
-	this.buildWhereCondition("AND", condItems...)
+	s.buildWhereCondition("AND", condItems...)
 
-	return this
+	return s
 }
 
-func (this *SqlQueryBuilder) WhereConditionOr(condItems ...*SqlColQueryItem) *SqlQueryBuilder {
+func (s *SqlQueryBuilder) WhereConditionOr(condItems ...*SqlColQueryItem) *SqlQueryBuilder {
 	if len(condItems) == 0 {
-		return this
+		return s
 	}
 
-	this.query += " WHERE "
+	s.query += " WHERE "
 
-	this.buildWhereCondition("OR", condItems...)
+	s.buildWhereCondition("OR", condItems...)
 
-	return this
+	return s
 }
 
-func (this *SqlQueryBuilder) OrderBy(orderBy string) *SqlQueryBuilder {
+func (s *SqlQueryBuilder) OrderBy(orderBy string) *SqlQueryBuilder {
 	if orderBy != "" {
-		this.query += " ORDER BY " + orderBy
+		s.query += " ORDER BY " + orderBy
 	}
 
-	return this
+	return s
 }
 
-func (this *SqlQueryBuilder) GroupBy(groupBy string) *SqlQueryBuilder {
+func (s *SqlQueryBuilder) GroupBy(groupBy string) *SqlQueryBuilder {
 	if groupBy != "" {
-		this.query += " GROUP BY " + groupBy
+		s.query += " GROUP BY " + groupBy
 	}
 
-	return this
+	return s
 }
 
-func (this *SqlQueryBuilder) HavingConditionAnd(condItems ...*SqlColQueryItem) *SqlQueryBuilder {
+func (s *SqlQueryBuilder) HavingConditionAnd(condItems ...*SqlColQueryItem) *SqlQueryBuilder {
 	if len(condItems) == 0 {
-		return this
+		return s
 	}
 
-	this.query += " HAVING "
+	s.query += " HAVING "
 
-	this.buildWhereCondition("AND", condItems...)
+	s.buildWhereCondition("AND", condItems...)
 
-	return this
+	return s
 }
 
-func (this *SqlQueryBuilder) HavingConditionOr(condItems ...*SqlColQueryItem) *SqlQueryBuilder {
+func (s *SqlQueryBuilder) HavingConditionOr(condItems ...*SqlColQueryItem) *SqlQueryBuilder {
 	if len(condItems) == 0 {
-		return this
+		return s
 	}
 
-	this.query += " HAVING "
+	s.query += " HAVING "
 
-	this.buildWhereCondition("OR", condItems...)
+	s.buildWhereCondition("OR", condItems...)
 
-	return this
+	return s
 }
 
-func (this *SqlQueryBuilder) Limit(offset, cnt int64) *SqlQueryBuilder {
+func (s *SqlQueryBuilder) Limit(offset, cnt int64) *SqlQueryBuilder {
 	if cnt <= 0 || offset < 0 {
-		return this
+		return s
 	}
 
-	this.query += " LIMIT ?, ?"
-	this.args = append(this.args, offset, cnt)
+	s.query += " LIMIT ?, ?"
+	s.args = append(s.args, offset, cnt)
 
-	return this
+	return s
 }
 
-func (this *SqlQueryBuilder) buildColValues(colValues []interface{}) {
+func (s *SqlQueryBuilder) buildColValues(colValues []interface{}) {
 	l := len(colValues) - 1
 	if l == -1 {
 		return
 	}
 
-	this.query += "("
+	s.query += "("
 
 	for i := 0; i < l; i++ {
-		this.query += "?, "
-		this.args = append(this.args, colValues[i])
+		s.query += "?, "
+		s.args = append(s.args, colValues[i])
 	}
 
-	this.query += "?)"
-	this.args = append(this.args, colValues[l])
+	s.query += "?)"
+	s.args = append(s.args, colValues[l])
 }
 
-func (this *SqlQueryBuilder) buildWhereCondition(andOr string, condItems ...*SqlColQueryItem) {
+func (s *SqlQueryBuilder) buildWhereCondition(andOr string, condItems ...*SqlColQueryItem) {
 	l := len(condItems) - 1
 	if l == -1 {
 		return
 	}
 
 	for i := 0; i < l; i++ {
-		this.buildCondition(condItems[i])
-		this.query += " " + andOr + " "
+		s.buildCondition(condItems[i])
+		s.query += " " + andOr + " "
 	}
-	this.buildCondition(condItems[l])
+	s.buildCondition(condItems[l])
 }
 
-func (this *SqlQueryBuilder) buildCondition(condItem *SqlColQueryItem) {
+func (s *SqlQueryBuilder) buildCondition(condItem *SqlColQueryItem) {
 	switch condItem.Condition {
 	case SQL_COND_EQUAL, SQL_COND_NOT_EQUAL, SQL_COND_LESS, SQL_COND_LESS_EQUAL, SQL_COND_GREATER, SQL_COND_GREATER_EQUAL:
-		this.query += condItem.Name + " " + condItem.Condition + " ?"
-		this.args = append(this.args, condItem.Value)
+		s.query += condItem.Name + " " + condItem.Condition + " ?"
+		s.args = append(s.args, condItem.Value)
 	case SQL_COND_IN:
-		this.buildConditionInOrNotIn(condItem, "IN")
+		s.buildConditionInOrNotIn(condItem, "IN")
 	case SQL_COND_NOT_IN:
-		this.buildConditionInOrNotIn(condItem, "NOT IN")
+		s.buildConditionInOrNotIn(condItem, "NOT IN")
 	case SQL_COND_LIKE:
-		this.query += condItem.Name + " LIKE ?"
-		this.args = append(this.args, condItem.Value)
+		s.query += condItem.Name + " LIKE ?"
+		s.args = append(s.args, condItem.Value)
 	case SQL_COND_BETWEEN:
 		rev := reflect.ValueOf(condItem.Value)
-		this.query += condItem.Name + " BETWEEN ? AND ?"
-		this.args = append(this.args, rev.Index(0).Interface(), rev.Index(1).Interface())
+		s.query += condItem.Name + " BETWEEN ? AND ?"
+		s.args = append(s.args, rev.Index(0).Interface(), rev.Index(1).Interface())
 	}
 }
 
-func (this *SqlQueryBuilder) buildConditionInOrNotIn(condItem *SqlColQueryItem, inOrNotIn string) {
+func (s *SqlQueryBuilder) buildConditionInOrNotIn(condItem *SqlColQueryItem, inOrNotIn string) {
 	rev := reflect.ValueOf(condItem.Value)
 	l := rev.Len() - 1
 	if l == -1 {
 		return
 	}
 
-	this.query += condItem.Name + " " + inOrNotIn + " ("
+	s.query += condItem.Name + " " + inOrNotIn + " ("
 	for i := 0; i < l; i++ {
-		this.query += "?, "
+		s.query += "?, "
 	}
-	this.query += "?)"
+	s.query += "?)"
 
 	for i := 0; i < rev.Len(); i++ {
-		this.args = append(this.args, rev.Index(i).Interface())
+		s.args = append(s.args, rev.Index(i).Interface())
 	}
 }

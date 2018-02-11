@@ -2,9 +2,9 @@ package misc
 
 import (
 	"github.com/goinbox/color"
+	"github.com/goinbox/golog"
 	"github.com/goinbox/mysql"
 	"github.com/goinbox/redis"
-	"github.com/goinbox/golog"
 
 	"fmt"
 	"reflect"

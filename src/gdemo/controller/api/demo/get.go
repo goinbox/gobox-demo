@@ -11,8 +11,8 @@ type getActionParams struct {
 	id int64
 }
 
-func (this *DemoController) GetAction(context *DemoContext) {
-	ap, e := this.parseGetActionParams(context)
+func (d *DemoController) GetAction(context *DemoContext) {
+	ap, e := d.parseGetActionParams(context)
 	if e != nil {
 		context.ApiData.Err = e
 		return
@@ -27,7 +27,7 @@ func (this *DemoController) GetAction(context *DemoContext) {
 	context.ApiData.Data = entity
 }
 
-func (this *DemoController) parseGetActionParams(context *DemoContext) (*getActionParams, *exception.Exception) {
+func (d *DemoController) parseGetActionParams(context *DemoContext) (*getActionParams, *exception.Exception) {
 	ap := new(getActionParams)
 
 	qs := query.NewQuerySet()

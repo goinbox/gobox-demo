@@ -11,8 +11,8 @@ type delActionParams struct {
 	id int64
 }
 
-func (this *DemoController) DelAction(context *DemoContext) {
-	ap, e := this.parseDelActionParams(context)
+func (d *DemoController) DelAction(context *DemoContext) {
+	ap, e := d.parseDelActionParams(context)
 	if e != nil {
 		context.ApiData.Err = e
 		return
@@ -27,7 +27,7 @@ func (this *DemoController) DelAction(context *DemoContext) {
 	context.ApiData.Data = deleted
 }
 
-func (this *DemoController) parseDelActionParams(context *DemoContext) (*delActionParams, *exception.Exception) {
+func (d *DemoController) parseDelActionParams(context *DemoContext) (*delActionParams, *exception.Exception) {
 	ap := new(delActionParams)
 
 	qs := query.NewQuerySet()

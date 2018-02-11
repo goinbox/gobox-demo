@@ -1,8 +1,8 @@
 package gvalue
 
 import (
-	"github.com/goinbox/redis"
 	"github.com/goinbox/golog"
+	"github.com/goinbox/redis"
 
 	"gdemo/conf"
 )

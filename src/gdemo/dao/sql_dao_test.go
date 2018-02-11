@@ -3,7 +3,7 @@ package dao
 import (
 	"gdemo/misc"
 
-	gmisc "github.com/goinbox/gomisc"
+	"github.com/goinbox/gomisc"
 
 	"testing"
 	"time"
@@ -56,7 +56,7 @@ func TestSqlDaoWrite(t *testing.T) {
 	var colNames = []string{"id", "add_time", "edit_time", "name", "status"}
 	var colsValues [][]interface{}
 
-	ts := time.Now().Format(gmisc.TimeGeneralLayout())
+	ts := time.Now().Format(gomisc.TimeGeneralLayout())
 	for i, name := range []string{"a", "b", "c"} {
 		colValues := []interface{}{
 			int64(i + 10),

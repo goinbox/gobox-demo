@@ -20,8 +20,8 @@ var indexQueryConditions map[string]string = map[string]string{
 	"status": dao.SQL_COND_EQUAL,
 }
 
-func (this *DemoController) IndexAction(context *DemoContext) {
-	ap, exists, e := this.parseIndexActionParams(context)
+func (d *DemoController) IndexAction(context *DemoContext) {
+	ap, exists, e := d.parseIndexActionParams(context)
 	if e != nil {
 		context.ApiData.Err = e
 		return
@@ -46,7 +46,7 @@ func (this *DemoController) IndexAction(context *DemoContext) {
 	context.ApiData.Data = entities
 }
 
-func (this *DemoController) parseIndexActionParams(context *DemoContext) (*indexActionParams, map[string]bool, *exception.Exception) {
+func (d *DemoController) parseIndexActionParams(context *DemoContext) (*indexActionParams, map[string]bool, *exception.Exception) {
 	ap := new(indexActionParams)
 
 	qs := query.NewQuerySet()

@@ -8,8 +8,8 @@ import (
 	"github.com/goinbox/gohttp/query"
 )
 
-func (this *DemoController) AddAction(context *DemoContext) {
-	ap, e := this.parseAddActionParams(context)
+func (d *DemoController) AddAction(context *DemoContext) {
+	ap, e := d.parseAddActionParams(context)
 	if e != nil {
 		context.ApiData.Err = e
 		return
@@ -26,7 +26,7 @@ func (this *DemoController) AddAction(context *DemoContext) {
 	}
 }
 
-func (this *DemoController) parseAddActionParams(context *DemoContext) (*svc.DemoEntity, *exception.Exception) {
+func (d *DemoController) parseAddActionParams(context *DemoContext) (*svc.DemoEntity, *exception.Exception) {
 	ap := new(svc.DemoEntity)
 
 	qs := query.NewQuerySet()
