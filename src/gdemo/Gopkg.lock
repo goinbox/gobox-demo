@@ -40,8 +40,8 @@
 [[projects]]
   name = "github.com/goinbox/golog"
   packages = ["."]
-  revision = "062fa2ca77337de83477942062ec3ddff7f68f32"
-  version = "v1.2.0"
+  revision = "0ae75b59de43b5893119fc00f69b225651244d06"
+  version = "v1.2.1"
 
 [[projects]]
   name = "github.com/goinbox/gomisc"
