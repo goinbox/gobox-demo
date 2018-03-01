@@ -4,7 +4,7 @@ import (
 	"gdemo/errno"
 
 	"github.com/goinbox/exception"
-	gmisc "github.com/goinbox/gomisc"
+	"github.com/goinbox/gomisc"
 
 	"encoding/json"
 	"errors"
@@ -48,7 +48,7 @@ func ApiJson(v string, data interface{}, e *exception.Exception) []byte {
 }
 
 func ApiJsonp(v string, data interface{}, e *exception.Exception, callback string) []byte {
-	return gmisc.AppendBytes(
+	return gomisc.AppendBytes(
 		[]byte(" "),
 		[]byte(callback),
 		[]byte("("),
@@ -67,7 +67,7 @@ func SendMail(subject, body, from string, to []string) error {
 }
 
 func ParseJsonFile(filePath string, v interface{}) error {
-	if !gmisc.FileExist(filePath) {
+	if !gomisc.FileExist(filePath) {
 		return errors.New("confFile " + filePath + " not exists")
 	}
 
