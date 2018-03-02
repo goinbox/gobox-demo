@@ -1,6 +1,6 @@
 {
     "PRJ_NAME" : "gdemo",
-    "PRJ_HOME": "__ARG__(prj_home)",
+    "PRJ_HOME": "__ARG__(prjHome)",
     "RIGGER_TPL_ROOT": "${PRJ_HOME}/conf/rigger/tpl",
 
     "SERVER_CONF_TPL": "${RIGGER_TPL_ROOT}/tpl_server_conf_rewrite.json",
