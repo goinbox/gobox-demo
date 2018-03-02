@@ -5,7 +5,7 @@ import (
 )
 
 type BaseSvc struct {
-	elogger golog.ILogger
+	Elogger golog.ILogger
 }
 
 func NewBaseSvc(elogger golog.ILogger) *BaseSvc {
@@ -14,6 +14,6 @@ func NewBaseSvc(elogger golog.ILogger) *BaseSvc {
 	}
 
 	return &BaseSvc{
-		elogger: elogger,
+		Elogger: elogger,
 	}
 }

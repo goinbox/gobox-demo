@@ -26,13 +26,13 @@ type SqlBaseEntity struct {
 type SqlBaseSvc struct {
 	*BaseSvc
 
-	mclient *mysql.Client
-	mlogger golog.ILogger
+	Mclient *mysql.Client
+	Mlogger golog.ILogger
 
-	entityName string
+	EntityName string
 
-	dao      *dao.SqlDao
-	idGenter *idgen.SqlIdGenter
+	Dao      *dao.SqlDao
+	IdGenter *idgen.SqlIdGenter
 }
 
 type SqlQueryParams struct {
@@ -67,16 +67,16 @@ func NewSqlBaseSvc(bs *BaseSvc, mclient *mysql.Client, entityName string) *SqlBa
 	return &SqlBaseSvc{
 		BaseSvc: bs,
 
-		mclient:    mclient,
-		entityName: entityName,
+		Mclient:    mclient,
+		EntityName: entityName,
 
-		dao:      dao.NewSqlDao(mclient),
-		idGenter: idgen.NewSqlIdGenter(mclient),
+		Dao:      dao.NewSqlDao(mclient),
+		IdGenter: idgen.NewSqlIdGenter(mclient),
 	}
 }
 
 func (s *SqlBaseSvc) fillBaseEntityForInsert(entity *SqlBaseEntity) error {
-	id, err := s.idGenter.GenId(s.entityName)
+	id, err := s.IdGenter.GenId(s.EntityName)
 	if err != nil {
 		return err
 	}
@@ -98,8 +98,8 @@ func (s *SqlBaseSvc) Insert(tableName string, colNames []string, entities ...int
 		baseEntity := rev.FieldByName("SqlBaseEntity").Addr().Interface().(*SqlBaseEntity)
 		err := s.fillBaseEntityForInsert(baseEntity)
 		if err != nil {
-			s.mclient.Free()
-			s.elogger.Error([]byte("fill SqlBaseEntity error: " + err.Error()))
+			s.Mclient.Free()
+			s.Elogger.Error([]byte("fill SqlBaseEntity error: " + err.Error()))
 			return nil, err
 		}
 
@@ -107,9 +107,9 @@ func (s *SqlBaseSvc) Insert(tableName string, colNames []string, entities ...int
 		ids[i] = baseEntity.Id
 	}
 
-	err := s.dao.Insert(tableName, colNames, colsValues...).Err
+	err := s.Dao.Insert(tableName, colNames, colsValues...).Err
 	if err != nil {
-		s.elogger.Error([]byte("insert mysql error: " + err.Error()))
+		s.Elogger.Error([]byte("insert mysql error: " + err.Error()))
 		return nil, err
 	}
 
@@ -139,12 +139,12 @@ func (s *SqlBaseSvc) reflectInsertColValues(rev reflect.Value) []interface{} {
 func (s *SqlBaseSvc) GetById(tableName string, id int64, entityPtr interface{}) (bool, error) {
 	dests := s.reflectEntityScanDests(reflect.ValueOf(entityPtr).Elem())
 
-	err := s.dao.SelectById(tableName, "*", id).Scan(dests...)
+	err := s.Dao.SelectById(tableName, "*", id).Scan(dests...)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return false, nil
 		}
-		s.mclient.Free()
+		s.Mclient.Free()
 		return false, err
 	}
 
@@ -177,8 +177,8 @@ func (s *SqlBaseSvc) UpdateById(tableName string, id int64, newEntityPtr interfa
 
 	find, err := s.GetById(tableName, id, oldEntity)
 	if err != nil {
-		s.mclient.Free()
-		s.elogger.Error([]byte("read mysql error"))
+		s.Mclient.Free()
+		s.Elogger.Error([]byte("read mysql error"))
 		return nil, err
 	}
 	if !find {
@@ -191,9 +191,9 @@ func (s *SqlBaseSvc) UpdateById(tableName string, id int64, newEntityPtr interfa
 	}
 
 	setItems = append(setItems, dao.NewSqlColQueryItem("edit_time", "", time.Now().Format(gomisc.TimeGeneralLayout())))
-	result := s.dao.UpdateById(tableName, id, setItems...)
+	result := s.Dao.UpdateById(tableName, id, setItems...)
 	if result.Err != nil {
-		s.elogger.Error([]byte("update mysql error: " + result.Err.Error()))
+		s.Elogger.Error([]byte("update mysql error: " + result.Err.Error()))
 		return nil, result.Err
 	}
 	if result.RowsAffected == 0 {
@@ -233,16 +233,16 @@ func (s *SqlBaseSvc) reflectUpdateSetItems(roldv, rnewv reflect.Value, updateFie
 }
 
 func (s *SqlBaseSvc) ListByIds(tableName string, ids []int64, orderBy string, entityType reflect.Type, listPtr interface{}) error {
-	rows, err := s.dao.SelectByIds(tableName, "*", orderBy, ids...)
+	rows, err := s.Dao.SelectByIds(tableName, "*", orderBy, ids...)
 	if err != nil {
-		s.mclient.Free()
-		s.elogger.Error([]byte("list from mysql error:" + err.Error()))
+		s.Mclient.Free()
+		s.Elogger.Error([]byte("list from mysql error:" + err.Error()))
 		return err
 	}
 
 	err = s.reflectQueryRowsToEntityList(rows, entityType, listPtr)
 	if err != nil {
-		s.elogger.Error([]byte("list from mysql error:" + err.Error()))
+		s.Elogger.Error([]byte("list from mysql error:" + err.Error()))
 		return err
 	}
 
@@ -259,7 +259,7 @@ func (s *SqlBaseSvc) reflectQueryRowsToEntityList(rows *sql.Rows, ret reflect.Ty
 	dests := s.reflectEntityScanDests(rev.Elem())
 	err := rows.Scan(dests...)
 	if err != nil {
-		s.elogger.Error([]byte("list from mysql error:" + err.Error()))
+		s.Elogger.Error([]byte("list from mysql error:" + err.Error()))
 		return err
 	}
 	rlistv.Set(reflect.Append(rlistv, rev))
@@ -269,7 +269,7 @@ func (s *SqlBaseSvc) reflectQueryRowsToEntityList(rows *sql.Rows, ret reflect.Ty
 		dests = s.reflectEntityScanDests(rev.Elem())
 		err = rows.Scan(dests...)
 		if err != nil {
-			s.elogger.Error([]byte("list from mysql error:" + err.Error()))
+			s.Elogger.Error([]byte("list from mysql error:" + err.Error()))
 			return err
 		}
 		rlistv.Set(reflect.Append(rlistv, rev))
@@ -281,16 +281,16 @@ func (s *SqlBaseSvc) reflectQueryRowsToEntityList(rows *sql.Rows, ret reflect.Ty
 func (s *SqlBaseSvc) SimpleQueryAnd(tableName string, sqp *SqlQueryParams, entityType reflect.Type, listPtr interface{}) error {
 	setItems := s.reflectQuerySetItems(reflect.ValueOf(sqp.ParamsStructPtr).Elem(), sqp.Exists, sqp.Conditions)
 
-	rows, err := s.dao.SimpleQueryAnd(tableName, "*", sqp.OrderBy, sqp.Offset, sqp.Cnt, setItems...)
+	rows, err := s.Dao.SimpleQueryAnd(tableName, "*", sqp.OrderBy, sqp.Offset, sqp.Cnt, setItems...)
 	if err != nil {
-		s.mclient.Free()
-		s.elogger.Error([]byte("list from mysql error:" + err.Error()))
+		s.Mclient.Free()
+		s.Elogger.Error([]byte("list from mysql error:" + err.Error()))
 		return err
 	}
 
 	err = s.reflectQueryRowsToEntityList(rows, entityType, listPtr)
 	if err != nil {
-		s.elogger.Error([]byte("list from mysql error:" + err.Error()))
+		s.Elogger.Error([]byte("list from mysql error:" + err.Error()))
 		return err
 	}
 

@@ -19,7 +19,7 @@ func NewSqlRedisBindSvc(bs *BaseSvc, ss *SqlBaseSvc, rs *RedisBaseSvc, redisKeyP
 }
 
 func (s *SqlRedisBindSvc) redisKeyForEntity(id int64) string {
-	return s.redisKeyPrefix + "_entity_" + s.entityName + "_id_" + strconv.FormatInt(id, 10)
+	return s.redisKeyPrefix + "_entity_" + s.EntityName + "_id_" + strconv.FormatInt(id, 10)
 }
 
 func (s *SqlRedisBindSvc) Insert(tableName string, colNames []string, expireSeconds int64, entities ...interface{}) ([]int64, error) {
@@ -48,7 +48,7 @@ func (s *SqlRedisBindSvc) GetById(tableName string, id, expireSeconds int64, ent
 
 	find, err = s.SqlBaseSvc.GetById(tableName, id, entityPtr)
 	if err != nil {
-		s.elogger.Error([]byte("getById from mysql error"))
+		s.Elogger.Error([]byte("getById from mysql error"))
 		return false, err
 	}
 	if !find {
@@ -61,9 +61,9 @@ func (s *SqlRedisBindSvc) GetById(tableName string, id, expireSeconds int64, ent
 }
 
 func (s *SqlRedisBindSvc) DeleteById(tableName string, id int64) (bool, error) {
-	result := s.dao.DeleteById(tableName, id)
+	result := s.Dao.DeleteById(tableName, id)
 	if result.Err != nil {
-		s.elogger.Error([]byte("delete from mysql error: " + result.Err.Error()))
+		s.Elogger.Error([]byte("delete from mysql error: " + result.Err.Error()))
 		return false, result.Err
 	}
 
@@ -72,9 +72,9 @@ func (s *SqlRedisBindSvc) DeleteById(tableName string, id int64) (bool, error) {
 	}
 
 	rk := s.redisKeyForEntity(id)
-	err := s.rclient.Do("del", rk).Err
+	err := s.Rclient.Do("del", rk).Err
 	if err != nil {
-		s.elogger.Warning([]byte("del key " + rk + " from redis failed: " + err.Error()))
+		s.Elogger.Warning([]byte("del key " + rk + " from redis failed: " + err.Error()))
 	}
 
 	return true, nil
@@ -107,18 +107,18 @@ func (s *SqlRedisBindSvc) updateSqlHashEntity(key string, setItems []*dao.SqlCol
 		ai++
 	}
 
-	s.rclient.Send("hmset", args...)
+	s.Rclient.Send("hmset", args...)
 	if expireSeconds > 0 {
-		s.rclient.Send("expire", expireSeconds)
+		s.Rclient.Send("expire", expireSeconds)
 	}
-	replies, errIndexes := s.rclient.ExecPipelining()
+	replies, errIndexes := s.Rclient.ExecPipelining()
 	if len(errIndexes) != 0 {
-		s.rclient.Free()
+		s.Rclient.Free()
 		msg := "hmset key " + key + " to redis error:"
 		for _, i := range errIndexes {
 			msg += " " + replies[i].Err.Error()
 		}
-		s.elogger.Warning([]byte(msg))
+		s.Elogger.Warning([]byte(msg))
 		return errors.New(msg)
 	}
 
