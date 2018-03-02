@@ -2,7 +2,7 @@ package conf
 
 import (
 	"github.com/goinbox/exception"
-	gmisc "github.com/goinbox/gomisc"
+	"github.com/goinbox/gomisc"
 
 	"gdemo/errno"
 )
@@ -10,7 +10,7 @@ import (
 var PrjHome string
 
 func Init(prjHome string) *exception.Exception {
-	if !gmisc.DirExist(prjHome) {
+	if !gomisc.DirExist(prjHome) {
 		return exception.New(errno.E_SYS_INVALID_PRJ_HOME, "prjHome not exists")
 	}
 

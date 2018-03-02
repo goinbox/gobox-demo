@@ -6,7 +6,7 @@ import (
 	"github.com/goinbox/encoding"
 	"github.com/goinbox/gohttp/controller"
 	"github.com/goinbox/golog"
-	gmisc "github.com/goinbox/gomisc"
+	"github.com/goinbox/gomisc"
 
 	"net/http"
 	"net/url"
@@ -81,7 +81,7 @@ func (b *BaseController) NewActionContext(req *http.Request, respWriter http.Res
 
 	now := time.Now()
 	timeInt := now.UnixNano()
-	randInt := gmisc.RandByTime(&now)
+	randInt := gomisc.RandByTime(&now)
 
 	ridStr := context.RemoteRealAddr.Ip + ":" + context.RemoteRealAddr.Port + "," + strconv.FormatInt(timeInt, 10) + "," + strconv.FormatInt(randInt, 10)
 	context.Rid = encoding.Base64Encode([]byte(ridStr))

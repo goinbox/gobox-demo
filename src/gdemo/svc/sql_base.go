@@ -2,7 +2,7 @@ package svc
 
 import (
 	"github.com/goinbox/golog"
-	gmisc "github.com/goinbox/gomisc"
+	"github.com/goinbox/gomisc"
 	"github.com/goinbox/mysql"
 
 	"gdemo/dao"
@@ -81,7 +81,7 @@ func (s *SqlBaseSvc) fillBaseEntityForInsert(entity *SqlBaseEntity) error {
 		return err
 	}
 
-	ts := time.Now().Format(gmisc.TimeGeneralLayout())
+	ts := time.Now().Format(gomisc.TimeGeneralLayout())
 	entity.Id = id
 	entity.AddTime = ts
 	entity.EditTime = ts
@@ -190,7 +190,7 @@ func (s *SqlBaseSvc) UpdateById(tableName string, id int64, newEntityPtr interfa
 		return nil, nil
 	}
 
-	setItems = append(setItems, dao.NewSqlColQueryItem("edit_time", "", time.Now().Format(gmisc.TimeGeneralLayout())))
+	setItems = append(setItems, dao.NewSqlColQueryItem("edit_time", "", time.Now().Format(gomisc.TimeGeneralLayout())))
 	result := s.dao.UpdateById(tableName, id, setItems...)
 	if result.Err != nil {
 		s.elogger.Error([]byte("update mysql error: " + result.Err.Error()))
