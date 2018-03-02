@@ -4,8 +4,8 @@
 [[projects]]
   name = "github.com/garyburd/redigo"
   packages = ["internal","redis"]
-  revision = "d1ed5c67e5794de818ea85e6b522fda02623a484"
-  version = "v1.4.0"
+  revision = "a69d19351219b6dd56f274f96d85a7014a2ec34e"
+  version = "v1.6.0"
 
 [[projects]]
   name = "github.com/go-sql-driver/mysql"
@@ -46,14 +46,14 @@
 [[projects]]
   name = "github.com/goinbox/gomisc"
   packages = ["."]
-  revision = "dc887af0a49a8835c564de7c8af964e184c80d8a"
-  version = "v1.0.1"
+  revision = "7f6a722743f1ace7a7baf1c4d7f8bbebc0303d89"
+  version = "v1.1.0"
 
 [[projects]]
   name = "github.com/goinbox/mysql"
   packages = ["."]
-  revision = "fff146bf799e6403909732dbfb714a7f1d92f8ff"
-  version = "v1.0.1"
+  revision = "d3078d6b499ea99372eacd4d0eaff2de9e5f4b18"
+  version = "v1.0.2"
 
 [[projects]]
   name = "github.com/goinbox/pidfile"
@@ -76,6 +76,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "55eb76090f8ab8c25e538f623a874f2ef74d09feb8d48c5e50e88a0922644322"
+  inputs-digest = "1691e4839a789704f23c98d91d382ac184f4333b323b42bbc65c06a113366512"
   solver-name = "gps-cdcl"
   solver-version = 1

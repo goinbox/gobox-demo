@@ -1,7 +1,7 @@
 package conf
 
 import (
-	"gdemo/misc"
+	"github.com/goinbox/gomisc"
 )
 
 var scJson serverConfJson
@@ -60,11 +60,11 @@ type serverConfJson struct {
 
 func initServerConfJson() error {
 	confRoot := PrjHome + "/conf"
-	err := misc.ParseJsonFile(confRoot+"/server/server_conf.json", &scJson)
+	err := gomisc.ParseJsonFile(confRoot+"/server/server_conf.json", &scJson)
 	if err != nil {
 		return err
 	}
-	err = misc.ParseJsonFile(confRoot+"/server_conf_rewrite.json", &scJson)
+	err = gomisc.ParseJsonFile(confRoot+"/server_conf_rewrite.json", &scJson)
 	if err != nil {
 		return err
 	}

@@ -7,8 +7,6 @@ import (
 	"github.com/goinbox/gomisc"
 
 	"encoding/json"
-	"errors"
-	"io/ioutil"
 	"net/smtp"
 	"reflect"
 	"strings"
@@ -64,28 +62,6 @@ func SendMail(subject, body, from string, to []string) error {
 
 	err := smtp.SendMail("127.0.0.1:25", auth, from, to, msg)
 	return err
-}
-
-func ParseJsonFile(filePath string, v interface{}) error {
-	if !gomisc.FileExist(filePath) {
-		return errors.New("confFile " + filePath + " not exists")
-	}
-
-	jsonBytes, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		return err
-	}
-
-	return json.Unmarshal(jsonBytes, v)
-}
-
-func SaveJsonFile(filePath string, v interface{}) error {
-	jsonBytes, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	return ioutil.WriteFile(filePath, jsonBytes, 0644)
 }
 
 var StructSimpleFields map[reflect.Kind]bool = map[reflect.Kind]bool{
