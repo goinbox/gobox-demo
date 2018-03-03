@@ -26,7 +26,7 @@ func NewRedisBaseSvc(bs *BaseSvc, rclient *redis.Client) *RedisBaseSvc {
 	}
 }
 
-func (r *RedisBaseSvc) saveJsonDataToRedis(key string, v interface{}, expireSeconds int64) error {
+func (r *RedisBaseSvc) SaveJsonDataToRedis(key string, v interface{}, expireSeconds int64) error {
 	jsonBytes, err := json.Marshal(v)
 	if err != nil {
 		r.Elogger.Warning([]byte("json_encode " + key + " error: " + err.Error()))
@@ -43,7 +43,7 @@ func (r *RedisBaseSvc) saveJsonDataToRedis(key string, v interface{}, expireSeco
 	return nil
 }
 
-func (r *RedisBaseSvc) getJsonDataFromRedis(key string, v interface{}) (bool, error) {
+func (r *RedisBaseSvc) GetJsonDataFromRedis(key string, v interface{}) (bool, error) {
 	reply := r.Rclient.Do("get", key)
 	if reply.Err != nil {
 		r.Rclient.Free()
@@ -70,7 +70,7 @@ func (r *RedisBaseSvc) getJsonDataFromRedis(key string, v interface{}) (bool, er
 	return true, nil
 }
 
-func (r *RedisBaseSvc) saveHashEntityToRedis(key string, entityPtr interface{}, expireSeconds int64) error {
+func (r *RedisBaseSvc) SaveHashEntityToRedis(key string, entityPtr interface{}, expireSeconds int64) error {
 	eargs := r.reflectSaveHashEntityArgs(reflect.ValueOf(entityPtr).Elem())
 	args := make([]interface{}, len(eargs)+1)
 	args[0] = key
@@ -96,7 +96,7 @@ func (r *RedisBaseSvc) saveHashEntityToRedis(key string, entityPtr interface{}, 
 	return nil
 }
 
-func (r *RedisBaseSvc) getHashEntityFromRedis(key string, entityPtr interface{}) (bool, error) {
+func (r *RedisBaseSvc) GetHashEntityFromRedis(key string, entityPtr interface{}) (bool, error) {
 	reply := r.Rclient.Do("hgetall", key)
 	if reply.Err != nil {
 		r.Rclient.Free()

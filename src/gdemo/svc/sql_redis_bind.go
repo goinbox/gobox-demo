@@ -29,7 +29,7 @@ func (s *SqlRedisBindSvc) Insert(tableName string, colNames []string, expireSeco
 	}
 
 	for i, id := range ids {
-		s.saveHashEntityToRedis(s.redisKeyForEntity(id), entities[i], expireSeconds)
+		s.SaveHashEntityToRedis(s.redisKeyForEntity(id), entities[i], expireSeconds)
 	}
 
 	return ids, nil
@@ -38,7 +38,7 @@ func (s *SqlRedisBindSvc) Insert(tableName string, colNames []string, expireSeco
 func (s *SqlRedisBindSvc) GetById(tableName string, id, expireSeconds int64, entityPtr interface{}) (bool, error) {
 	rk := s.redisKeyForEntity(id)
 
-	find, err := s.getHashEntityFromRedis(rk, entityPtr)
+	find, err := s.GetHashEntityFromRedis(rk, entityPtr)
 	if err != nil {
 		return s.SqlBaseSvc.GetById(tableName, id, entityPtr)
 	}
@@ -55,7 +55,7 @@ func (s *SqlRedisBindSvc) GetById(tableName string, id, expireSeconds int64, ent
 		return false, nil
 	}
 
-	s.saveHashEntityToRedis(rk, entityPtr, expireSeconds)
+	s.SaveHashEntityToRedis(rk, entityPtr, expireSeconds)
 
 	return true, nil
 }

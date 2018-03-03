@@ -75,7 +75,7 @@ func NewSqlBaseSvc(bs *BaseSvc, mclient *mysql.Client, entityName string) *SqlBa
 	}
 }
 
-func (s *SqlBaseSvc) fillBaseEntityForInsert(entity *SqlBaseEntity) error {
+func (s *SqlBaseSvc) FillBaseEntityForInsert(entity *SqlBaseEntity) error {
 	id, err := s.IdGenter.GenId(s.EntityName)
 	if err != nil {
 		return err
@@ -96,7 +96,7 @@ func (s *SqlBaseSvc) Insert(tableName string, colNames []string, entities ...int
 	for i, entity := range entities {
 		rev := reflect.ValueOf(entity).Elem()
 		baseEntity := rev.FieldByName("SqlBaseEntity").Addr().Interface().(*SqlBaseEntity)
-		err := s.fillBaseEntityForInsert(baseEntity)
+		err := s.FillBaseEntityForInsert(baseEntity)
 		if err != nil {
 			s.Mclient.Free()
 			s.Elogger.Error([]byte("fill SqlBaseEntity error: " + err.Error()))
@@ -240,7 +240,7 @@ func (s *SqlBaseSvc) ListByIds(tableName string, ids []int64, orderBy string, en
 		return err
 	}
 
-	err = s.reflectQueryRowsToEntityList(rows, entityType, listPtr)
+	err = s.ReflectQueryRowsToEntityList(rows, entityType, listPtr)
 	if err != nil {
 		s.Elogger.Error([]byte("list from mysql error:" + err.Error()))
 		return err
@@ -249,7 +249,7 @@ func (s *SqlBaseSvc) ListByIds(tableName string, ids []int64, orderBy string, en
 	return nil
 }
 
-func (s *SqlBaseSvc) reflectQueryRowsToEntityList(rows *sql.Rows, ret reflect.Type, listPtr interface{}) error {
+func (s *SqlBaseSvc) ReflectQueryRowsToEntityList(rows *sql.Rows, ret reflect.Type, listPtr interface{}) error {
 	if rows.Next() == false {
 		return nil
 	}
@@ -288,7 +288,7 @@ func (s *SqlBaseSvc) SimpleQueryAnd(tableName string, sqp *SqlQueryParams, entit
 		return err
 	}
 
-	err = s.reflectQueryRowsToEntityList(rows, entityType, listPtr)
+	err = s.ReflectQueryRowsToEntityList(rows, entityType, listPtr)
 	if err != nil {
 		s.Elogger.Error([]byte("list from mysql error:" + err.Error()))
 		return err
