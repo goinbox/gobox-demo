@@ -36,7 +36,7 @@ func NewDemoSvc(elogger golog.ILogger, mclient *mysql.Client, redisKeyPrefix str
 			SqlBaseSvc:   sbs,
 			RedisBaseSvc: NewRedisBaseSvc(bs, rclient),
 
-			redisKeyPrefix: redisKeyPrefix,
+			RedisKeyPrefix: redisKeyPrefix,
 		},
 	}
 }

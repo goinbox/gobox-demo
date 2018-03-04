@@ -11,7 +11,7 @@ type SqlRedisBindSvc struct {
 	*SqlBaseSvc
 	*RedisBaseSvc
 
-	redisKeyPrefix string
+	RedisKeyPrefix string
 }
 
 func NewSqlRedisBindSvc(bs *BaseSvc, ss *SqlBaseSvc, rs *RedisBaseSvc, redisKeyPrefix string) *SqlRedisBindSvc {
@@ -19,7 +19,7 @@ func NewSqlRedisBindSvc(bs *BaseSvc, ss *SqlBaseSvc, rs *RedisBaseSvc, redisKeyP
 }
 
 func (s *SqlRedisBindSvc) redisKeyForEntity(id int64) string {
-	return s.redisKeyPrefix + "_entity_" + s.EntityName + "_id_" + strconv.FormatInt(id, 10)
+	return s.RedisKeyPrefix + "_entity_" + s.EntityName + "_id_" + strconv.FormatInt(id, 10)
 }
 
 func (s *SqlRedisBindSvc) Insert(tableName string, colNames []string, expireSeconds int64, entities ...interface{}) ([]int64, error) {
