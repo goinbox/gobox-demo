@@ -18,7 +18,7 @@ func NewSqlRedisBindSvc(bs *BaseSvc, ss *SqlBaseSvc, rs *RedisBaseSvc, redisKeyP
 	return &SqlRedisBindSvc{bs, ss, rs, redisKeyPrefix}
 }
 
-func (s *SqlRedisBindSvc) redisKeyForEntity(id int64) string {
+func (s *SqlRedisBindSvc) RedisKeyForEntity(id int64) string {
 	return s.RedisKeyPrefix + "_entity_" + s.EntityName + "_id_" + strconv.FormatInt(id, 10)
 }
 
@@ -29,14 +29,14 @@ func (s *SqlRedisBindSvc) Insert(tableName string, colNames []string, expireSeco
 	}
 
 	for i, id := range ids {
-		s.SaveHashEntityToRedis(s.redisKeyForEntity(id), entities[i], expireSeconds)
+		s.SaveHashEntityToRedis(s.RedisKeyForEntity(id), entities[i], expireSeconds)
 	}
 
 	return ids, nil
 }
 
 func (s *SqlRedisBindSvc) GetById(tableName string, id, expireSeconds int64, entityPtr interface{}) (bool, error) {
-	rk := s.redisKeyForEntity(id)
+	rk := s.RedisKeyForEntity(id)
 
 	find, err := s.GetHashEntityFromRedis(rk, entityPtr)
 	if err != nil {
@@ -71,7 +71,7 @@ func (s *SqlRedisBindSvc) DeleteById(tableName string, id int64) (bool, error) {
 		return false, nil
 	}
 
-	rk := s.redisKeyForEntity(id)
+	rk := s.RedisKeyForEntity(id)
 	err := s.Rclient.Do("del", rk).Err
 	if err != nil {
 		s.Elogger.Warning([]byte("del key " + rk + " from redis failed: " + err.Error()))
@@ -90,7 +90,7 @@ func (s *SqlRedisBindSvc) UpdateById(tableName string, id int64, newEntityPtr in
 		return false, nil
 	}
 
-	s.updateSqlHashEntity(s.redisKeyForEntity(id), setItems, expireSeconds)
+	s.updateSqlHashEntity(s.RedisKeyForEntity(id), setItems, expireSeconds)
 
 	return true, nil
 }
