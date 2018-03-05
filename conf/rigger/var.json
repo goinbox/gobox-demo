@@ -27,7 +27,7 @@
     "API_HTTP_DOMAIN": "${USER}.gdemo.com",
     "API_HTTPS_DOMAIN": "${USER}.gdemo.com",
     "API_UPSTREAM": "gdemo_golang_${USER}",
-    "API_GOHTTP_PORT": "__MATH__(6000+${UID})",
+    "API_GOHTTP_PORT": "__MATH__(6001+${UID})",
     "PPROF_PORT": "__MATH__(6060+${UID})",
 
     "API_HTTP_ACCESS_LOG": "${API_HTTP_DOMAIN}.log",

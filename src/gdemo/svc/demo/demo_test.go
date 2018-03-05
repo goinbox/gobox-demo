@@ -1,7 +1,8 @@
-package svc
+package demo
 
 import (
 	"gdemo/misc"
+	"gdemo/svc"
 
 	"github.com/goinbox/gomisc"
 
@@ -36,7 +37,7 @@ func TestDemoSvc(t *testing.T) {
 		t.Log(deleted, err)
 	}
 
-	baseEntity := SqlBaseEntity{AddTime: time.Now().Format(gomisc.TimeGeneralLayout())}
+	baseEntity := svc.SqlBaseEntity{AddTime: time.Now().Format(gomisc.TimeGeneralLayout())}
 	demoSvc.UpdateById(1, &DemoEntity{SqlBaseEntity: baseEntity, Name: "aa", Status: 1}, map[string]bool{"add_time": true, "name": true})
 
 	entities, err := demoSvc.ListByIds(1, 10, 11)
@@ -44,7 +45,7 @@ func TestDemoSvc(t *testing.T) {
 		t.Log("listByIds", entity, err)
 	}
 
-	sqp := &SqlQueryParams{
+	sqp := &svc.SqlQueryParams{
 		ParamsStructPtr: &testQueryParamsStruct{
 			Addtime: []string{"2017-10-01 17:06:30", "2017-10-30 17:06:30"},
 			Name:    "%a%",

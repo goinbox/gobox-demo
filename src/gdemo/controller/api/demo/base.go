@@ -3,7 +3,7 @@ package demo
 import (
 	"gdemo/conf"
 	"gdemo/controller/api"
-	"gdemo/svc"
+	demoSvc "gdemo/svc/demo"
 
 	gcontroller "github.com/goinbox/gohttp/controller"
 
@@ -13,13 +13,13 @@ import (
 type DemoContext struct {
 	*api.ApiContext
 
-	demoSvc *svc.DemoSvc
+	demoSvc *demoSvc.DemoSvc
 }
 
 func (d *DemoContext) BeforeAction() {
 	d.ApiContext.BeforeAction()
 
-	d.demoSvc = svc.NewDemoSvc(
+	d.demoSvc = demoSvc.NewDemoSvc(
 		d.ErrorLogger,
 		d.MysqlClient,
 		conf.BaseConf.PrjName,

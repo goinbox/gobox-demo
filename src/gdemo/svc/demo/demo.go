@@ -1,6 +1,8 @@
-package svc
+package demo
 
 import (
+	"gdemo/svc"
+
 	"github.com/goinbox/golog"
 	"github.com/goinbox/mysql"
 	"github.com/goinbox/redis"
@@ -13,28 +15,28 @@ const (
 )
 
 var demoEntityType reflect.Type = reflect.TypeOf(DemoEntity{})
-var demoColNames []string = ReflectColNames(demoEntityType)
+var demoColNames []string = svc.ReflectColNames(demoEntityType)
 
 type DemoEntity struct {
-	SqlBaseEntity
+	svc.SqlBaseEntity
 
 	Name   string `mysql:"name" json:"name" redis:"name"`
 	Status int    `mysql:"status" json:"status" redis:"status"`
 }
 
 type DemoSvc struct {
-	*SqlRedisBindSvc
+	*svc.SqlRedisBindSvc
 }
 
 func NewDemoSvc(elogger golog.ILogger, mclient *mysql.Client, redisKeyPrefix string, rclient *redis.Client) *DemoSvc {
-	bs := NewBaseSvc(elogger)
-	sbs := NewSqlBaseSvc(bs, mclient, "demo")
+	bs := svc.NewBaseSvc(elogger)
+	sbs := svc.NewSqlBaseSvc(bs, mclient, "demo")
 
 	return &DemoSvc{
-		&SqlRedisBindSvc{
+		&svc.SqlRedisBindSvc{
 			BaseSvc:      bs,
 			SqlBaseSvc:   sbs,
-			RedisBaseSvc: NewRedisBaseSvc(bs, rclient),
+			RedisBaseSvc: svc.NewRedisBaseSvc(bs, rclient),
 
 			RedisKeyPrefix: redisKeyPrefix,
 		},
@@ -83,7 +85,7 @@ func (d *DemoSvc) ListByIds(ids ...int64) ([]*DemoEntity, error) {
 	return entities, nil
 }
 
-func (d *DemoSvc) SimpleQueryAnd(sqp *SqlQueryParams) ([]*DemoEntity, error) {
+func (d *DemoSvc) SimpleQueryAnd(sqp *svc.SqlQueryParams) ([]*DemoEntity, error) {
 	var entities []*DemoEntity
 
 	err := d.SqlBaseSvc.SimpleQueryAnd(d.EntityName, sqp, demoEntityType, &entities)

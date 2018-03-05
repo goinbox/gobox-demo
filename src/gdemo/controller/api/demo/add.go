@@ -2,7 +2,7 @@ package demo
 
 import (
 	"gdemo/errno"
-	"gdemo/svc"
+	demoSvc "gdemo/svc/demo"
 
 	"github.com/goinbox/exception"
 	"github.com/goinbox/gohttp/query"
@@ -26,8 +26,8 @@ func (d *DemoController) AddAction(context *DemoContext) {
 	}
 }
 
-func (d *DemoController) parseAddActionParams(context *DemoContext) (*svc.DemoEntity, *exception.Exception) {
-	ap := new(svc.DemoEntity)
+func (d *DemoController) parseAddActionParams(context *DemoContext) (*demoSvc.DemoEntity, *exception.Exception) {
+	ap := new(demoSvc.DemoEntity)
 
 	qs := query.NewQuerySet()
 	qs.StringVar(&ap.Name, "name", true, errno.E_API_DEMO_INVALID_NAME, "invalid name", query.CheckStringNotEmpty)
