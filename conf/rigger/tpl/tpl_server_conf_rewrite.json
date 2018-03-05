@@ -12,7 +12,6 @@
     },
 
     "api_http": {
-        "http_domain": "${API_HTTP_DOMAIN}",
         "gohttp_port": "${API_GOHTTP_PORT}"
     },
 
