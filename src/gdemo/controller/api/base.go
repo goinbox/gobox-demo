@@ -24,7 +24,6 @@ import (
 type ApiSignParams struct {
 	T     int64
 	Nonce string
-	Token string
 	Sign  string
 	Debug int
 }
@@ -34,7 +33,6 @@ var ApiSignQueryNames = []string{"t", "nonce"}
 func SetApiSignParams(qs *query.QuerySet, asp *ApiSignParams) {
 	qs.Int64Var(&asp.T, "t", true, errno.E_COMMON_INVALID_SIGN_T, "invalid sign t", query.CheckInt64IsPositive)
 	qs.StringVar(&asp.Nonce, "nonce", true, errno.E_COMMON_INVALID_SIGN_NONCE, "invalid sign nonce", query.CheckStringNotEmpty)
-	qs.StringVar(&asp.Token, "token", true, errno.E_COMMON_INVALID_SIGN_TOKEN, "invalid sign token", query.CheckStringNotEmpty)
 	qs.StringVar(&asp.Sign, "sign", true, errno.E_COMMON_INVALID_SIGN_SIGN, "invalid sign sign", query.CheckStringNotEmpty)
 	qs.IntVar(&asp.Debug, "debug", false, errno.E_COMMON_INVALID_SIGN_DEBUG, "invalid sign debug", nil)
 }
