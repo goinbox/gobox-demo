@@ -1,9 +1,13 @@
 #!/bin/bash
 
-CURDIR=$(cd `dirname $0`/../; pwd)
-PRJHOME=$(dirname $CURDIR)
+curDir=`dirname $0`
+cd $curDir
+curDir=`pwd`
+cd $curDir/../../
+prjHome=`pwd`
 
-export GOPATH="$PRJHOME"
-export GOBIN="$PRJHOME/bin"
+export GOPATH=$prjHome
+export GOBIN=$prjHome/bin
 
-dep "$@"
+cd $curDir
+dep $@
