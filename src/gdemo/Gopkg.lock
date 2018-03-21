@@ -2,10 +2,10 @@
 
 
 [[projects]]
+  branch = "master"
   name = "github.com/garyburd/redigo"
   packages = ["internal","redis"]
-  revision = "a69d19351219b6dd56f274f96d85a7014a2ec34e"
-  version = "v1.6.0"
+  revision = "e8e59ed1cd89662b75af5d1109e39e5dc148cc00"
 
 [[projects]]
   name = "github.com/go-sql-driver/mysql"
@@ -46,8 +46,8 @@
 [[projects]]
   name = "github.com/goinbox/golog"
   packages = ["."]
-  revision = "0ae75b59de43b5893119fc00f69b225651244d06"
-  version = "v1.2.1"
+  revision = "627acab36e21bb6a026ebaf5fcab5604d56ef667"
+  version = "v1.2.2"
 
 [[projects]]
   name = "github.com/goinbox/gomisc"
@@ -76,8 +76,8 @@
 [[projects]]
   name = "github.com/goinbox/redis"
   packages = ["."]
-  revision = "f14bf2df06824e697ed4f55648714367c63d9d7c"
-  version = "v1.0.1"
+  revision = "3737fb275219b79121ce1abf26da560e2bd54e9d"
+  version = "v1.1.0"
 
 [solve-meta]
   analyzer-name = "dep"
