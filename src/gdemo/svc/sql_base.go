@@ -297,6 +297,12 @@ func (s *SqlBaseSvc) SimpleQueryAnd(tableName string, sqp *SqlQueryParams, entit
 	return nil
 }
 
+func (s *SqlBaseSvc) SimpleTotalAnd(tableName string, sqp *SqlQueryParams) (int64, error) {
+	setItems := s.reflectQuerySetItems(reflect.ValueOf(sqp.ParamsStructPtr).Elem(), sqp.Exists, sqp.Conditions)
+
+	return s.Dao.SimpleTotalAnd(tableName, setItems...)
+}
+
 func (s *SqlBaseSvc) reflectQuerySetItems(rev reflect.Value, exists map[string]bool, conditions map[string]string) []*dao.SqlColQueryItem {
 	var setItems []*dao.SqlColQueryItem
 	ret := rev.Type()

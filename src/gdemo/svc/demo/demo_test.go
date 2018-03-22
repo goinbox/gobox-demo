@@ -63,4 +63,8 @@ func TestDemoSvc(t *testing.T) {
 	for _, entity := range entities {
 		t.Log("listByIds", entity, err)
 	}
+
+	sqp = &svc.SqlQueryParams{ParamsStructPtr: &testQueryParamsStruct{}}
+	total, err := demoSvc.SimpleTotalAnd(demoSvc.EntityName, sqp)
+	t.Log("total:", total, err)
 }
