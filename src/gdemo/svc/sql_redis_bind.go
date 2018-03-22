@@ -107,6 +107,7 @@ func (s *SqlRedisBindSvc) TotalRows(tableName string, expireSeconds int64) (int6
 			}
 			s.Rclient.Free()
 			s.Elogger.Warning([]byte("get " + rk + " reply.Int64() error: " + err.Error()))
+			s.Rclient.Do("del", rk)
 		}
 	} else {
 		s.Rclient.Free()
