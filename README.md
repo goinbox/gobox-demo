@@ -89,7 +89,7 @@ ligang     5121  0.0  0.1  69108  4452 pts/1    Sl+  10:21   0:00 /tmp/go-build0
 可以简单测试下是否运行成功：
 
 ```
-ligang@vm-centos7 ~ $ curl 'http://ligang.gdemo.com/demo/get?id=1' -x 127.0.0.1:80
+ligang@vm-centos7 ~ $ curl 'http://$USER.gdemo.com/demo/get?id=1' -x 127.0.0.1:80
 
 返回json：
 
