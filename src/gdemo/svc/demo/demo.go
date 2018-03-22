@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	DEF_DEMO_ENTITY_CACHE_EXPIRE_SECONDS = 60 * 30
+	DEF_DEMO_ENTITY_CACHE_EXPIRE_SECONDS     = 60 * 30
+	DEF_DEMO_TOTAL_ROWS_CACHE_EXPIRE_SECONDS = 60 * 10
 )
 
 var demoEntityType reflect.Type = reflect.TypeOf(DemoEntity{})

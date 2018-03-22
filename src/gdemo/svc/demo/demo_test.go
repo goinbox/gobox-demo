@@ -64,7 +64,6 @@ func TestDemoSvc(t *testing.T) {
 		t.Log("listByIds", entity, err)
 	}
 
-	sqp = &svc.SqlQueryParams{ParamsStructPtr: &testQueryParamsStruct{}}
-	total, err := demoSvc.SimpleTotalAnd(demoSvc.EntityName, sqp)
+	total, err := demoSvc.TotalRows(demoSvc.EntityName, DEF_DEMO_TOTAL_ROWS_CACHE_EXPIRE_SECONDS)
 	t.Log("total:", total, err)
 }

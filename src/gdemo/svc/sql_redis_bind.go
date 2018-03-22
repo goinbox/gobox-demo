@@ -48,7 +48,7 @@ func (s *SqlRedisBindSvc) GetById(tableName string, id, expireSeconds int64, ent
 
 	find, err = s.SqlBaseSvc.GetById(tableName, id, entityPtr)
 	if err != nil {
-		s.Elogger.Error([]byte("getById from mysql error"))
+		s.Elogger.Error([]byte("getById from mysql error: " + err.Error()))
 		return false, err
 	}
 	if !find {
@@ -93,6 +93,39 @@ func (s *SqlRedisBindSvc) UpdateById(tableName string, id int64, newEntityPtr in
 	s.updateSqlHashEntity(s.RedisKeyForEntity(id), setItems, expireSeconds)
 
 	return true, nil
+}
+
+func (s *SqlRedisBindSvc) TotalRows(tableName string, expireSeconds int64) (int64, error) {
+	rk := s.redisKeyForTotalRows(tableName)
+
+	reply := s.Rclient.Do("get", rk)
+	if reply.Err == nil {
+		if !reply.SimpleReplyIsNil() {
+			total, err := reply.Int64()
+			if err == nil {
+				return total, err
+			}
+			s.Rclient.Free()
+			s.Elogger.Warning([]byte("get " + rk + " reply.Int64() error: " + err.Error()))
+		}
+	} else {
+		s.Rclient.Free()
+		s.Elogger.Warning([]byte("get " + rk + " from redis error: " + reply.Err.Error()))
+	}
+
+	total, err := s.Dao.SimpleTotalAnd(tableName)
+	if err != nil {
+		s.Elogger.Error([]byte("mysql error: " + err.Error()))
+		return 0, err
+	}
+
+	s.Rclient.Do("set", rk, total, "ex", expireSeconds)
+
+	return total, nil
+}
+
+func (s *SqlRedisBindSvc) redisKeyForTotalRows(tableName string) string {
+	return s.RedisKeyPrefix + "_total_rows_" + tableName
 }
 
 func (s *SqlRedisBindSvc) updateSqlHashEntity(key string, setItems []*dao.SqlColQueryItem, expireSeconds int64) error {
