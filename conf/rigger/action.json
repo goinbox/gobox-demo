@@ -12,7 +12,7 @@
         }
     ],
     "exec": [
-        "cd ${PRJ_HOME}/src/${PRJ_NAME} && test ! -d vendor && ./dep.sh ensure",
+        "cd ${PRJ_HOME}/src/${PRJ_NAME};./dep.sh ensure",
         "${NGX_EXEC_PREFIX} -s reload"
     ]
 }
