@@ -135,15 +135,21 @@ func (a *ApiContext) AfterAction() {
 }
 
 func (a *ApiContext) Destruct() {
-	a.MysqlClient.Free()
-	a.MysqlLogger.Free()
-
-	if a.RedisClient.Connected() {
-		a.RedisClient.SetLogger(gvalue.NoopLogger)
-		a.RedisPool.Put(a.RedisClient)
+	if a.MysqlClient != nil {
+		a.MysqlClient.Free()
+		if a.MysqlLogger != nil {
+			a.MysqlLogger.Free()
+		}
 	}
-	if a.RedisLogger != nil {
-		a.RedisLogger.Free()
+
+	if a.RedisClient != nil {
+		if a.RedisClient.Connected() {
+			a.RedisClient.SetLogger(gvalue.NoopLogger)
+			a.RedisPool.Put(a.RedisClient)
+		}
+		if a.RedisLogger != nil {
+			a.RedisLogger.Free()
+		}
 	}
 
 	a.BaseContext.Destruct()
