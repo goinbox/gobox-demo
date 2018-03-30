@@ -2,10 +2,13 @@
 
 
 [[projects]]
-  branch = "master"
   name = "github.com/garyburd/redigo"
-  packages = ["internal","redis"]
-  revision = "e8e59ed1cd89662b75af5d1109e39e5dc148cc00"
+  packages = [
+    "internal",
+    "redis"
+  ]
+  revision = "a69d19351219b6dd56f274f96d85a7014a2ec34e"
+  version = "v1.6.0"
 
 [[projects]]
   name = "github.com/go-sql-driver/mysql"
@@ -39,9 +42,15 @@
 
 [[projects]]
   name = "github.com/goinbox/gohttp"
-  packages = ["controller","gracehttp","query","router","system"]
-  revision = "e544f6aab0e1ff3bc7c32784a9b1c3038e499d28"
-  version = "v1.0.1"
+  packages = [
+    "controller",
+    "gracehttp",
+    "query",
+    "router",
+    "system"
+  ]
+  revision = "e8597e4118f05d9969f95518bd7115c0b7eb0b53"
+  version = "v2.0.0"
 
 [[projects]]
   name = "github.com/goinbox/golog"
@@ -82,6 +91,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5b92ac4e8731636aac4524ceac967eea6d10ab41d6377580000b12054c67e69a"
+  inputs-digest = "844cbde2ca5befe126611652cbda9bbadbae5386760e67a663aab304e2ebbe27"
   solver-name = "gps-cdcl"
   solver-version = 1

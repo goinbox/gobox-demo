@@ -50,6 +50,10 @@ func (b *BaseContext) ResponseBody() []byte {
 	return b.RespBody
 }
 
+func (b *BaseContext) SetResponseBody(body []byte) {
+	b.RespBody = body
+}
+
 func (b *BaseContext) BeforeAction() {
 }
 

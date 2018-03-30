@@ -163,7 +163,5 @@ func (b *BaseController) NewActionContext(req *http.Request, respWriter http.Res
 func JumpToApiError(context gcontroller.ActionContext, args ...interface{}) {
 	acontext := context.(IApiDataContext)
 
-	rb := acontext.ResponseBody()
-	rbp := &rb
-	*rbp = misc.ApiJson(acontext.Version(), acontext.Data(), acontext.Err())
+	acontext.SetResponseBody(misc.ApiJson(acontext.Version(), acontext.Data(), acontext.Err()))
 }
