@@ -60,8 +60,6 @@ type IApiDataContext interface {
 	Version() string
 	Data() interface{}
 	Err() *exception.Exception
-
-	SetResponseBody([]byte)
 }
 
 type ApiContext struct {
@@ -91,10 +89,6 @@ func (a *ApiContext) Data() interface{} {
 
 func (a *ApiContext) Err() *exception.Exception {
 	return a.ApiData.Err
-}
-
-func (a *ApiContext) SetResponseBody(body []byte) {
-	a.RespBody = body
 }
 
 func (a *ApiContext) BeforeAction() {
@@ -169,5 +163,7 @@ func (b *BaseController) NewActionContext(req *http.Request, respWriter http.Res
 func JumpToApiError(context gcontroller.ActionContext, args ...interface{}) {
 	acontext := context.(IApiDataContext)
 
-	acontext.SetResponseBody(misc.ApiJson(acontext.Version(), acontext.Data(), acontext.Err()))
+	rb := acontext.ResponseBody()
+	rbp := &rb
+	*rbp = misc.ApiJson(acontext.Version(), acontext.Data(), acontext.Err())
 }
