@@ -54,6 +54,16 @@ func VerifyApiSign(asp *ApiSignParams, queryValues url.Values, signQueryNames []
 	return nil
 }
 
+type IApiDataContext interface {
+	gcontroller.ActionContext
+
+	Version() string
+	Data() interface{}
+	Err() *exception.Exception
+
+	SetResponseBody([]byte)
+}
+
 type ApiContext struct {
 	*controller.BaseContext
 
@@ -69,6 +79,22 @@ type ApiContext struct {
 	RedisPool   *redis.Pool
 	RedisClient *redis.Client
 	RedisLogger golog.ILogger
+}
+
+func (a *ApiContext) Version() string {
+	return a.ApiData.V
+}
+
+func (a *ApiContext) Data() interface{} {
+	return a.ApiData.Data
+}
+
+func (a *ApiContext) Err() *exception.Exception {
+	return a.ApiData.Err
+}
+
+func (a *ApiContext) SetResponseBody(body []byte) {
+	a.RespBody = body
 }
 
 func (a *ApiContext) BeforeAction() {
@@ -116,7 +142,9 @@ func (a *ApiContext) Destruct() {
 		a.RedisClient.SetLogger(gvalue.NoopLogger)
 		a.RedisPool.Put(a.RedisClient)
 	}
-	a.RedisLogger.Free()
+	if a.RedisLogger != nil {
+		a.RedisLogger.Free()
+	}
 
 	a.BaseContext.Destruct()
 }
@@ -133,7 +161,7 @@ func (b *BaseController) NewActionContext(req *http.Request, respWriter http.Res
 }
 
 func JumpToApiError(context gcontroller.ActionContext, args ...interface{}) {
-	acontext := context.(*ApiContext)
+	acontext := context.(IApiDataContext)
 
-	acontext.RespBody = misc.ApiJson(acontext.ApiData.V, acontext.ApiData.Data, acontext.ApiData.Err)
+	acontext.SetResponseBody(misc.ApiJson(acontext.Version(), acontext.Data(), acontext.Err()))
 }
