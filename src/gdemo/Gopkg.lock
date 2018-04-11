@@ -49,8 +49,8 @@
     "router",
     "system"
   ]
-  revision = "e8597e4118f05d9969f95518bd7115c0b7eb0b53"
-  version = "v2.0.0"
+  revision = "fddf4237e09b22ca5f5339b2d17b40fccc9d611f"
+  version = "v3.0.0"
 
 [[projects]]
   name = "github.com/goinbox/golog"
@@ -91,6 +91,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "844cbde2ca5befe126611652cbda9bbadbae5386760e67a663aab304e2ebbe27"
+  inputs-digest = "4e96900d2a0cbdb847206aa00dfe1c1a551d2d5bddfc220736e7b59fbf3e72a6"
   solver-name = "gps-cdcl"
   solver-version = 1

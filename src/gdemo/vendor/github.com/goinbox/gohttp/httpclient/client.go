@@ -1,18 +1,21 @@
-package client
+package httpclient
 
 import (
 	"github.com/goinbox/golog"
 
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"net"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
 )
 
 type Client struct {
+	config *Config
 	logger golog.ILogger
 
 	client *http.Client
@@ -25,39 +28,27 @@ type Response struct {
 	*http.Response
 }
 
-func NewClient(logger golog.ILogger) *Client {
-	c := new(Client)
+func NewClient(config *Config, logger golog.ILogger) *Client {
+	c := &Client{
+		config: config,
+	}
 
-	c.logger = logger
-	if c.logger == nil {
+	if logger == nil {
 		c.logger = new(golog.NoopLogger)
+	} else {
+		c.logger = logger
 	}
 
-	c.client = new(http.Client)
-	c.client.Transport = &http.Transport{
-		Proxy: http.ProxyFromEnvironment,
-		Dial: (&net.Dialer{
-			Timeout:   30 * time.Second,
-			KeepAlive: 30 * time.Second,
-		}).Dial,
-		TLSHandshakeTimeout:   10 * time.Second,
-		ExpectContinueTimeout: 1 * time.Second,
-	}
+	c.client = &http.Client{
+		Timeout: config.Timeout,
 
-	return c
-}
-
-func (c *Client) SetTimeout(timeout time.Duration) *Client {
-	if timeout != 0 {
-		c.client.Timeout = timeout
-	}
-
-	return c
-}
-
-func (c *Client) SetMaxIdleConnsPerHost(value int) *Client {
-	if value != 0 {
-		c.client.Transport.(*http.Transport).MaxIdleConnsPerHost = value
+		Transport: &http.Transport{
+			Proxy: http.ProxyFromEnvironment,
+			Dial: (&net.Dialer{
+				Timeout:   config.Timeout,
+				KeepAlive: config.KeepAliveTime,
+			}).Dial,
+		},
 	}
 
 	return c
@@ -93,7 +84,7 @@ func (c *Client) Do(req *http.Request, retry int) (*Response, error) {
 		return nil, err
 	}
 	msg = append(msg, []byte("StatusCode:"+strconv.Itoa(resp.StatusCode)))
-	c.logger.Info(bytes.Join(msg, []byte("\t")))
+	c.logger.Log(c.config.LogLevel, bytes.Join(msg, []byte("\t")))
 
 	contents, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -107,16 +98,12 @@ func (c *Client) Do(req *http.Request, retry int) (*Response, error) {
 	}, nil
 }
 
-func NewRequestForGet(url string, ip string, extHeaders map[string]string) (*http.Request, error) {
-	req, err := http.NewRequest("GET", url, nil)
+func NewRequest(method string, url string, body []byte, ip string, extHeaders map[string]string) (*http.Request, error) {
+	req, err := http.NewRequest(method, url, bytes.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
 
-	return setRequestCommon(req, ip, extHeaders), nil
-}
-
-func setRequestCommon(req *http.Request, ip string, extHeaders map[string]string) *http.Request {
 	req.Host = req.URL.Host
 
 	if ip != "" {
@@ -131,5 +118,14 @@ func setRequestCommon(req *http.Request, ip string, extHeaders map[string]string
 		}
 	}
 
-	return req
+	return req, nil
+}
+
+func MakeRequestBodyUrlEncoded(params map[string]interface{}) []byte {
+	values := url.Values{}
+	for key, value := range params {
+		values.Add(key, fmt.Sprint(value))
+	}
+
+	return []byte(values.Encode())
 }
