@@ -4,7 +4,7 @@
     "idc": "",
 
     "log": {
-        "level": 3,
+        "level": 5,
         "max_async_msg_num": 4096,
         "max_buffer_num": 4096,
         "bufsize": 1024,
