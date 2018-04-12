@@ -37,7 +37,7 @@ func (c *consoleFormater) SetColor(level int, cf colorFunc) *consoleFormater {
 }
 
 func (c *consoleFormater) Format(level int, msg []byte) []byte {
-	lm, ok := logLevels[level]
+	lm, ok := LogLevels[level]
 	if !ok {
 		lm = []byte("-")
 	}

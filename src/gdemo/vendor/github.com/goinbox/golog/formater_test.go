@@ -21,8 +21,8 @@ func TestWebFormater(t *testing.T) {
 func TestConsoleFormater(t *testing.T) {
 	f := NewConsoleFormater()
 
-	for level, _ := range logLevels {
-		b := f.Format(level, logLevels[level])
+	for level, _ := range LogLevels {
+		b := f.Format(level, LogLevels[level])
 		t.Log(string(b))
 	}
 }

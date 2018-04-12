@@ -21,7 +21,7 @@ type simpleLogger struct {
 }
 
 func NewSimpleLogger(writer IWriter, globalLevel int, formater IFormater) (*simpleLogger, error) {
-	_, ok := logLevels[globalLevel]
+	_, ok := LogLevels[globalLevel]
 	if !ok {
 		return nil, errors.New("Global level not exists")
 	}
@@ -35,8 +35,8 @@ func NewSimpleLogger(writer IWriter, globalLevel int, formater IFormater) (*simp
 	}
 
 	noopWriter := new(NoopWriter)
-	for level, _ := range logLevels {
-		if level < globalLevel {
+	for level, _ := range LogLevels {
+		if level > globalLevel {
 			s.levelWriters[level] = noopWriter
 		} else {
 			s.levelWriters[level] = s.w
