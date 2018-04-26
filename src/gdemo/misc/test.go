@@ -3,6 +3,7 @@ package misc
 import (
 	"github.com/goinbox/color"
 	"github.com/goinbox/golog"
+	"github.com/goinbox/mongo"
 	"github.com/goinbox/mysql"
 	"github.com/goinbox/redis"
 
@@ -41,4 +42,15 @@ func RedisTestClient() *redis.Client {
 	logger, _ := golog.NewSimpleLogger(w, golog.LEVEL_INFO, golog.NewSimpleFormater())
 
 	return redis.NewClient(config, logger)
+}
+
+func MongoTestClient() *mongo.Client {
+	config := mongo.NewConfig("localhost", "myport", "myuser", "mypass", "mydb")
+
+	w, _ := golog.NewFileWriter("/tmp/test_mongo.log")
+	logger, _ := golog.NewSimpleLogger(w, golog.LEVEL_INFO, golog.NewSimpleFormater())
+
+	client := mongo.NewClient(config, logger)
+
+	return client
 }

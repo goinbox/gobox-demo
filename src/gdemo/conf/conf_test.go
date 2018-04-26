@@ -25,4 +25,5 @@ func TestConf(t *testing.T) {
 	misc.PrintComplexObjectForTest(&ApiHttpConf)
 	misc.PrintComplexObjectForTest(&RedisConf)
 	misc.PrintComplexObjectForTest(&MysqlConf)
+	misc.PrintComplexObjectForTest(&MongoConf)
 }

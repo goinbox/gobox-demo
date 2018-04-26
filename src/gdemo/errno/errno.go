@@ -10,6 +10,7 @@ const (
 	E_SYS_SAVE_PID_FILE_FAIL         = 15
 	E_SYS_MYSQL_ERROR                = 16
 	E_SYS_REDIS_ERROR                = 17
+	E_SYS_MONGO_ERROR                = 18
 
 	E_COMMON_FILE_NOT_EXIST             = 101
 	E_COMMON_READ_FILE_ERROR            = 102

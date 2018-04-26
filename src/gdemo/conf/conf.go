@@ -27,6 +27,7 @@ func Init(prjHome string) *exception.Exception {
 	initHttpConf()
 	initRedisConf()
 	initMysqlConf()
+	initMongoConf()
 
 	return nil
 }

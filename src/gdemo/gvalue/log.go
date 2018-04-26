@@ -11,6 +11,7 @@ import (
 var ErrorLogWriter golog.IWriter
 var RedisLogWriter golog.IWriter
 var MysqlLogWriter golog.IWriter
+var MongoLogWriter golog.IWriter
 
 var NoopLogger golog.ILogger = new(golog.NoopLogger)
 
@@ -31,6 +32,11 @@ func InitLog(systemName string) *exception.Exception {
 	}
 
 	MysqlLogWriter, err = golog.NewFileWriter(conf.LogConf.RootPath + "/" + systemName + "_mysql.log")
+	if err != nil {
+		return exception.New(errno.E_SYS_INIT_LOG_FAIL, err.Error())
+	}
+
+	MongoLogWriter, err = golog.NewFileWriter(conf.LogConf.RootPath + "/" + systemName + "_mongo.log")
 	if err != nil {
 		return exception.New(errno.E_SYS_INIT_LOG_FAIL, err.Error())
 	}
