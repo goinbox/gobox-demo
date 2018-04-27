@@ -12,6 +12,7 @@ import (
 	"github.com/goinbox/gohttp/query"
 	"github.com/goinbox/gohttp/system"
 	"github.com/goinbox/golog"
+	"github.com/goinbox/mongo"
 	"github.com/goinbox/mysql"
 	"github.com/goinbox/redis"
 
@@ -77,6 +78,10 @@ type ApiContext struct {
 	RedisPool   *redis.Pool
 	RedisClient *redis.Client
 	RedisLogger golog.ILogger
+
+	MongoPool   *mongo.Pool
+	MongoClient *mongo.Client
+	MongoLogger golog.ILogger
 }
 
 func (a *ApiContext) Version() string {
@@ -111,6 +116,15 @@ func (a *ApiContext) BeforeAction() {
 	}
 	a.RedisLogger = gvalue.NewAsyncLogger(gvalue.RedisLogWriter, a.LogFormater)
 	a.RedisClient.SetLogger(a.RedisLogger)
+
+	a.MongoPool = gvalue.MongoClientPool
+	a.MongoClient, err = a.MongoPool.Get()
+	if err != nil {
+		a.ApiData.Err = exception.New(errno.E_SYS_MONGO_ERROR, err.Error())
+		system.JumpOutAction(JumpToApiError)
+	}
+	a.MongoLogger = gvalue.NewAsyncLogger(gvalue.MongoLogWriter, a.LogFormater)
+	a.MongoClient.SetLogger(a.MongoLogger)
 }
 
 func (a *ApiContext) AfterAction() {
@@ -143,6 +157,16 @@ func (a *ApiContext) Destruct() {
 		}
 		if a.RedisLogger != nil {
 			a.RedisLogger.Free()
+		}
+	}
+
+	if a.MongoClient != nil {
+		if a.MongoClient.Connected() {
+			a.MongoClient.SetLogger(gvalue.NoopLogger)
+			a.MongoPool.Put(a.MongoClient)
+		}
+		if a.MongoLogger != nil {
+			a.MongoLogger.Free()
 		}
 	}
 

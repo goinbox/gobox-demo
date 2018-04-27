@@ -40,5 +40,16 @@
         "rw_timeout_seconds": 3,
         "pool_size": 256,
         "pool_client_max_idle_seconds": 10
+    },
+
+    "mongo": {
+        "host": "",
+        "user": "",
+        "pass": "",
+        "port": "",
+        "name": "",
+        "rw_timeout_seconds": 3,
+        "pool_size": 256,
+        "pool_client_max_idle_seconds": 10
     }
 }

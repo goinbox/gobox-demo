@@ -45,6 +45,17 @@ type mysqlConfJson struct {
 	PoolClientMaxIdleSeconds int    `json:"pool_client_max_idle_seconds"`
 }
 
+type mongoConfJson struct {
+	Host                     string `json:"host"`
+	User                     string `json:"user"`
+	Pass                     string `json:"pass"`
+	Port                     string `json:"port"`
+	Name                     string `json:"name"`
+	RWTimeoutSeconds         int    `json:"rw_timeout_seconds"`
+	PoolSize                 int    `json:"pool_size"`
+	PoolClientMaxIdleSeconds int    `json:"pool_client_max_idle_seconds"`
+}
+
 type serverConfJson struct {
 	PrjName string `json:"prj_name"`
 	IsDev   bool   `json:"is_dev"`
@@ -56,6 +67,7 @@ type serverConfJson struct {
 
 	Redis redisConfJson `json:"redis"`
 	Mysql mysqlConfJson `json:"mysql"`
+	Mongo mongoConfJson `json:"mongo"`
 }
 
 func initServerConfJson() error {
