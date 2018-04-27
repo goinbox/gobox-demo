@@ -10,9 +10,14 @@ import (
 func TestClient(t *testing.T) {
 	client := getTestClient()
 
-	reply := client.Do("set", "a", "1")
+	reply := client.Do("set", "c", "1")
 	t.Log(reply.String())
-	reply = client.Do("get", "a")
+	reply = client.Do("get", "c")
+	t.Log(reply.Int())
+
+	reply = client.DoWithoutLog("set", "d", "1")
+	t.Log(reply.String())
+	reply = client.DoWithoutLog("get", "d")
 	t.Log(reply.Int())
 
 	client.Send("set", "a", "a")

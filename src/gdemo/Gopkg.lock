@@ -85,8 +85,8 @@
 [[projects]]
   name = "github.com/goinbox/redis"
   packages = ["."]
-  revision = "3737fb275219b79121ce1abf26da560e2bd54e9d"
-  version = "v1.1.0"
+  revision = "8e06cfb0a95d68124bdecbb407185f20ed172a00"
+  version = "v1.2.0"
 
 [solve-meta]
   analyzer-name = "dep"

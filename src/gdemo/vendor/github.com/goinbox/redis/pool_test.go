@@ -13,6 +13,10 @@ func TestPool(t *testing.T) {
 
 	pool := NewPool(config)
 	testPool(pool, t)
+
+	config.LogKeepAlive = true
+	pool = NewPool(config)
+	testPool(pool, t)
 }
 
 func newRedisTestClient() (*Client, error) {

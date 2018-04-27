@@ -102,6 +102,21 @@ func (c *Client) Do(cmd string, args ...interface{}) *Reply {
 	}
 
 	c.log(cmd, args...)
+
+	return c.do(cmd, args...)
+}
+
+func (c *Client) DoWithoutLog(cmd string, args ...interface{}) *Reply {
+	if !c.connected {
+		if err := c.Connect(); err != nil {
+			return NewReply(nil, err)
+		}
+	}
+
+	return c.do(cmd, args...)
+}
+
+func (c *Client) do(cmd string, args ...interface{}) *Reply {
 	defer func() {
 		c.pipeCmds = []*cmdArgs{}
 	}()
