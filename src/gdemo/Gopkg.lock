@@ -3,7 +3,10 @@
 
 [[projects]]
   name = "github.com/garyburd/redigo"
-  packages = ["internal","redis"]
+  packages = [
+    "internal",
+    "redis"
+  ]
   revision = "a69d19351219b6dd56f274f96d85a7014a2ec34e"
   version = "v1.6.0"
 
@@ -39,7 +42,13 @@
 
 [[projects]]
   name = "github.com/goinbox/gohttp"
-  packages = ["controller","gracehttp","query","router","system"]
+  packages = [
+    "controller",
+    "gracehttp",
+    "query",
+    "router",
+    "system"
+  ]
   revision = "fddf4237e09b22ca5f5339b2d17b40fccc9d611f"
   version = "v3.0.0"
 
@@ -64,8 +73,8 @@
 [[projects]]
   name = "github.com/goinbox/mysql"
   packages = ["."]
-  revision = "d3078d6b499ea99372eacd4d0eaff2de9e5f4b18"
-  version = "v1.0.2"
+  revision = "396c0d1f53152ec3be86fbb02ab4bea996c0544b"
+  version = "v1.0.3"
 
 [[projects]]
   name = "github.com/goinbox/pidfile"
@@ -82,13 +91,19 @@
 [[projects]]
   name = "github.com/goinbox/redis"
   packages = ["."]
-  revision = "8e06cfb0a95d68124bdecbb407185f20ed172a00"
-  version = "v1.2.0"
+  revision = "46dad9d74e69504071233b5bb12458bf34662300"
+  version = "v1.2.1"
 
 [[projects]]
   branch = "v2"
   name = "gopkg.in/mgo.v2"
-  packages = [".","bson","internal/json","internal/sasl","internal/scram"]
+  packages = [
+    ".",
+    "bson",
+    "internal/json",
+    "internal/sasl",
+    "internal/scram"
+  ]
   revision = "3f83fa5005286a7fe593b055f0d7771a7dce4655"
 
 [solve-meta]

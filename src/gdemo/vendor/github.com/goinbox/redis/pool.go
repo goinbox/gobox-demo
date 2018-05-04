@@ -23,8 +23,12 @@ func NewPool(config *PConfig) *Pool {
 		config: config,
 	}
 
-	config.NewConnFunc = p.newConn
-	config.KeepAliveFunc = p.keepAlive
+	if config.NewConnFunc == nil {
+		config.NewConnFunc = p.newConn
+	}
+	if config.KeepAliveFunc == nil {
+		config.KeepAliveFunc = p.keepAlive
+	}
 
 	p.pl = pool.NewPool(&p.config.Config)
 

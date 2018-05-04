@@ -23,7 +23,9 @@ func NewPool(config *PConfig) *Pool {
 		config: config,
 	}
 
-	config.NewConnFunc = p.newConn
+	if config.NewConnFunc == nil {
+		config.NewConnFunc = p.newConn
+	}
 
 	p.pl = pool.NewPool(&p.config.Config)
 
