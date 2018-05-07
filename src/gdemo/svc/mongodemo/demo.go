@@ -15,8 +15,8 @@ var demoColNames []string = svc.ReflectMongoColNames(MongoDemoEntityType)
 type MongoDemoEntity struct {
 	svc.MongoBaseEntity
 
-	Name   string `bson:"name" json:"name" redis:"name"`
-	Status int    `bson:"status" json:"status" redis:"status"`
+	Name   string `bson:"name" json:"name"`
+	Status int    `bson:"status" json:"status"`
 }
 
 type MongoDemoSvc struct {

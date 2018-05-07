@@ -3,10 +3,7 @@
 
 [[projects]]
   name = "github.com/garyburd/redigo"
-  packages = [
-    "internal",
-    "redis"
-  ]
+  packages = ["internal","redis"]
   revision = "a69d19351219b6dd56f274f96d85a7014a2ec34e"
   version = "v1.6.0"
 
@@ -42,13 +39,7 @@
 
 [[projects]]
   name = "github.com/goinbox/gohttp"
-  packages = [
-    "controller",
-    "gracehttp",
-    "query",
-    "router",
-    "system"
-  ]
+  packages = ["controller","gracehttp","query","router","system"]
   revision = "fddf4237e09b22ca5f5339b2d17b40fccc9d611f"
   version = "v3.0.0"
 
@@ -67,8 +58,8 @@
 [[projects]]
   name = "github.com/goinbox/mongo"
   packages = ["."]
-  revision = "41c3325af119ef15858c144fc80b503618dfb565"
-  version = "v1.0.4"
+  revision = "4123bcf9aeab402cd9eeedad1928a1ad81a4096b"
+  version = "v1.0.5"
 
 [[projects]]
   name = "github.com/goinbox/mysql"
@@ -97,13 +88,7 @@
 [[projects]]
   branch = "v2"
   name = "gopkg.in/mgo.v2"
-  packages = [
-    ".",
-    "bson",
-    "internal/json",
-    "internal/sasl",
-    "internal/scram"
-  ]
+  packages = [".","bson","internal/json","internal/sasl","internal/scram"]
   revision = "3f83fa5005286a7fe593b055f0d7771a7dce4655"
 
 [solve-meta]

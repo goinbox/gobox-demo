@@ -7,13 +7,11 @@ import (
 	"time"
 
 	"testing"
-
-	"github.com/goinbox/gomisc"
 )
 
 type testQueryParamsStruct struct {
-	Name   string `bson:"name" json:"name" redis:"name"`
-	Status int    `bson:"status" json:"status" redis:"status"`
+	Name   string `bson:"name" json:"name"`
+	Status int    `bson:"status" json:"status"`
 }
 
 func TestDemoSvc(t *testing.T) {
@@ -33,8 +31,8 @@ func TestDemoSvc(t *testing.T) {
 		t.Log(deleted, err)
 	}
 
-	baseEntity := svc.MongoBaseEntity{AddTime: time.Now().Format(gomisc.TimeGeneralLayout())}
-	demoSvc.UpdateById(11, &MongoDemoEntity{MongoBaseEntity: baseEntity, Name: "ccc", Status: 44}, map[string]bool{"name": true, "status": true})
+	baseEntity := svc.MongoBaseEntity{AddTime: time.Now()}
+	demoSvc.UpdateById(11, &MongoDemoEntity{MongoBaseEntity: baseEntity, Name: "ccc", Status: 1}, map[string]bool{"name": true, "status": true, "add_time": true})
 
 	entity, err := demoSvc.GetById(11)
 	t.Log(entity, err)
@@ -49,9 +47,8 @@ func TestDemoSvc(t *testing.T) {
 			"name":   dao.MONGO_COND_EQUAL,
 			"status": dao.MONGO_COND_GREATER_EQUAL,
 		},
-		OrderBy: "_id", Offset: 0, Cnt: 10,
+		OrderBy: []string{"name", "-_id"}, Offset: 0, Cnt: 10,
 	}
 	entities, err := demoSvc.SelectAll(mqp)
 	t.Log(entities, err)
-
 }

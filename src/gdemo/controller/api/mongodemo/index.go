@@ -17,7 +17,7 @@ type indexActionParams struct {
 }
 
 var indexQueryConditions map[string]string = map[string]string{
-	"status": dao.MONGO_COND_EQUAL,
+	"status": dao.MONGO_COND_GREATER_EQUAL,
 }
 
 func (d *MongoDemoController) IndexAction(context *MongoDemoContext) {
@@ -32,7 +32,7 @@ func (d *MongoDemoController) IndexAction(context *MongoDemoContext) {
 		Exists:          exists,
 		Conditions:      indexQueryConditions,
 
-		OrderBy: "id",
+		OrderBy: []string{"-_id"},
 		Offset:  ap.offset,
 		Cnt:     ap.cnt,
 	}

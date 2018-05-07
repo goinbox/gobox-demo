@@ -130,7 +130,7 @@ func TestUpsert(t *testing.T) {
 
 func TestQuery(t *testing.T) {
 	result := []bson.M{}
-	query := NewQuery().Find(bson.M{"_id": bson.M{"$gt": 0}}).Select(bson.M{"edit_time": 0}).Skip(1).SetMaxTime(1 * time.Second)
+	query := NewQuery().Find(bson.M{"_id": bson.M{"$gt": 0}}).Sort("view_count").Select(bson.M{"edit_time": 0}).Skip(0).SetMaxTime(1 * time.Second)
 	err := client.Query(MONGO_TEST_COLLECTION, query).All(&result)
 	if err != nil {
 		t.Error(err)
@@ -141,7 +141,7 @@ func TestQuery(t *testing.T) {
 
 func TestQueryOne(t *testing.T) {
 	result := bson.M{}
-	query := NewQuery().Find(bson.M{"_id": bson.M{"$gt": 0}}).Sort("-_id").Select(bson.M{"edit_time": 0}).Skip(0).SetMaxTime(1 * time.Second)
+	query := NewQuery().Find(bson.M{"_id": bson.M{"$gt": 0}}).Sort("view_count", "-_id").Select(bson.M{"edit_time": 0}).Skip(0).SetMaxTime(1 * time.Second)
 	err := client.Query(MONGO_TEST_COLLECTION, query).One(&result)
 	if err != nil {
 		t.Error(err)
