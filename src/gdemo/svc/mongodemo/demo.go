@@ -32,7 +32,7 @@ func NewMongoDemoSvc(elogger golog.ILogger, mclient *mongo.Client) *MongoDemoSvc
 	}
 }
 
-func (d *MongoDemoSvc) Insert(entities ...*MongoDemoEntity) ([]int64, error) {
+func (d *MongoDemoSvc) Insert(entities ...*MongoDemoEntity) ([]interface{}, error) {
 	is := make([]interface{}, len(entities))
 	for i, entity := range entities {
 		is[i] = entity
@@ -41,15 +41,15 @@ func (d *MongoDemoSvc) Insert(entities ...*MongoDemoEntity) ([]int64, error) {
 	return d.MongoBaseSvc.Insert(d.EntityName, demoColNames, is...)
 }
 
-func (d *MongoDemoSvc) DeleteById(id int64) (bool, error) {
+func (d *MongoDemoSvc) DeleteById(id interface{}) (bool, error) {
 	return d.MongoBaseSvc.DeleteById(d.EntityName, id)
 }
 
-func (d *MongoDemoSvc) UpdateById(id int64, newEntity *MongoDemoEntity, updateFields map[string]bool) (error, error) {
+func (d *MongoDemoSvc) UpdateById(id interface{}, newEntity *MongoDemoEntity, updateFields map[string]bool) (error, error) {
 	return d.MongoBaseSvc.UpdateById(d.EntityName, id, newEntity, updateFields)
 }
 
-func (d *MongoDemoSvc) GetById(id int64) (*MongoDemoEntity, error) {
+func (d *MongoDemoSvc) GetById(id interface{}) (*MongoDemoEntity, error) {
 	entity := new(MongoDemoEntity)
 	find, err := d.MongoBaseSvc.GetById(entity, d.EntityName, id)
 	if err != nil {

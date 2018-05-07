@@ -17,9 +17,9 @@ const (
 )
 
 type MongoBaseEntity struct {
-	Id       int64     `bson:"_id" json:"_id"`
-	AddTime  time.Time `bson:"add_time" json:"add_time"`
-	EditTime time.Time `bson:"edit_time" json:"edit_time"`
+	Id       interface{} `bson:"_id" json:"_id"`
+	AddTime  time.Time   `bson:"add_time" json:"add_time"`
+	EditTime time.Time   `bson:"edit_time" json:"edit_time"`
 }
 
 type MongoBaseSvc struct {
@@ -49,7 +49,7 @@ func ReflectMongoColNames(ret reflect.Type) []string {
 
 	for i := 0; i < ret.NumField(); i++ {
 		retf := ret.Field(i)
-		if retf.Type.Kind() == reflect.Struct && ret.Field(i).Name == ENTITY_MONGO_BASE {
+		if retf.Type.Kind() == reflect.Struct && retf.Name == ENTITY_MONGO_BASE {
 			cns = ReflectMongoColNames(retf.Type)
 			continue
 		}
@@ -89,10 +89,10 @@ func (s *MongoBaseSvc) FillBaseEntityForInsert(entity *MongoBaseEntity) error {
 	return nil
 }
 
-func (s *MongoBaseSvc) Insert(tableName string, colNames []string, entities ...interface{}) ([]int64, error) {
+func (s *MongoBaseSvc) Insert(tableName string, colNames []string, entities ...interface{}) ([]interface{}, error) {
 	cnt := len(entities)
 	colsValues := make([][]interface{}, cnt)
-	ids := make([]int64, cnt)
+	ids := make([]interface{}, cnt)
 	for i, entity := range entities {
 		rev := reflect.ValueOf(entity).Elem()
 		baseEntity := rev.FieldByName(ENTITY_MONGO_BASE).Addr().Interface().(*MongoBaseEntity)
@@ -122,8 +122,7 @@ func (s *MongoBaseSvc) reflectInsertColValues(rev reflect.Value) []interface{} {
 	ret := rev.Type()
 	for i := 0; i < rev.NumField(); i++ {
 		revf := rev.Field(i)
-
-		if revf.Kind() == reflect.Struct && ret.Field(i).Name == ENTITY_MONGO_BASE {
+		if revf.Kind() == reflect.Struct && revf.Type().Name() == ENTITY_MONGO_BASE {
 			colValues = s.reflectInsertColValues(revf)
 			continue
 		}
@@ -137,7 +136,7 @@ func (s *MongoBaseSvc) reflectInsertColValues(rev reflect.Value) []interface{} {
 	return colValues
 }
 
-func (s *MongoBaseSvc) DeleteById(tableName string, id int64) (bool, error) {
+func (s *MongoBaseSvc) DeleteById(tableName string, id interface{}) (bool, error) {
 	err := s.Dao.DeleteById(tableName, id)
 	if err != nil {
 		return false, err
@@ -145,7 +144,7 @@ func (s *MongoBaseSvc) DeleteById(tableName string, id int64) (bool, error) {
 	return true, nil
 }
 
-func (s *MongoBaseSvc) UpdateById(tableName string, id int64, newEntityPtr interface{}, updateFields map[string]bool) (error, error) {
+func (s *MongoBaseSvc) UpdateById(tableName string, id interface{}, newEntityPtr interface{}, updateFields map[string]bool) (error, error) {
 	rnewv := reflect.ValueOf(newEntityPtr).Elem()
 	oldEntity := reflect.New(rnewv.Type()).Interface()
 
@@ -180,7 +179,7 @@ func (s *MongoBaseSvc) reflectUpdateSetItems(roldv, rnewv reflect.Value, updateF
 	rnewt := rnewv.Type()
 	for i := 0; i < rnewv.NumField(); i++ {
 		rnewvf := rnewv.Field(i)
-		if rnewvf.Kind() == reflect.Struct && rnewt.Field(i).Name == ENTITY_MONGO_BASE {
+		if rnewvf.Kind() == reflect.Struct && rnewvf.Type().Name() == ENTITY_MONGO_BASE {
 			setItems = s.reflectUpdateSetItems(roldv.Field(i), rnewvf, updateFields)
 			continue
 		}
@@ -201,7 +200,7 @@ func (s *MongoBaseSvc) reflectUpdateSetItems(roldv, rnewv reflect.Value, updateF
 	return setItems
 }
 
-func (s *MongoBaseSvc) GetById(entityPtr interface{}, tableName string, id int64) (bool, error) {
+func (s *MongoBaseSvc) GetById(entityPtr interface{}, tableName string, id interface{}) (bool, error) {
 	result, err := s.Dao.SelectById(tableName, id)
 	if err != nil {
 		s.Mclient.Free()
@@ -242,7 +241,7 @@ func (s *MongoBaseSvc) reflectQuerySetItems(rev reflect.Value, exists map[string
 
 	for i := 0; i < rev.NumField(); i++ {
 		revf := rev.Field(i)
-		if revf.Kind() == reflect.Struct {
+		if revf.Kind() == reflect.Struct && revf.Type().Name() == ENTITY_MONGO_BASE {
 			setItems = s.reflectQuerySetItems(revf, exists, conditions)
 			continue
 		}

@@ -50,15 +50,15 @@ func (m *MongoDao) InsertRows(tableName string, colNames []string, colsValues ..
 	return m.Insert(tableName, docs...)
 }
 
-func (m *MongoDao) DeleteById(tableName string, id int64) error {
+func (m *MongoDao) DeleteById(tableName string, id interface{}) error {
 	return m.RemoveId(tableName, id)
 }
 
-func (m *MongoDao) UpdateById(tableName string, id int64, updater map[string]interface{}) error {
+func (m *MongoDao) UpdateById(tableName string, id interface{}, updater map[string]interface{}) error {
 	return m.UpdateId(tableName, id, map[string]interface{}{"$set": updater})
 }
 
-func (m *MongoDao) SelectById(tableName string, id int64) (bson.M, error) {
+func (m *MongoDao) SelectById(tableName string, id interface{}) (bson.M, error) {
 	result := bson.M{}
 	err := m.FindId(tableName, id).One(&result)
 	if err != nil {
@@ -67,7 +67,7 @@ func (m *MongoDao) SelectById(tableName string, id int64) (bson.M, error) {
 	return result, nil
 }
 
-func (m *MongoDao) SelectByIds(tableName string, ids ...int64) ([]bson.M, error) {
+func (m *MongoDao) SelectByIds(tableName string, ids ...interface{}) ([]bson.M, error) {
 	result := []bson.M{}
 	err := m.Find(tableName, bson.M{"_id": bson.M{"$in": ids}}).All(&result)
 	if err != nil {
