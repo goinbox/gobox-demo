@@ -3,6 +3,7 @@ package svc
 import (
 	"github.com/goinbox/golog"
 	"github.com/goinbox/mongo"
+	mgo "gopkg.in/mgo.v2"
 
 	"gdemo/dao"
 	"gdemo/idgen"
@@ -220,9 +221,13 @@ func (s *MongoBaseSvc) reflectUpdateSetItems(roldv, rnewv reflect.Value, updateF
 
 func (s *MongoBaseSvc) GetById(entityPtr interface{}, tableName string, id interface{}) (bool, error) {
 	result, err := s.Dao.SelectById(tableName, id)
-	if err != nil {
+	if err != nil && err != mgo.ErrNotFound {
 		s.Mclient.Free()
 		return false, err
+	}
+
+	if err == mgo.ErrNotFound {
+		return false, nil
 	}
 
 	err = s.Dao.ConvertJsonToStruct(result, entityPtr)
