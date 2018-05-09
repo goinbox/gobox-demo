@@ -51,4 +51,19 @@ func TestDemoSvc(t *testing.T) {
 	}
 	entities, err := demoSvc.SelectAll(mqp)
 	t.Log(entities, err)
+
+	mqp = &svc.MongoQueryParams{
+		ParamsStructPtr: &testQueryParamsStruct{
+			Name:   "CC.+",
+			Status: 1,
+		},
+		Exists: map[string]bool{"name": true, "status": true},
+		Conditions: map[string]string{
+			"name":   dao.MONGO_COND_REGEX,
+			"status": dao.MONGO_COND_GREATER_EQUAL,
+		},
+		OrderBy: []string{"name", "-_id"}, Offset: 0, Cnt: 10,
+	}
+	entities, err = demoSvc.SelectRegex(mqp)
+	t.Log(entities, err)
 }

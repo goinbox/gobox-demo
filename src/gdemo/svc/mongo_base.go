@@ -215,8 +215,10 @@ func (s *MongoBaseSvc) GetById(entityPtr interface{}, tableName string, id inter
 	return true, nil
 }
 
-func (s *MongoBaseSvc) SelectAll(entityListPtr interface{}, tableName string, mqp *MongoQueryParams) error {
-	setItems := s.reflectQuerySetItems(reflect.ValueOf(mqp.ParamsStructPtr).Elem(), mqp.Exists, mqp.Conditions)
+func (s *MongoBaseSvc) SelectAll(entityListPtr interface{}, tableName string, mqp *MongoQueryParams, setItems map[string]interface{}) error {
+	if setItems == nil {
+		setItems = s.ReflectQuerySetItems(reflect.ValueOf(mqp.ParamsStructPtr).Elem(), mqp.Exists, mqp.Conditions)
+	}
 
 	query := mongo.NewQuery().Find(setItems).Sort(mqp.OrderBy...).Skip(mqp.Offset).Limit(mqp.Cnt)
 	result, err := s.Dao.SelectAll(tableName, query)
@@ -235,14 +237,14 @@ func (s *MongoBaseSvc) SelectAll(entityListPtr interface{}, tableName string, mq
 	return nil
 }
 
-func (s *MongoBaseSvc) reflectQuerySetItems(rev reflect.Value, exists map[string]bool, conditions map[string]string) map[string]interface{} {
+func (s *MongoBaseSvc) ReflectQuerySetItems(rev reflect.Value, exists map[string]bool, conditions map[string]string) map[string]interface{} {
 	setItems := make(map[string]interface{})
 	ret := rev.Type()
 
 	for i := 0; i < rev.NumField(); i++ {
 		revf := rev.Field(i)
 		if revf.Kind() == reflect.Struct && revf.Type().Name() == ENTITY_MONGO_BASE {
-			setItems = s.reflectQuerySetItems(revf, exists, conditions)
+			setItems = s.ReflectQuerySetItems(revf, exists, conditions)
 			continue
 		}
 

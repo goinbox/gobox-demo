@@ -22,6 +22,8 @@ const (
 	MONGO_COND_GREATER_EQUAL = "$gte"
 	MONGO_COND_IN            = "$in"
 	MONGO_COND_NOT_IN        = "$nin"
+	MONGO_COND_REGEX         = "$regex"
+	MONGO_COND_OPTIONS       = "$options"
 )
 
 func NewMongoDao(client *mongo.Client) *MongoDao {

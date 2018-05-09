@@ -1,6 +1,7 @@
 package mongodemo
 
 import (
+	"gdemo/dao"
 	"gdemo/svc"
 
 	"github.com/goinbox/golog"
@@ -64,7 +65,20 @@ func (d *MongoDemoSvc) GetById(id interface{}) (*MongoDemoEntity, error) {
 
 func (d *MongoDemoSvc) SelectAll(mqp *svc.MongoQueryParams) (*[]MongoDemoEntity, error) {
 	entities := new([]MongoDemoEntity)
-	err := d.MongoBaseSvc.SelectAll(entities, d.EntityName, mqp)
+	err := d.MongoBaseSvc.SelectAll(entities, d.EntityName, mqp, nil)
+	if err != nil {
+		return nil, err
+	}
+	return entities, nil
+}
+
+func (d *MongoDemoSvc) SelectRegex(mqp *svc.MongoQueryParams) (*[]MongoDemoEntity, error) {
+	entities := new([]MongoDemoEntity)
+
+	setItems := d.MongoBaseSvc.ReflectQuerySetItems(reflect.ValueOf(mqp.ParamsStructPtr).Elem(), mqp.Exists, mqp.Conditions)
+	setItems["name"].(map[string]interface{})[dao.MONGO_COND_OPTIONS] = "i"
+
+	err := d.MongoBaseSvc.SelectAll(entities, d.EntityName, mqp, setItems)
 	if err != nil {
 		return nil, err
 	}
