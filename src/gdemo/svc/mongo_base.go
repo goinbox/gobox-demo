@@ -75,17 +75,30 @@ func NewMongoBaseSvc(bs *BaseSvc, mclient *mongo.Client, entityName string) *Mon
 	}
 }
 
-func (s *MongoBaseSvc) FillBaseEntityForInsert(entity *MongoBaseEntity) error {
-	id, err := s.IdGenter.GenId(s.EntityName)
-	if err != nil {
-		return err
-	}
-
+func (s *MongoBaseSvc) FillBaseEntityForInsert(baseEntity *MongoBaseEntity, rev reflect.Value) error {
 	ts := time.Now()
-	entity.Id = id
-	entity.AddTime = ts
-	entity.EditTime = ts
-
+	entityId := rev.FieldByName("Id").Interface()
+	entityAddTime := rev.FieldByName("AddTime").Interface().(time.Time)
+	entityEditTime := rev.FieldByName("EditTime").Interface().(time.Time)
+	if entityId == nil {
+		id, err := s.IdGenter.GenId(s.EntityName)
+		if err != nil {
+			return err
+		}
+		baseEntity.Id = id
+	} else {
+		baseEntity.Id = entityId
+	}
+	if entityAddTime.IsZero() {
+		baseEntity.AddTime = ts
+	} else {
+		baseEntity.AddTime = entityAddTime
+	}
+	if entityEditTime.IsZero() {
+		baseEntity.EditTime = ts
+	} else {
+		baseEntity.EditTime = entityEditTime
+	}
 	return nil
 }
 
@@ -95,16 +108,21 @@ func (s *MongoBaseSvc) Insert(tableName string, colNames []string, entities ...i
 	ids := make([]interface{}, cnt)
 	for i, entity := range entities {
 		rev := reflect.ValueOf(entity).Elem()
-		baseEntity := rev.FieldByName(ENTITY_MONGO_BASE).Addr().Interface().(*MongoBaseEntity)
-		err := s.FillBaseEntityForInsert(baseEntity)
-		if err != nil {
-			s.Mclient.Free()
-			s.Elogger.Error([]byte("fill " + ENTITY_MONGO_BASE + " error: " + err.Error()))
-			return nil, err
-		}
+		if rev.FieldByName(ENTITY_MONGO_BASE).IsValid() {
+			baseEntity := rev.FieldByName(ENTITY_MONGO_BASE).Addr().Interface().(*MongoBaseEntity)
+			err := s.FillBaseEntityForInsert(baseEntity, rev)
+			if err != nil {
+				s.Mclient.Free()
+				s.Elogger.Error([]byte("fill " + ENTITY_MONGO_BASE + " error: " + err.Error()))
+				return nil, err
+			}
 
-		colsValues[i] = s.reflectInsertColValues(rev)
-		ids[i] = baseEntity.Id
+			colsValues[i] = s.reflectInsertColValues(rev)
+			ids[i] = baseEntity.Id
+		} else {
+			colsValues[i] = s.reflectInsertColValues(rev)
+			ids[i] = rev.FieldByName("Id").Interface()
+		}
 	}
 
 	err := s.Dao.InsertRows(tableName, colNames, colsValues...)
