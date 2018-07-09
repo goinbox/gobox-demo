@@ -18,7 +18,7 @@ func InitMongo() {
 }
 
 func NewMongoClient() (*mongo.Client, error) {
-	config := mongo.NewConfig(conf.MongoConf.Host, conf.MongoConf.Port, conf.MongoConf.User, conf.MongoConf.Pass, conf.MongoConf.Name)
+	config := mongo.NewConfig([]string{conf.MongoConf.Host + ":" + conf.MongoConf.Port}, conf.MongoConf.User, conf.MongoConf.Pass, conf.MongoConf.Name)
 
 	config.LogLevel = golog.LEVEL_DEBUG
 	config.QueryTimeout = conf.MongoConf.RWTimeout

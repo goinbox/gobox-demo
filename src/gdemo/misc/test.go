@@ -45,7 +45,7 @@ func RedisTestClient() *redis.Client {
 }
 
 func MongoTestClient() *mongo.Client {
-	config := mongo.NewConfig("localhost", "myport", "myuser", "mypass", "mydb")
+	config := mongo.NewConfig([]string{"localhost:myport"}, "myuser", "mypass", "mydb")
 
 	w, _ := golog.NewFileWriter("/tmp/test_mongo.log")
 	logger, _ := golog.NewSimpleLogger(w, golog.LEVEL_INFO, golog.NewSimpleFormater())
