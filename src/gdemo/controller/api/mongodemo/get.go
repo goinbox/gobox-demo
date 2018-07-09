@@ -30,7 +30,7 @@ func (d *MongoDemoController) parseGetActionParams(context *MongoDemoContext) (*
 	ap := new(getActionParams)
 
 	qs := query.NewQuerySet()
-	qs.Int64Var(&ap.id, "id", true, errno.E_COMMON_INVALID_ID, "invalid id", query.CheckInt64IsPositive)
+	qs.Int64Var(&ap.id, "id", true, errno.E_COMMON_INVALID_ARG, "invalid id", query.CheckInt64IsPositive)
 	e := qs.Parse(context.QueryValues)
 
 	return ap, e

@@ -26,15 +26,16 @@ func NewConfig(user, pass, host, port, dbname string) *Config {
 	}
 
 	config := &mysql.Config{
-		User:         user,
-		Passwd:       pass,
-		Net:          "tcp",
-		Addr:         host + ":" + port,
-		DBName:       dbname,
-		Params:       params,
-		Timeout:      DEFAULT_CONNECT_TIMEOUT,
-		ReadTimeout:  DEFAULT_READ_TIMEOUT,
-		WriteTimeout: DEFAULT_WRITE_TIMEOUT,
+		User:                 user,
+		Passwd:               pass,
+		Net:                  "tcp",
+		Addr:                 host + ":" + port,
+		DBName:               dbname,
+		Params:               params,
+		Timeout:              DEFAULT_CONNECT_TIMEOUT,
+		ReadTimeout:          DEFAULT_READ_TIMEOUT,
+		WriteTimeout:         DEFAULT_WRITE_TIMEOUT,
+		AllowNativePasswords: true,
 	}
 
 	return &Config{

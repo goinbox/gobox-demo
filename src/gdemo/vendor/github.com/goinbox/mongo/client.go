@@ -9,6 +9,7 @@ import (
 	"github.com/goinbox/golog"
 
 	"fmt"
+	"strings"
 )
 
 type CmdLogFmtFunc func(cmd string, args ...interface{}) []byte
@@ -75,7 +76,7 @@ func (c *Client) Free() {
 }
 
 func (c *Client) Connect() error {
-	url := "mongodb://" + c.config.User + ":" + c.config.Pass + "@" + c.config.Host + ":" + c.config.Port
+	url := "mongodb://" + c.config.User + ":" + c.config.Pass + "@" + strings.Join(c.config.Hosts, ",")
 
 	session, err := mgo.Dial(url)
 	if err != nil {
@@ -84,6 +85,8 @@ func (c *Client) Connect() error {
 
 	//session.SetMode(mgo.Monotonic, true)
 	session.SetMode(mgo.Eventual, true)
+	session.SetSocketTimeout(c.config.SocketTimeout)
+	session.SetSyncTimeout(c.config.SyncTimeout)
 
 	c.conn = session
 	c.db = session.DB(c.config.DBName)
@@ -121,7 +124,7 @@ func (c *Client) Count(coll string) (n int, err error) {
 }
 
 func (c *Client) BuildQuery(coll string, query *Query) *mgo.Query {
-	q := c.Collection(coll).Find(query.finder)
+	q := c.Collection(coll).Find(query.finder).SetMaxTime(c.config.QueryTimeout)
 	if query.selector != nil {
 		q = q.Select(query.selector)
 	}

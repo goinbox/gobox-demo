@@ -18,7 +18,7 @@ func Init(prjHome string) *exception.Exception {
 
 	err := initServerConfJson()
 	if err != nil {
-		return exception.New(errno.E_SYS_INIT_SERVER_CONF_JSON_FAIL, "init serverConfJson error: "+err.Error())
+		return exception.New(errno.E_SYS_INIT_SERVER_CONF_FAIL, "init serverConfJson error: "+err.Error())
 	}
 
 	initBaseConf()

@@ -32,10 +32,10 @@ type ApiSignParams struct {
 var ApiSignQueryNames = []string{"t", "nonce"}
 
 func SetApiSignParams(qs *query.QuerySet, asp *ApiSignParams) {
-	qs.Int64Var(&asp.T, "t", true, errno.E_COMMON_INVALID_SIGN_T, "invalid sign t", query.CheckInt64IsPositive)
-	qs.StringVar(&asp.Nonce, "nonce", true, errno.E_COMMON_INVALID_SIGN_NONCE, "invalid sign nonce", query.CheckStringNotEmpty)
-	qs.StringVar(&asp.Sign, "sign", true, errno.E_COMMON_INVALID_SIGN_SIGN, "invalid sign sign", query.CheckStringNotEmpty)
-	qs.IntVar(&asp.Debug, "debug", false, errno.E_COMMON_INVALID_SIGN_DEBUG, "invalid sign debug", nil)
+	qs.Int64Var(&asp.T, "t", true, errno.E_COMMON_INVALID_ARG, "invalid sign t", query.CheckInt64IsPositive)
+	qs.StringVar(&asp.Nonce, "nonce", true, errno.E_COMMON_INVALID_ARG, "invalid sign nonce", query.CheckStringNotEmpty)
+	qs.StringVar(&asp.Sign, "sign", true, errno.E_COMMON_INVALID_ARG, "invalid sign sign", query.CheckStringNotEmpty)
+	qs.IntVar(&asp.Debug, "debug", false, errno.E_COMMON_INVALID_ARG, "invalid sign debug", nil)
 }
 
 func VerifyApiSign(asp *ApiSignParams, queryValues url.Values, signQueryNames []string, token string) *exception.Exception {
@@ -44,12 +44,12 @@ func VerifyApiSign(asp *ApiSignParams, queryValues url.Values, signQueryNames []
 	}
 
 	if time.Now().Unix()-asp.T > 600 {
-		return exception.New(errno.E_COMMON_INVALID_SIGN_T, "verify sign failed, invalid sign t")
+		return exception.New(errno.E_COMMON_INVALID_ARG, "verify sign failed, invalid sign t")
 	}
 
 	sign := misc.CalApiSign(queryValues, signQueryNames, token)
 	if sign != asp.Sign {
-		return exception.New(errno.E_COMMON_INVALID_SIGN_SIGN, "verify sign failed, invalid sign sign")
+		return exception.New(errno.E_COMMON_INVALID_ARG, "verify sign failed, invalid sign sign")
 	}
 
 	return nil

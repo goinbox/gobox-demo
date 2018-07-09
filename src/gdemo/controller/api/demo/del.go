@@ -31,7 +31,7 @@ func (d *DemoController) parseDelActionParams(context *DemoContext) (*delActionP
 	ap := new(delActionParams)
 
 	qs := query.NewQuerySet()
-	qs.Int64Var(&ap.id, "id", true, errno.E_COMMON_INVALID_ID, "invalid id", query.CheckInt64IsPositive)
+	qs.Int64Var(&ap.id, "id", true, errno.E_COMMON_INVALID_ARG, "invalid id", query.CheckInt64IsPositive)
 	e := qs.Parse(context.QueryValues)
 
 	return ap, e

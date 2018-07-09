@@ -17,7 +17,7 @@ func (d *DemoController) AddAction(context *DemoContext) {
 
 	ids, err := context.demoSvc.Insert(ap)
 	if err != nil {
-		context.ApiData.Err = exception.New(errno.E_API_DEMO_INSERT_FAILED, err.Error())
+		context.ApiData.Err = exception.New(errno.E_COMMON_INSERT_ENTITY_FAILED, err.Error())
 		return
 	}
 
@@ -30,15 +30,15 @@ func (d *DemoController) parseAddActionParams(context *DemoContext) (*demoSvc.De
 	ap := new(demoSvc.DemoEntity)
 
 	qs := query.NewQuerySet()
-	qs.StringVar(&ap.Name, "name", true, errno.E_API_DEMO_INVALID_NAME, "invalid name", query.CheckStringNotEmpty)
-	qs.IntVar(&ap.Status, "status", true, errno.E_API_DEMO_INVALID_STATUS, "invalid status", nil)
+	qs.StringVar(&ap.Name, "name", true, errno.E_COMMON_INVALID_ARG, "invalid name", query.CheckStringNotEmpty)
+	qs.IntVar(&ap.Status, "status", true, errno.E_COMMON_INVALID_ARG, "invalid status", nil)
 	e := qs.Parse(context.QueryValues)
 	if e != nil {
 		return ap, e
 	}
 
 	if ap.Status < 0 {
-		return ap, exception.New(errno.E_API_DEMO_INVALID_STATUS, "invalid status")
+		return ap, exception.New(errno.E_COMMON_INVALID_ARG, "invalid status")
 	}
 
 	return ap, nil
