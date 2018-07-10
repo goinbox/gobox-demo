@@ -19,7 +19,7 @@ server {
     access_log logs/${API_HTTPS_ACCESS_LOG} combinedio buffer=${NGX_ACCESS_LOG_BUFFER}k;
     error_log  logs/${API_HTTPS_ERROR_LOG};
 
-    ssl_session_cache shared:BEHAVIOR_SSL:100m;
+    ssl_session_cache shared:GDEMO_SSL:100m;
     ssl_certificate ${PRJ_HOME}/conf/http/ssl/gdemo.crt.dev;
     ssl_certificate_key ${PRJ_HOME}/conf/http/ssl/gdemo.key.dev;
 
