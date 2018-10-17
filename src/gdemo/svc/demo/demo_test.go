@@ -5,8 +5,8 @@ import (
 	"gdemo/svc"
 
 	"github.com/goinbox/gomisc"
+	"github.com/goinbox/mysql"
 
-	"gdemo/dao"
 	"testing"
 	"time"
 )
@@ -53,9 +53,9 @@ func TestDemoSvc(t *testing.T) {
 		},
 		Exists: map[string]bool{"add_time": true, "name": true, "status": false},
 		Conditions: map[string]string{
-			"add_time": dao.SQL_COND_BETWEEN,
-			"name":     dao.SQL_COND_LIKE,
-			"status":   dao.SQL_COND_EQUAL,
+			"add_time": mysql.SQL_COND_BETWEEN,
+			"name":     mysql.SQL_COND_LIKE,
+			"status":   mysql.SQL_COND_EQUAL,
 		},
 		OrderBy: "id desc", Offset: 0, Cnt: 10,
 	}

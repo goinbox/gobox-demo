@@ -1,8 +1,9 @@
 package svc
 
 import (
+	"github.com/goinbox/mysql"
+
 	"errors"
-	"gdemo/dao"
 	"strconv"
 )
 
@@ -129,7 +130,7 @@ func (s *SqlRedisBindSvc) redisKeyForTotalRows(tableName string) string {
 	return s.RedisKeyPrefix + "_total_rows_" + tableName
 }
 
-func (s *SqlRedisBindSvc) updateSqlHashEntity(key string, setItems []*dao.SqlColQueryItem, expireSeconds int64) error {
+func (s *SqlRedisBindSvc) updateSqlHashEntity(key string, setItems []*mysql.SqlColQueryItem, expireSeconds int64) error {
 	cnt := len(setItems)*2 + 1
 	args := make([]interface{}, cnt)
 	args[0] = key

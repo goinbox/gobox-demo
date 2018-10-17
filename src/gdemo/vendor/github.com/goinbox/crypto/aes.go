@@ -23,7 +23,7 @@ type AesCBCCrypter struct {
 func NewAesCBCCrypter(key []byte, iv []byte) (*AesCBCCrypter, error) {
 	l := len(key)
 	if l != 32 && l != 24 && l != 16 {
-		return nil, errors.New("The key argument should be the AES key, either 16, 24, or 32 bytes to select AES-128, AES-192, or AES-256.")
+		return nil, errors.New("The key argument should be the AES key, any of 16, 24, 32 bytes to select AES-128, AES-192, or AES-256.")
 	}
 
 	block, _ := aes.NewCipher(key)

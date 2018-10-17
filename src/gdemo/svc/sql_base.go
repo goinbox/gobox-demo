@@ -5,7 +5,6 @@ import (
 	"github.com/goinbox/gomisc"
 	"github.com/goinbox/mysql"
 
-	"gdemo/dao"
 	"gdemo/idgen"
 
 	"database/sql"
@@ -31,7 +30,7 @@ type SqlBaseSvc struct {
 
 	EntityName string
 
-	Dao      *dao.SqlDao
+	Dao      *mysql.SqlDao
 	IdGenter *idgen.SqlIdGenter
 }
 
@@ -70,7 +69,7 @@ func NewSqlBaseSvc(bs *BaseSvc, mclient *mysql.Client, entityName string) *SqlBa
 		Mclient:    mclient,
 		EntityName: entityName,
 
-		Dao:      dao.NewSqlDao(mclient),
+		Dao:      mysql.NewSqlDao(mclient),
 		IdGenter: idgen.NewSqlIdGenter(mclient),
 	}
 }
@@ -171,7 +170,7 @@ func (s *SqlBaseSvc) reflectEntityScanDests(rev reflect.Value) []interface{} {
 	return dests
 }
 
-func (s *SqlBaseSvc) UpdateById(tableName string, id int64, newEntityPtr interface{}, updateFields map[string]bool) ([]*dao.SqlColQueryItem, error) {
+func (s *SqlBaseSvc) UpdateById(tableName string, id int64, newEntityPtr interface{}, updateFields map[string]bool) ([]*mysql.SqlColQueryItem, error) {
 	rnewv := reflect.ValueOf(newEntityPtr).Elem()
 	oldEntity := reflect.New(rnewv.Type()).Interface()
 
@@ -190,7 +189,7 @@ func (s *SqlBaseSvc) UpdateById(tableName string, id int64, newEntityPtr interfa
 		return nil, nil
 	}
 
-	setItems = append(setItems, dao.NewSqlColQueryItem("edit_time", "", time.Now().Format(gomisc.TimeGeneralLayout())))
+	setItems = append(setItems, mysql.NewSqlColQueryItem("edit_time", "", time.Now().Format(gomisc.TimeGeneralLayout())))
 	result := s.Dao.UpdateById(tableName, id, setItems...)
 	if result.Err != nil {
 		s.Elogger.Error([]byte("update mysql error: " + result.Err.Error()))
@@ -203,8 +202,8 @@ func (s *SqlBaseSvc) UpdateById(tableName string, id int64, newEntityPtr interfa
 	return setItems, nil
 }
 
-func (s *SqlBaseSvc) reflectUpdateSetItems(roldv, rnewv reflect.Value, updateFields map[string]bool) []*dao.SqlColQueryItem {
-	var setItems []*dao.SqlColQueryItem
+func (s *SqlBaseSvc) reflectUpdateSetItems(roldv, rnewv reflect.Value, updateFields map[string]bool) []*mysql.SqlColQueryItem {
+	var setItems []*mysql.SqlColQueryItem
 
 	rnewt := rnewv.Type()
 	for i := 0; i < rnewv.NumField(); i++ {
@@ -225,7 +224,7 @@ func (s *SqlBaseSvc) reflectUpdateSetItems(roldv, rnewv reflect.Value, updateFie
 
 		nv := rnewvf.Interface()
 		if nv != roldv.Field(i).Interface() {
-			setItems = append(setItems, dao.NewSqlColQueryItem(colName, "", nv))
+			setItems = append(setItems, mysql.NewSqlColQueryItem(colName, "", nv))
 		}
 	}
 
@@ -303,8 +302,8 @@ func (s *SqlBaseSvc) SimpleTotalAnd(tableName string, sqp *SqlQueryParams) (int6
 	return s.Dao.SimpleTotalAnd(tableName, setItems...)
 }
 
-func (s *SqlBaseSvc) reflectQuerySetItems(rev reflect.Value, exists map[string]bool, conditions map[string]string) []*dao.SqlColQueryItem {
-	var setItems []*dao.SqlColQueryItem
+func (s *SqlBaseSvc) reflectQuerySetItems(rev reflect.Value, exists map[string]bool, conditions map[string]string) []*mysql.SqlColQueryItem {
+	var setItems []*mysql.SqlColQueryItem
 	ret := rev.Type()
 
 	for i := 0; i < rev.NumField(); i++ {
@@ -327,7 +326,7 @@ func (s *SqlBaseSvc) reflectQuerySetItems(rev reflect.Value, exists map[string]b
 			continue
 		}
 
-		setItems = append(setItems, dao.NewSqlColQueryItem(name, cond, revf.Interface()))
+		setItems = append(setItems, mysql.NewSqlColQueryItem(name, cond, revf.Interface()))
 	}
 
 	return setItems

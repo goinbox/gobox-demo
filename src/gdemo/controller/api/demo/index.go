@@ -1,12 +1,12 @@
 package demo
 
 import (
-	"gdemo/dao"
 	"gdemo/errno"
 	"gdemo/svc"
 
 	"github.com/goinbox/exception"
 	"github.com/goinbox/gohttp/query"
+	"github.com/goinbox/mysql"
 )
 
 type indexActionParams struct {
@@ -17,7 +17,7 @@ type indexActionParams struct {
 }
 
 var indexQueryConditions map[string]string = map[string]string{
-	"status": dao.SQL_COND_EQUAL,
+	"status": mysql.SQL_COND_EQUAL,
 }
 
 func (d *DemoController) IndexAction(context *DemoContext) {
