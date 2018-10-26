@@ -4,6 +4,7 @@ import (
 	"github.com/garyburd/redigo/redis"
 
 	"github.com/goinbox/golog"
+	"github.com/goinbox/gomisc"
 
 	"fmt"
 	"io"
@@ -17,9 +18,10 @@ type cmdArgs struct {
 }
 
 type Client struct {
-	config *Config
-	logger golog.ILogger
-	clff   CmdLogFmtFunc
+	config    *Config
+	logger    golog.ILogger
+	clff      CmdLogFmtFunc
+	logPrefix []byte
 
 	conn      redis.Conn
 	connected bool
@@ -43,6 +45,9 @@ func NewClient(config *Config, logger golog.ILogger) *Client {
 		pipeCmds: []*cmdArgs{},
 	}
 	c.clff = c.cmdLogFmt
+	c.logPrefix = []byte("[redis " +
+		config.Host + ":" + config.Port +
+		"]\t")
 
 	return c
 }
@@ -261,7 +266,7 @@ func (c *Client) cmdLogFmt(cmd string, args ...interface{}) []byte {
 		cmd += " " + fmt.Sprint(arg)
 	}
 
-	return []byte(cmd)
+	return gomisc.AppendBytes(c.logPrefix, []byte(cmd))
 }
 
 func (c *Client) reconnect() error {

@@ -8,9 +8,9 @@ import (
 	"github.com/goinbox/golog"
 )
 
+var AccessLogWriter golog.IWriter
 var ErrorLogWriter golog.IWriter
-var RedisLogWriter golog.IWriter
-var MysqlLogWriter golog.IWriter
+
 var MongoLogWriter golog.IWriter
 
 var NoopLogger golog.ILogger = new(golog.NoopLogger)
@@ -21,17 +21,12 @@ func InitLog(systemName string) *exception.Exception {
 
 	var err error
 
+	AccessLogWriter, err = golog.NewFileWriter(conf.LogConf.RootPath + "/" + systemName + "_access.log")
+	if err != nil {
+		return exception.New(errno.E_SYS_INIT_LOG_FAIL, err.Error())
+	}
+
 	ErrorLogWriter, err = golog.NewFileWriter(conf.LogConf.RootPath + "/" + systemName + "_error.log")
-	if err != nil {
-		return exception.New(errno.E_SYS_INIT_LOG_FAIL, err.Error())
-	}
-
-	RedisLogWriter, err = golog.NewFileWriter(conf.LogConf.RootPath + "/" + systemName + "_redis.log")
-	if err != nil {
-		return exception.New(errno.E_SYS_INIT_LOG_FAIL, err.Error())
-	}
-
-	MysqlLogWriter, err = golog.NewFileWriter(conf.LogConf.RootPath + "/" + systemName + "_mysql.log")
 	if err != nil {
 		return exception.New(errno.E_SYS_INIT_LOG_FAIL, err.Error())
 	}

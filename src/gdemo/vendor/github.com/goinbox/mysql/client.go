@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"github.com/goinbox/gomisc"
 )
 
 type Client struct {
@@ -17,7 +18,8 @@ type Client struct {
 
 	connClosed bool
 
-	logger golog.ILogger
+	logger    golog.ILogger
+	logPrefix []byte
 }
 
 func NewClient(config *Config, logger golog.ILogger) (*Client, error) {
@@ -41,6 +43,9 @@ func NewClient(config *Config, logger golog.ILogger) (*Client, error) {
 		tx: nil,
 
 		logger: logger,
+		logPrefix: []byte("[mysql " +
+			config.Addr +
+			"]\t"),
 	}, nil
 }
 
@@ -143,5 +148,5 @@ func (c *Client) log(query string, args ...interface{}) {
 	}
 
 	query = fmt.Sprintf(query, vs...)
-	c.logger.Log(c.config.LogLevel, []byte(query))
+	c.logger.Log(c.config.LogLevel, gomisc.AppendBytes(c.logPrefix, []byte(query)))
 }

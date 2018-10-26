@@ -1,6 +1,8 @@
 package mysql
 
 import (
+	"github.com/goinbox/golog"
+
 	"database/sql"
 	"strconv"
 	"testing"
@@ -17,8 +19,10 @@ type tableDemoRowItem struct {
 }
 
 func init() {
+	logger, _ := golog.NewSimpleLogger(golog.NewStdoutWriter(), golog.LEVEL_DEBUG, golog.NewConsoleFormater())
+
 	config := NewConfig("root", "123", "127.0.0.1", "3306", "gobox-demo")
-	client, _ = NewClient(config, nil)
+	client, _ = NewClient(config, logger)
 
 	client.Exec("DELETE FROM demo")
 }

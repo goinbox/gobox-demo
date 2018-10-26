@@ -73,11 +73,9 @@ type ApiContext struct {
 	}
 
 	MysqlClient *mysql.Client
-	MysqlLogger golog.ILogger
 
 	RedisPool   *redis.Pool
 	RedisClient *redis.Client
-	RedisLogger golog.ILogger
 
 	MongoPool   *mongo.Pool
 	MongoClient *mongo.Client
@@ -105,8 +103,7 @@ func (a *ApiContext) BeforeAction() {
 		a.ApiData.Err = exception.New(errno.E_SYS_MYSQL_ERROR, err.Error())
 		system.JumpOutAction(JumpToApiError)
 	}
-	a.MysqlLogger = gvalue.NewAsyncLogger(gvalue.MysqlLogWriter, a.LogFormater)
-	a.MysqlClient.SetLogger(a.MysqlLogger)
+	a.MysqlClient.SetLogger(a.AccessLogger)
 
 	a.RedisPool = gvalue.RedisClientPool
 	a.RedisClient, err = a.RedisPool.Get()
@@ -114,8 +111,7 @@ func (a *ApiContext) BeforeAction() {
 		a.ApiData.Err = exception.New(errno.E_SYS_REDIS_ERROR, err.Error())
 		system.JumpOutAction(JumpToApiError)
 	}
-	a.RedisLogger = gvalue.NewAsyncLogger(gvalue.RedisLogWriter, a.LogFormater)
-	a.RedisClient.SetLogger(a.RedisLogger)
+	a.RedisClient.SetLogger(a.AccessLogger)
 
 	a.MongoPool = gvalue.MongoClientPool
 	a.MongoClient, err = a.MongoPool.Get()
@@ -145,18 +141,12 @@ func (a *ApiContext) AfterAction() {
 func (a *ApiContext) Destruct() {
 	if a.MysqlClient != nil {
 		a.MysqlClient.Free()
-		if a.MysqlLogger != nil {
-			a.MysqlLogger.Free()
-		}
 	}
 
 	if a.RedisClient != nil {
 		if a.RedisClient.Connected() {
 			a.RedisClient.SetLogger(gvalue.NoopLogger)
 			a.RedisPool.Put(a.RedisClient)
-		}
-		if a.RedisLogger != nil {
-			a.RedisLogger.Free()
 		}
 	}
 
