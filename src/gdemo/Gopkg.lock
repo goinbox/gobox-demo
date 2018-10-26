@@ -91,12 +91,12 @@
   version = "v1.0.7"
 
 [[projects]]
-  digest = "1:93674a297176441b1f13ea7f9425ed23b7fec2a134699fb1ba9a6fd51f05fd4d"
+  digest = "1:f6326a1a4005069cb27c4fc9a12b98a0c05c9f8e7c23b4ede20c7e990b314c94"
   name = "github.com/goinbox/mysql"
   packages = ["."]
   pruneopts = ""
-  revision = "2906ea1e1bd1e2923f4613012ecd50af86c76e0e"
-  version = "v1.1.1"
+  revision = "de516174499ed88e064b5f35de810ed50226b766"
+  version = "v1.1.2"
 
 [[projects]]
   digest = "1:4cf68495e9bef403134510561e256ca5d45adc739e99c2bbd0b76faf8ec2c2ff"
@@ -115,12 +115,12 @@
   version = "v1.0.1"
 
 [[projects]]
-  digest = "1:b60253f30ca7b4d50ce53059f11a0eeb5850a791a095093034fa26620669ad14"
+  digest = "1:42668933f3cb7b4662e7e90e3bfac39b8fcc101a0744165bead64d66be43414e"
   name = "github.com/goinbox/redis"
   packages = ["."]
   pruneopts = ""
-  revision = "f67734a3e2ece14c80cf995989ac79c77b041909"
-  version = "v1.2.2"
+  revision = "01018c1dc88e52785516fd850b27b5feb8682e35"
+  version = "v1.2.3"
 
 [[projects]]
   digest = "1:8c432632a230496c35a15cfdf441436f04c90e724ad99c8463ef0c82bbe93edb"

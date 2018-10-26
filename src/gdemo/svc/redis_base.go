@@ -12,6 +12,8 @@ const (
 	ENTITY_REDIS_HASH_FIELD_TAG = "redis"
 )
 
+var LogKindRedisBaseSvc = []byte("RedisBaseSvc")
+
 type RedisBaseSvc struct {
 	*BaseSvc
 
@@ -29,14 +31,14 @@ func NewRedisBaseSvc(bs *BaseSvc, rclient *redis.Client) *RedisBaseSvc {
 func (r *RedisBaseSvc) SaveJsonDataToRedis(key string, v interface{}, expireSeconds int64) error {
 	jsonBytes, err := json.Marshal(v)
 	if err != nil {
-		r.Elogger.Warning([]byte("json_encode " + key + " error: " + err.Error()))
+		r.Warning(LogKindRedisBaseSvc, []byte("json_encode "+key+" error: "+err.Error()))
 		return err
 	}
 
 	err = r.Rclient.Do("set", key, string(jsonBytes), "ex", expireSeconds).Err
 	if err != nil {
 		r.Rclient.Free()
-		r.Elogger.Warning([]byte("set " + key + " to redis error: " + err.Error()))
+		r.Warning(LogKindRedisBaseSvc, []byte("set "+key+" to redis error: "+err.Error()))
 		return err
 	}
 
@@ -47,7 +49,7 @@ func (r *RedisBaseSvc) GetJsonDataFromRedis(key string, v interface{}) (bool, er
 	reply := r.Rclient.Do("get", key)
 	if reply.Err != nil {
 		r.Rclient.Free()
-		r.Elogger.Warning([]byte("get " + key + " from redis error: " + reply.Err.Error()))
+		r.Warning(LogKindRedisBaseSvc, []byte("get "+key+" from redis error: "+reply.Err.Error()))
 		return false, reply.Err
 	}
 
@@ -57,13 +59,13 @@ func (r *RedisBaseSvc) GetJsonDataFromRedis(key string, v interface{}) (bool, er
 
 	jsonBytes, err := reply.Bytes()
 	if err != nil {
-		r.Elogger.Warning([]byte("reply " + key + " from redis error: " + err.Error()))
+		r.Warning(LogKindRedisBaseSvc, []byte("reply "+key+" from redis error: "+err.Error()))
 		return false, err
 	}
 
 	err = json.Unmarshal(jsonBytes, v)
 	if err != nil {
-		r.Elogger.Warning([]byte("json_decode " + key + " from redis error: " + err.Error()))
+		r.Warning(LogKindRedisBaseSvc, []byte("json_decode "+key+" from redis error: "+err.Error()))
 		return false, err
 	}
 
@@ -89,7 +91,7 @@ func (r *RedisBaseSvc) SaveHashEntityToRedis(key string, entityPtr interface{}, 
 		for _, i := range errIndexes {
 			msg += " " + replies[i].Err.Error()
 		}
-		r.Elogger.Warning([]byte(msg))
+		r.Warning(LogKindRedisBaseSvc, []byte(msg))
 		return errors.New(msg)
 	}
 
@@ -100,7 +102,7 @@ func (r *RedisBaseSvc) GetHashEntityFromRedis(key string, entityPtr interface{})
 	reply := r.Rclient.Do("hgetall", key)
 	if reply.Err != nil {
 		r.Rclient.Free()
-		r.Elogger.Warning([]byte("hgetall " + key + " from redis error: " + reply.Err.Error()))
+		r.Warning(LogKindRedisBaseSvc, []byte("hgetall "+key+" from redis error: "+reply.Err.Error()))
 		return false, reply.Err
 	}
 
@@ -110,7 +112,7 @@ func (r *RedisBaseSvc) GetHashEntityFromRedis(key string, entityPtr interface{})
 
 	err := reply.Struct(entityPtr)
 	if err != nil {
-		r.Elogger.Warning([]byte("reply to struct " + key + " from redis error: " + err.Error()))
+		r.Warning(LogKindRedisBaseSvc, []byte("reply to struct "+key+" from redis error: "+err.Error()))
 		return false, err
 	}
 

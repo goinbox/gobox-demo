@@ -29,8 +29,8 @@ type DemoSvc struct {
 	*svc.SqlRedisBindSvc
 }
 
-func NewDemoSvc(elogger golog.ILogger, mclient *mysql.Client, redisKeyPrefix string, rclient *redis.Client) *DemoSvc {
-	bs := svc.NewBaseSvc(elogger)
+func NewDemoSvc(alogger golog.ILogger, mclient *mysql.Client, redisKeyPrefix string, rclient *redis.Client) *DemoSvc {
+	bs := svc.NewBaseSvc().SetAccessLogger(alogger)
 	sbs := svc.NewSqlBaseSvc(bs, mclient, "demo")
 
 	return &DemoSvc{

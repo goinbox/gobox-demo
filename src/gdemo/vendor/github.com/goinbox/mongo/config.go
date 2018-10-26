@@ -15,7 +15,7 @@ const (
 type Config struct {
 	LogLevel int
 
-	Hosts   []string
+	Hosts  []string
 	User   string
 	Pass   string
 	DBName string
@@ -29,7 +29,7 @@ func NewConfig(hosts []string, user, pass, dbname string) *Config {
 	return &Config{
 		LogLevel: golog.LEVEL_INFO,
 
-		Hosts:   hosts,
+		Hosts:  hosts,
 		User:   user,
 		Pass:   pass,
 		DBName: dbname,

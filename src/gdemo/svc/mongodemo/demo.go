@@ -24,8 +24,8 @@ type MongoDemoSvc struct {
 	*svc.MongoBaseSvc
 }
 
-func NewMongoDemoSvc(elogger golog.ILogger, mclient *mongo.Client) *MongoDemoSvc {
-	bs := svc.NewBaseSvc(elogger)
+func NewMongoDemoSvc(alogger golog.ILogger, mclient *mongo.Client) *MongoDemoSvc {
+	bs := svc.NewBaseSvc().SetAccessLogger(alogger)
 	sbs := svc.NewMongoBaseSvc(bs, mclient, "mycoll")
 
 	return &MongoDemoSvc{

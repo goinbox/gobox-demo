@@ -7,6 +7,8 @@ import (
 	"strconv"
 )
 
+var LogKindSqlRedisBindSvc = []byte("SqlRedisBindSvc")
+
 type SqlRedisBindSvc struct {
 	*BaseSvc
 	*SqlBaseSvc
@@ -49,7 +51,7 @@ func (s *SqlRedisBindSvc) GetById(tableName string, id, expireSeconds int64, ent
 
 	find, err = s.SqlBaseSvc.GetById(tableName, id, entityPtr)
 	if err != nil {
-		s.Elogger.Error([]byte("getById from mysql error: " + err.Error()))
+		s.Error(LogKindSqlRedisBindSvc, []byte("getById from mysql error: "+err.Error()))
 		return false, err
 	}
 	if !find {
@@ -64,7 +66,7 @@ func (s *SqlRedisBindSvc) GetById(tableName string, id, expireSeconds int64, ent
 func (s *SqlRedisBindSvc) DeleteById(tableName string, id int64) (bool, error) {
 	result := s.Dao.DeleteById(tableName, id)
 	if result.Err != nil {
-		s.Elogger.Error([]byte("delete from mysql error: " + result.Err.Error()))
+		s.Error(LogKindSqlRedisBindSvc, []byte("delete from mysql error: "+result.Err.Error()))
 		return false, result.Err
 	}
 
@@ -75,7 +77,7 @@ func (s *SqlRedisBindSvc) DeleteById(tableName string, id int64) (bool, error) {
 	rk := s.RedisKeyForEntity(id)
 	err := s.Rclient.Do("del", rk).Err
 	if err != nil {
-		s.Elogger.Warning([]byte("del key " + rk + " from redis failed: " + err.Error()))
+		s.Warning(LogKindSqlRedisBindSvc, []byte("del key "+rk+" from redis failed: "+err.Error()))
 	}
 
 	return true, nil
@@ -107,17 +109,17 @@ func (s *SqlRedisBindSvc) TotalRows(tableName string, expireSeconds int64) (int6
 				return total, err
 			}
 			s.Rclient.Free()
-			s.Elogger.Warning([]byte("get " + rk + " reply.Int64() error: " + err.Error()))
+			s.Warning(LogKindSqlRedisBindSvc, []byte("get "+rk+" reply.Int64() error: "+err.Error()))
 			s.Rclient.Do("del", rk)
 		}
 	} else {
 		s.Rclient.Free()
-		s.Elogger.Warning([]byte("get " + rk + " from redis error: " + reply.Err.Error()))
+		s.Warning(LogKindSqlRedisBindSvc, []byte("get "+rk+" from redis error: "+reply.Err.Error()))
 	}
 
 	total, err := s.Dao.SimpleTotalAnd(tableName)
 	if err != nil {
-		s.Elogger.Error([]byte("mysql error: " + err.Error()))
+		s.Error(LogKindSqlRedisBindSvc, []byte("mysql error: "+err.Error()))
 		return 0, err
 	}
 
@@ -153,7 +155,7 @@ func (s *SqlRedisBindSvc) updateSqlHashEntity(key string, setItems []*mysql.SqlC
 		for _, i := range errIndexes {
 			msg += " " + replies[i].Err.Error()
 		}
-		s.Elogger.Warning([]byte(msg))
+		s.Warning(LogKindSqlRedisBindSvc, []byte(msg))
 		return errors.New(msg)
 	}
 

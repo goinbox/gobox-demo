@@ -45,7 +45,7 @@ func NewClient(config *Config, logger golog.ILogger) *Client {
 		pipeCmds: []*cmdArgs{},
 	}
 	c.clff = c.cmdLogFmt
-	c.logPrefix = []byte("[redis " +
+	c.logPrefix = []byte("[GoinboxRedis " +
 		config.Host + ":" + config.Port +
 		"]\t")
 

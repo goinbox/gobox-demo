@@ -4,6 +4,7 @@ import (
 	"gdemo/misc"
 	"gdemo/svc"
 
+	"github.com/goinbox/golog"
 	"github.com/goinbox/gomisc"
 	"github.com/goinbox/mysql"
 
@@ -18,7 +19,8 @@ type testQueryParamsStruct struct {
 }
 
 func TestDemoSvc(t *testing.T) {
-	demoSvc := NewDemoSvc(nil, misc.MysqlTestClient(), "gdemo", misc.RedisTestClient())
+	logger, _ := golog.NewSimpleLogger(golog.NewStdoutWriter(), golog.LEVEL_DEBUG, golog.NewConsoleFormater())
+	demoSvc := NewDemoSvc(logger, misc.MysqlTestClient(), "gdemo", misc.RedisTestClient())
 
 	ids, err := demoSvc.Insert(
 		&DemoEntity{Name: "a1", Status: 0},

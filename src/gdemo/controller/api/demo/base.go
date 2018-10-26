@@ -20,7 +20,7 @@ func (d *DemoContext) BeforeAction() {
 	d.ApiContext.BeforeAction()
 
 	d.demoSvc = demoSvc.NewDemoSvc(
-		d.ErrorLogger,
+		d.AccessLogger,
 		d.MysqlClient,
 		conf.BaseConf.PrjName,
 		d.RedisClient,

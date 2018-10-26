@@ -27,7 +27,7 @@ type BaseContext struct {
 	RespWriter http.ResponseWriter
 	RespBody   []byte
 
-	QueryValues url.Values
+	QueryValues    url.Values
 	RemoteRealAddr struct {
 		Ip   string
 		Port string
@@ -36,7 +36,6 @@ type BaseContext struct {
 
 	LogFormater  golog.IFormater
 	AccessLogger golog.ILogger
-	ErrorLogger  golog.ILogger
 }
 
 func (b *BaseContext) Request() *http.Request {
@@ -59,6 +58,8 @@ func (b *BaseContext) BeforeAction() {
 }
 
 func (b *BaseContext) AfterAction() {
+	msg := gomisc.AppendBytes([]byte("[response]\t"), b.RespBody)
+	b.AccessLogger.Debug(msg)
 }
 
 func (b *BaseContext) Destruct() {
@@ -67,7 +68,6 @@ func (b *BaseContext) Destruct() {
 	b.Rid = nil
 
 	b.AccessLogger.Free()
-	b.ErrorLogger.Free()
 	b.LogFormater = nil
 }
 
@@ -95,7 +95,6 @@ func (b *BaseController) NewActionContext(req *http.Request, respWriter http.Res
 	context.LogFormater = golog.NewWebFormater(context.Rid, []byte(context.RemoteRealAddr.Ip))
 	context.RespWriter.Header().Add("X-Powered-By", "gohttp")
 	context.AccessLogger = gvalue.NewAsyncLogger(gvalue.AccessLogWriter, context.LogFormater)
-	context.ErrorLogger = gvalue.NewAsyncLogger(gvalue.ErrorLogWriter, context.LogFormater)
 
 	return context
 }

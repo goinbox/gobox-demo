@@ -19,7 +19,7 @@ func (d *MongoDemoContext) BeforeAction() {
 	d.ApiContext.BeforeAction()
 
 	d.demoSvc = demoSvc.NewMongoDemoSvc(
-		d.ErrorLogger,
+		d.AccessLogger,
 		d.MongoClient,
 	)
 }

@@ -9,7 +9,6 @@ import (
 )
 
 var AccessLogWriter golog.IWriter
-var ErrorLogWriter golog.IWriter
 
 var MongoLogWriter golog.IWriter
 
@@ -22,11 +21,6 @@ func InitLog(systemName string) *exception.Exception {
 	var err error
 
 	AccessLogWriter, err = golog.NewFileWriter(conf.LogConf.RootPath + "/" + systemName + "_access.log")
-	if err != nil {
-		return exception.New(errno.E_SYS_INIT_LOG_FAIL, err.Error())
-	}
-
-	ErrorLogWriter, err = golog.NewFileWriter(conf.LogConf.RootPath + "/" + systemName + "_error.log")
 	if err != nil {
 		return exception.New(errno.E_SYS_INIT_LOG_FAIL, err.Error())
 	}

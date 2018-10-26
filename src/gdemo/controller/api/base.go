@@ -134,7 +134,6 @@ func (a *ApiContext) AfterAction() {
 	}
 
 	a.RespBody = misc.ApiJson(a.ApiData.V, a.ApiData.Data, a.ApiData.Err)
-
 	a.BaseContext.AfterAction()
 }
 

@@ -2,12 +2,12 @@ package mysql
 
 import (
 	"github.com/goinbox/golog"
+	"github.com/goinbox/gomisc"
 
 	"database/sql"
 	"errors"
 	"fmt"
 	"strings"
-	"github.com/goinbox/gomisc"
 )
 
 type Client struct {
@@ -43,7 +43,7 @@ func NewClient(config *Config, logger golog.ILogger) (*Client, error) {
 		tx: nil,
 
 		logger: logger,
-		logPrefix: []byte("[mysql " +
+		logPrefix: []byte("[GoinboxMysql " +
 			config.Addr +
 			"]\t"),
 	}, nil
