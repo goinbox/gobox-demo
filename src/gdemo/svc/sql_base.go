@@ -1,11 +1,11 @@
 package svc
 
 import (
+	"gdemo/idgen"
+
 	"github.com/goinbox/golog"
 	"github.com/goinbox/gomisc"
 	"github.com/goinbox/mysql"
-
-	"gdemo/idgen"
 
 	"database/sql"
 	"reflect"
