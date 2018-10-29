@@ -6,53 +6,57 @@ import (
 )
 
 type BaseSvc struct {
-	AccessLogger golog.ILogger
+	accessLogger golog.ILogger
 }
 
 func NewBaseSvc() *BaseSvc {
 	return &BaseSvc{
-		AccessLogger: new(golog.NoopLogger),
+		accessLogger: new(golog.NoopLogger),
 	}
 }
 
 func (b *BaseSvc) SetAccessLogger(logger golog.ILogger) *BaseSvc {
 	if logger != nil {
-		b.AccessLogger = logger
+		b.accessLogger = logger
 	}
 
 	return b
 }
 
-func (b *BaseSvc) Debug(kind, msg []byte) {
-	b.AccessLogger.Debug(b.makeLogMsg(kind, msg))
+func (b *BaseSvc) AccessLogger() golog.ILogger {
+	return b.accessLogger
 }
 
-func (b *BaseSvc) Info(kind, msg []byte) {
-	b.AccessLogger.Info(b.makeLogMsg(kind, msg))
+func (b *BaseSvc) DebugLog(kind, msg []byte) {
+	b.accessLogger.Debug(b.makeLogMsg(kind, msg))
 }
 
-func (b *BaseSvc) Notice(kind, msg []byte) {
-	b.AccessLogger.Notice(b.makeLogMsg(kind, msg))
+func (b *BaseSvc) InfoLog(kind, msg []byte) {
+	b.accessLogger.Info(b.makeLogMsg(kind, msg))
 }
 
-func (b *BaseSvc) Warning(kind, msg []byte) {
-	b.AccessLogger.Warning(b.makeLogMsg(kind, msg))
+func (b *BaseSvc) NoticeLog(kind, msg []byte) {
+	b.accessLogger.Notice(b.makeLogMsg(kind, msg))
 }
 
-func (b *BaseSvc) Error(kind, msg []byte) {
-	b.AccessLogger.Error(b.makeLogMsg(kind, msg))
+func (b *BaseSvc) WarningLog(kind, msg []byte) {
+	b.accessLogger.Warning(b.makeLogMsg(kind, msg))
 }
 
-func (b *BaseSvc) Critical(kind, msg []byte) {
-	b.AccessLogger.Critical(b.makeLogMsg(kind, msg))
+func (b *BaseSvc) ErrorLog(kind, msg []byte) {
+	b.accessLogger.Error(b.makeLogMsg(kind, msg))
 }
 
-func (b *BaseSvc) Alert(kind, msg []byte) {
-	b.AccessLogger.Alert(b.makeLogMsg(kind, msg))
+func (b *BaseSvc) CriticalLog(kind, msg []byte) {
+	b.accessLogger.Critical(b.makeLogMsg(kind, msg))
 }
 
-func (b *BaseSvc) Emergency(kind, msg []byte) {
-	b.AccessLogger.Emergency(b.makeLogMsg(kind, msg))
+func (b *BaseSvc) AlertLog(kind, msg []byte) {
+	b.accessLogger.Alert(b.makeLogMsg(kind, msg))
+}
+
+func (b *BaseSvc) EmergencyLog(kind, msg []byte) {
+	b.accessLogger.Emergency(b.makeLogMsg(kind, msg))
 }
 
 func (b *BaseSvc) makeLogMsg(kind, msg []byte) []byte {
