@@ -1,12 +1,14 @@
 package controller
 
 import (
-	"bytes"
 	"gdemo/gvalue"
+
 	"github.com/goinbox/encoding"
 	"github.com/goinbox/gohttp/controller"
 	"github.com/goinbox/golog"
 	"github.com/goinbox/gomisc"
+
+	"bytes"
 	"io/ioutil"
 	"net/http"
 	"net/url"
