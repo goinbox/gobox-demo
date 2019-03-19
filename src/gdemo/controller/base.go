@@ -1,13 +1,14 @@
 package controller
 
 import (
+	"bytes"
+	"fmt"
 	"gdemo/gvalue"
-
 	"github.com/goinbox/encoding"
 	"github.com/goinbox/gohttp/controller"
 	"github.com/goinbox/golog"
 	"github.com/goinbox/gomisc"
-
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -20,10 +21,13 @@ const (
 	REMOTE_REAL_PORT_HEADER_KEY = "REMOTE-REAL-PORT"
 
 	DOWNSTREAM_SERVER_IP = "127.0.0.1"
+
+	MAX_AUTO_PARSE_BODY_LEN = 1024 * 1024
 )
 
 type BaseContext struct {
 	Req        *http.Request
+	ReqRawBody []byte
 	RespWriter http.ResponseWriter
 	RespBody   []byte
 
@@ -80,8 +84,15 @@ func (b *BaseController) NewActionContext(req *http.Request, respWriter http.Res
 		RespWriter: respWriter,
 	}
 
+	if req.ContentLength < MAX_AUTO_PARSE_BODY_LEN {
+		context.ReqRawBody, _ = ioutil.ReadAll(req.Body)
+		req.Body = ioutil.NopCloser(bytes.NewBuffer(context.ReqRawBody))
+	}
+
 	req.ParseForm()
 	context.QueryValues = req.Form
+
+	fmt.Println("here2", string(context.ReqRawBody), context.QueryValues)
 
 	context.RemoteRealAddr.Ip, context.RemoteRealAddr.Port = b.parseRemoteAddr(req)
 
