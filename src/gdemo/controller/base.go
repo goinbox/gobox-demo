@@ -2,7 +2,6 @@ package controller
 
 import (
 	"bytes"
-	"fmt"
 	"gdemo/gvalue"
 	"github.com/goinbox/encoding"
 	"github.com/goinbox/gohttp/controller"
@@ -91,9 +90,6 @@ func (b *BaseController) NewActionContext(req *http.Request, respWriter http.Res
 
 	req.ParseForm()
 	context.QueryValues = req.Form
-
-	fmt.Println("here2", string(context.ReqRawBody), context.QueryValues)
-
 	context.RemoteRealAddr.Ip, context.RemoteRealAddr.Port = b.parseRemoteAddr(req)
 
 	now := time.Now()
