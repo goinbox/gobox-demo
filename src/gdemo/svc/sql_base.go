@@ -280,7 +280,10 @@ func (s *SqlBaseSvc) ReflectQueryRowsToEntityList(rows *sql.Rows, ret reflect.Ty
 }
 
 func (s *SqlBaseSvc) SimpleQueryAnd(tableName string, sqp *SqlQueryParams, entityType reflect.Type, listPtr interface{}) error {
-	setItems := s.reflectQuerySetItems(reflect.ValueOf(sqp.ParamsStructPtr).Elem(), sqp.Exists, sqp.Conditions)
+	var setItems []*mysql.SqlColQueryItem
+	if (sqp.ParamsStructPtr != nil) {
+		setItems = s.reflectQuerySetItems(reflect.ValueOf(sqp.ParamsStructPtr).Elem(), sqp.Exists, sqp.Conditions)
+	}
 
 	rows, err := s.Dao.SimpleQueryAnd(tableName, "*", sqp.OrderBy, sqp.Offset, sqp.Cnt, setItems...)
 	if err != nil {
