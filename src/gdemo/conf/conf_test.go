@@ -23,7 +23,11 @@ func TestConf(t *testing.T) {
 	misc.PrintComplexObjectForTest(&LogConf)
 	misc.PrintComplexObjectForTest(&PprofConf)
 	misc.PrintComplexObjectForTest(&ApiHttpConf)
-	misc.PrintComplexObjectForTest(&RedisConf)
+
+	for _, item := range RedisConfList {
+		misc.PrintComplexObjectForTest(item)
+	}
+
 	misc.PrintComplexObjectForTest(&MysqlConf)
 	misc.PrintComplexObjectForTest(&MongoConf)
 }

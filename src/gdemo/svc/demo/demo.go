@@ -1,11 +1,11 @@
 package demo
 
 import (
+	"gdemo/conf"
+	"gdemo/resource"
 	"gdemo/svc"
 
 	"github.com/goinbox/golog"
-	"github.com/goinbox/mysql"
-	"github.com/goinbox/redis"
 
 	"reflect"
 )
@@ -26,21 +26,26 @@ type DemoEntity struct {
 }
 
 type DemoSvc struct {
+	*svc.BaseSvc
 	*svc.SqlRedisBindSvc
+
+	EntityName     string
+	RedisKeyPrefix string
 }
 
-func NewDemoSvc(alogger golog.ILogger, mclient *mysql.Client, redisKeyPrefix string, rclient *redis.Client) *DemoSvc {
-	bs := svc.NewBaseSvc().SetAccessLogger(alogger)
-	sbs := svc.NewSqlBaseSvc(bs, mclient, "demo")
-
+func NewDemoSvc(traceId []byte, logger golog.ILogger) *DemoSvc {
 	return &DemoSvc{
-		&svc.SqlRedisBindSvc{
-			BaseSvc:      bs,
-			SqlBaseSvc:   sbs,
-			RedisBaseSvc: svc.NewRedisBaseSvc(bs, rclient),
-
-			RedisKeyPrefix: redisKeyPrefix,
+		BaseSvc: &svc.BaseSvc{
+			TraceId:      traceId,
+			AccessLogger: logger,
 		},
+		SqlRedisBindSvc: &svc.SqlRedisBindSvc{
+			SqlSvc:   svc.NewSqlSvc(logger, resource.MysqlClientPool, true),
+			RedisSvc: svc.NewRedisSvc(logger, resource.RedisClientPoolList[0]),
+		},
+
+		EntityName:     "demo",
+		RedisKeyPrefix: conf.BaseConf.PrjName,
 	}
 }
 
@@ -50,15 +55,24 @@ func (d *DemoSvc) Insert(entities ...*DemoEntity) ([]int64, error) {
 		is[i] = entity
 	}
 
-	return d.SqlRedisBindSvc.Insert(d.EntityName, demoColNames, DEF_DEMO_ENTITY_CACHE_EXPIRE_SECONDS, is...)
+	ids, merr, rerr := d.SqlRedisBindSvc.Insert(d.EntityName, d.EntityName, d.RedisKeyPrefix, demoColNames, DEF_DEMO_ENTITY_CACHE_EXPIRE_SECONDS, is...)
+	if rerr != nil {
+		d.ErrorLog([]byte("DemoSvc.Insert"), []byte(rerr.Error()))
+	}
+
+	return ids, merr
 }
 
 func (d *DemoSvc) GetById(id int64) (*DemoEntity, error) {
 	entity := new(DemoEntity)
 
-	find, err := d.SqlRedisBindSvc.GetById(d.EntityName, id, DEF_DEMO_ENTITY_CACHE_EXPIRE_SECONDS, entity)
-	if err != nil {
-		return nil, err
+	find, merr, rerr := d.SqlRedisBindSvc.GetById(d.EntityName, d.EntityName, d.RedisKeyPrefix, id, DEF_DEMO_ENTITY_CACHE_EXPIRE_SECONDS, entity)
+	if rerr != nil {
+		d.ErrorLog([]byte("DemoSvc.GetById"), []byte(rerr.Error()))
+	}
+
+	if merr != nil {
+		return nil, merr
 	}
 	if !find {
 		return nil, nil
@@ -68,17 +82,27 @@ func (d *DemoSvc) GetById(id int64) (*DemoEntity, error) {
 }
 
 func (d *DemoSvc) DeleteById(id int64) (bool, error) {
-	return d.SqlRedisBindSvc.DeleteById(d.EntityName, id)
+	find, merr, rerr := d.SqlRedisBindSvc.DeleteById(d.EntityName, d.EntityName, d.RedisKeyPrefix, id)
+	if rerr != nil {
+		d.ErrorLog([]byte("DemoSvc.DeleteById"), []byte(rerr.Error()))
+	}
+
+	return find, merr
 }
 
 func (d *DemoSvc) UpdateById(id int64, newEntity *DemoEntity, updateFields map[string]bool) (bool, error) {
-	return d.SqlRedisBindSvc.UpdateById(d.EntityName, id, newEntity, updateFields, DEF_DEMO_ENTITY_CACHE_EXPIRE_SECONDS)
+	setItems, merr, rerr := d.SqlRedisBindSvc.UpdateById(d.EntityName, d.EntityName, d.RedisKeyPrefix, id, newEntity, updateFields, DEF_DEMO_ENTITY_CACHE_EXPIRE_SECONDS)
+	if rerr != nil {
+		d.ErrorLog([]byte("DemoSvc.UpdateById"), []byte(rerr.Error()))
+	}
+
+	return (setItems != nil), merr
 }
 
 func (d *DemoSvc) ListByIds(ids ...int64) ([]*DemoEntity, error) {
 	var entities []*DemoEntity
 
-	err := d.SqlBaseSvc.ListByIds(d.EntityName, ids, "id desc", demoEntityType, &entities)
+	err := d.SqlSvc.ListByIds(d.EntityName, ids, "id desc", demoEntityType, &entities)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +113,7 @@ func (d *DemoSvc) ListByIds(ids ...int64) ([]*DemoEntity, error) {
 func (d *DemoSvc) SimpleQueryAnd(sqp *svc.SqlQueryParams) ([]*DemoEntity, error) {
 	var entities []*DemoEntity
 
-	err := d.SqlBaseSvc.SimpleQueryAnd(d.EntityName, sqp, demoEntityType, &entities)
+	err := d.SqlSvc.SimpleQueryAnd(d.EntityName, sqp, demoEntityType, &entities)
 	if err != nil {
 		return nil, err
 	}

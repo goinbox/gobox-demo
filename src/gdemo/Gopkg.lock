@@ -2,58 +2,58 @@
 
 
 [[projects]]
-  digest = "1:9525d0e79ccf382e32edeef466b9a91f16eb0eebdca5971a03fad1bb3be9cd89"
+  digest = "1:0594af97b2f4cec6554086eeace6597e20a4b69466eb4ada25adf9f4300dddd2"
   name = "github.com/garyburd/redigo"
   packages = [
     "internal",
     "redis",
   ]
-  pruneopts = ""
+  pruneopts = "UT"
   revision = "a69d19351219b6dd56f274f96d85a7014a2ec34e"
   version = "v1.6.0"
 
 [[projects]]
-  digest = "1:c07de423ca37dc2765396d6971599ab652a339538084b9b58c9f7fc533b28525"
+  digest = "1:ec6f9bf5e274c833c911923c9193867f3f18788c461f76f05f62bb1510e0ae65"
   name = "github.com/go-sql-driver/mysql"
   packages = ["."]
-  pruneopts = ""
-  revision = "d523deb1b23d913de5bdada721a6071e71283618"
-  version = "v1.4.0"
+  pruneopts = "UT"
+  revision = "72cd26f257d44c1114970e19afddcd812016007e"
+  version = "v1.4.1"
 
 [[projects]]
-  digest = "1:f39178df5cf482262acd8c158fd2d44b7da9a4dd25c151a226e8d215c6729bd5"
+  digest = "1:7f2f830c2881d935ae6ead14ca1b875b7a66669394fd18f182d582592e8c1b43"
   name = "github.com/goinbox/color"
   packages = ["."]
-  pruneopts = ""
+  pruneopts = "UT"
   revision = "b829175016e6f52d5783bc84511fb3fe37b51213"
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:aa503d9aced425a14d98725e349ffc5fa188e068896ff2c22e70693a62541fb5"
+  digest = "1:58370a90618744171406c75e014be528a845418501756cb5ba7044aab615bec2"
   name = "github.com/goinbox/crypto"
   packages = ["."]
-  pruneopts = ""
+  pruneopts = "UT"
   revision = "0c23705429a864b879d42869cd8585fc52a8c269"
   version = "v1.1.0"
 
 [[projects]]
-  digest = "1:9ef0849d5cc41af4847485f17bb2f0d5002920db7384b4fcc8aaf1a89bb20f30"
+  digest = "1:e1b2176808fd1403b35a6c0e1049bcccf4de506d8f021a2e8a7223df919d82f7"
   name = "github.com/goinbox/encoding"
   packages = ["."]
-  pruneopts = ""
+  pruneopts = "UT"
   revision = "4ce5cac4f174809a1e26c02dca3831da1047069e"
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:57ddec142445978e8ef7bc534355a6aa391b0b5ebb3990e53540920b6ab67e57"
+  digest = "1:c233bdde02d79638d11f4afc5d53de562a5d52c3e3356a187c1a0e5ad0c912f6"
   name = "github.com/goinbox/exception"
   packages = ["."]
-  pruneopts = ""
+  pruneopts = "UT"
   revision = "e0c2f3dfc942a2698fa8f184558ab497304e1891"
   version = "v1.0.1"
 
 [[projects]]
-  digest = "1:417682d0f8883c37321976e2bce5ec9699fae27b03ccb603f30c254ef1103889"
+  digest = "1:a1c9825ed3f251ccf779d890089cee8b3bf7a777bbd73d2c9021d762c4430614"
   name = "github.com/goinbox/gohttp"
   packages = [
     "controller",
@@ -62,47 +62,47 @@
     "router",
     "system",
   ]
-  pruneopts = ""
-  revision = "fddf4237e09b22ca5f5339b2d17b40fccc9d611f"
-  version = "v3.0.0"
+  pruneopts = "UT"
+  revision = "21595a3dabb6a40746a7213c71f8c5537717fef6"
+  version = "v4.0.0"
 
 [[projects]]
-  digest = "1:3e3e8965fbd3bba086add2d3577097be04ac1828613bfeaf2edb80c56f46fb57"
+  digest = "1:bab8ae89496aaec77ebfb41bd150d092d6cfce180e213f4e4d8dd77430504069"
   name = "github.com/goinbox/golog"
   packages = ["."]
-  pruneopts = ""
-  revision = "e059fcbf8a8f7ae5c3ee333d83104c3af1283924"
-  version = "v1.3.0"
+  pruneopts = "UT"
+  revision = "0b6cd31acb2bd921a5b935f569aab5c0bc49c4a4"
+  version = "v2.0.0"
 
 [[projects]]
-  digest = "1:311e01a7828f2bd5d2de716d0aae008fd369efcac0f818f94b10a2771cf662c1"
+  digest = "1:56840882539fdb14f36e39074729ecf20510a18bd09658317f1a474ea666e406"
   name = "github.com/goinbox/gomisc"
   packages = ["."]
-  pruneopts = ""
+  pruneopts = "UT"
   revision = "9a64b4b730b8a17d1fb7d34fd77b78a2f81ca92f"
   version = "v1.2.0"
 
 [[projects]]
-  digest = "1:4e40d359d504e77e97a70d020eb562ee712df7ac6feb60d07173a11c36a889c7"
+  digest = "1:396bf0dc8a092ee4ab8783d1522905240e6e5aa0f8dd7381e14a0d9bb611fc27"
   name = "github.com/goinbox/mongo"
   packages = ["."]
-  pruneopts = ""
+  pruneopts = "UT"
   revision = "948e0eb35b75187ac670948b8fcbe63985465882"
   version = "v1.0.7"
 
 [[projects]]
-  digest = "1:f6326a1a4005069cb27c4fc9a12b98a0c05c9f8e7c23b4ede20c7e990b314c94"
+  digest = "1:6d66343e88bff2f3317b72398d6d7e994bcaad2e011fbb7fd46d83b821b2dbca"
   name = "github.com/goinbox/mysql"
   packages = ["."]
-  pruneopts = ""
-  revision = "de516174499ed88e064b5f35de810ed50226b766"
-  version = "v1.1.2"
+  pruneopts = "UT"
+  revision = "35411bf5adec68a41f624ea441e961f05f982968"
+  version = "v1.2.1"
 
 [[projects]]
-  digest = "1:4cf68495e9bef403134510561e256ca5d45adc739e99c2bbd0b76faf8ec2c2ff"
+  digest = "1:726f339e2eb1bf7a6d71f601c4d9b6e670b1dba485a7b966e9cda8cbc69e6f69"
   name = "github.com/goinbox/pidfile"
   packages = ["."]
-  pruneopts = ""
+  pruneopts = "UT"
   revision = "5b7189680797ce9bc03a824b85dd0b53f5f5343b"
   version = "v1.0.1"
 
@@ -110,29 +110,29 @@
   digest = "1:b64e51f5411b32b7f7a7367244d82a5b90ac6ebf5e8cb12310b7c0f6c54e9a8d"
   name = "github.com/goinbox/pool"
   packages = ["."]
-  pruneopts = ""
+  pruneopts = "UT"
   revision = "6074e4a026e3a495c9f4995b991da53002f8b8eb"
   version = "v1.0.1"
 
 [[projects]]
-  digest = "1:42668933f3cb7b4662e7e90e3bfac39b8fcc101a0744165bead64d66be43414e"
+  digest = "1:18828cb9e0faa733e406696f3ab15825428e1266a86203dc5ccacdc3e1226bff"
   name = "github.com/goinbox/redis"
   packages = ["."]
-  pruneopts = ""
-  revision = "01018c1dc88e52785516fd850b27b5feb8682e35"
-  version = "v1.2.3"
+  pruneopts = "UT"
+  revision = "01679967f0b8c4b3c230457a23bddde22e9a8292"
+  version = "v1.2.5"
 
 [[projects]]
-  digest = "1:8c432632a230496c35a15cfdf441436f04c90e724ad99c8463ef0c82bbe93edb"
+  digest = "1:c25289f43ac4a68d88b02245742347c94f1e108c534dda442188015ff80669b3"
   name = "google.golang.org/appengine"
   packages = ["cloudsql"]
-  pruneopts = ""
-  revision = "ae0ab99deb4dc413a2b4bd6c8bdd0eb67f1e4d06"
-  version = "v1.2.0"
+  pruneopts = "UT"
+  revision = "54a98f90d1c46b7731eb8fb305d2a321c30ef610"
+  version = "v1.5.0"
 
 [[projects]]
   branch = "v2"
-  digest = "1:f54ba71a035aac92ced3e902d2bff3734a15d1891daff73ec0f90ef236750139"
+  digest = "1:988de7520a09024d5d94cd99bd545afbf194893994ec759b1cda0a0bbb6adb80"
   name = "gopkg.in/mgo.v2"
   packages = [
     ".",
@@ -141,7 +141,7 @@
     "internal/sasl",
     "internal/scram",
   ]
-  pruneopts = ""
+  pruneopts = "UT"
   revision = "9856a29383ce1c59f308dd1cf0363a79b5bef6b5"
 
 [solve-meta]

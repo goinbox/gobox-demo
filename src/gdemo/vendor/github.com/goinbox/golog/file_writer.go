@@ -8,72 +8,93 @@
 package golog
 
 import (
-	"errors"
+	"github.com/goinbox/gomisc"
+
 	"os"
 	"sync"
 	"time"
-
-	"github.com/goinbox/gomisc"
 )
 
-/**
-* @name file writer
-* @{ */
-
 type FileWriter struct {
-	path        string
-	lock        *sync.Mutex
-	closeOnFree bool
-
 	*os.File
+
+	path           string
+	lock           *sync.Mutex
+	lastTimeSecond int64
+
+	buf     []byte
+	bufsize int
+	bufpos  int
 }
 
-func NewFileWriter(path string) (*FileWriter, error) {
+func NewFileWriter(path string, bufsize int) (*FileWriter, error) {
 	file, err := openFile(path)
 	if err != nil {
 		return nil, err
 	}
 
 	return &FileWriter{
-		path:        path,
-		lock:        new(sync.Mutex),
-		closeOnFree: false,
-
 		File: file,
+
+		path:           path,
+		lock:           new(sync.Mutex),
+		lastTimeSecond: time.Now().Unix(),
+
+		buf:     make([]byte, bufsize),
+		bufsize: bufsize,
+		bufpos:  0,
 	}, nil
 }
 
-func (f *FileWriter) CloseOnFree(closeOneFree bool) *FileWriter {
-	f.closeOnFree = closeOneFree
-
-	return f
-}
-
 func (f *FileWriter) Write(msg []byte) (int, error) {
-	// file may be deleted when doing logrotate
-	if !gomisc.FileExist(f.path) {
-		f.Close()
-		f.File, _ = openFile(f.path)
+	f.lock.Lock()
+	defer f.lock.Unlock()
+
+	err := f.ensureFileExist()
+	if err != nil {
+		return 0, err
 	}
 
-	f.lock.Lock()
-	n, err := f.File.Write(msg)
-	f.lock.Unlock()
+	if f.bufsize == 0 {
+		return f.File.Write(msg)
+	}
 
-	return n, err
+	if f.appendToBuffer(msg) {
+		return len(msg), nil
+	}
+
+	err = f.flushBuffer()
+	if err != nil {
+		return 0, err
+	}
+
+	if f.appendToBuffer(msg) {
+		return len(msg), nil
+	}
+
+	return f.File.Write(msg)
 }
 
 func (f *FileWriter) Flush() error {
-	return nil
+	if f.bufsize == 0 {
+		return nil
+	}
+
+	f.lock.Lock()
+	defer f.lock.Unlock()
+
+	err := f.ensureFileExist()
+	if err != nil {
+		return err
+	}
+
+	return f.flushBuffer()
 }
 
 func (f *FileWriter) Free() {
-	if f.closeOnFree {
-		f.File.Close()
-	}
-}
+	f.ensureFileExist()
 
-func (f *FileWriter) ForceFree() {
+	f.flushBuffer()
 	f.File.Close()
 }
 
@@ -81,69 +102,47 @@ func openFile(path string) (*os.File, error) {
 	return os.OpenFile(path, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
 }
 
-/**  @} */
-
-/**
-* @name file writer with split
-* @{ */
-
-const (
-	SPLIT_BY_DAY  = 1
-	SPLIT_BY_HOUR = 2
-)
-
-type FileWithSplitWriter struct {
-	path   string
-	split  int
-	suffix string
-
-	*FileWriter
-}
-
-func NewFileWriterWithSplit(path string, split int) (*FileWithSplitWriter, error) {
-	suffix := makeFileSuffix(split)
-	if suffix == "" {
-		return nil, errors.New("Split not support")
+func (f *FileWriter) ensureFileExist() error {
+	nowTimeSecond := time.Now().Unix()
+	if f.lastTimeSecond == nowTimeSecond {
+		return nil
 	}
 
-	fw, err := NewFileWriter(path + "." + suffix)
+	if gomisc.FileExist(f.path) {
+		return nil
+	}
+
+	f.Close()
+
+	var err error
+	f.File, err = openFile(f.path)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	f := &FileWithSplitWriter{
-		path:   path,
-		split:  split,
-		suffix: suffix,
-
-		FileWriter: fw,
-	}
-
-	return f, nil
+	f.lastTimeSecond = nowTimeSecond
+	return nil
 }
 
-func (f *FileWithSplitWriter) Write(msg []byte) (int, error) {
-	suffix := makeFileSuffix(f.split)
-
-	//need split
-	if suffix != f.suffix {
-		f.Free()
-		f.FileWriter, _ = NewFileWriter(f.path + "." + suffix)
-		f.suffix = suffix
+func (f *FileWriter) appendToBuffer(msg []byte) bool {
+	after := f.bufpos + len(msg)
+	if after >= f.bufsize {
+		return false
 	}
 
-	return f.File.Write(msg)
+	copy(f.buf[f.bufpos:], msg)
+	f.bufpos = after
+
+	return true
 }
 
-func makeFileSuffix(split int) string {
-	switch split {
-	case SPLIT_BY_DAY:
-		return time.Now().Format(gomisc.TIME_FMT_STR_YEAR + gomisc.TIME_FMT_STR_MONTH + gomisc.TIME_FMT_STR_DAY)
-	case SPLIT_BY_HOUR:
-		return time.Now().Format(gomisc.TIME_FMT_STR_YEAR + gomisc.TIME_FMT_STR_MONTH + gomisc.TIME_FMT_STR_DAY + gomisc.TIME_FMT_STR_HOUR)
-	default:
-		return ""
+func (f *FileWriter) flushBuffer() error {
+	if f.bufpos == 0 {
+		return nil
 	}
-}
 
-/**  @} */
+	_, err := f.File.Write(f.buf[:f.bufpos])
+	f.bufpos = 0
+
+	return err
+}

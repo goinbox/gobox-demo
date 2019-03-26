@@ -5,10 +5,8 @@
 
     "log": {
         "level": 5,
-        "max_async_msg_num": 4096,
-        "max_buffer_num": 4096,
-        "bufsize": 1024,
-        "buffer_auto_flush_time_interval_seconds": 7
+        "async_queue_size": 1000000,
+        "bufsize": 4096
     },
 
     "pprof": {
@@ -21,15 +19,18 @@
         "gohttp_port": "9001"
     },
 
-    "redis": {
-        "host": "",
-        "pass": "",
-        "port": "",
-        "rw_timeout_seconds": 3,
-        "pool_size": 256,
-        "pool_keepalive_interval_seconds": 10,
-        "pool_client_max_idle_seconds": 30
-    },
+    "redis": [
+        {
+            "host": "",
+            "pass": "",
+            "port": "",
+            "connect_timeout_seconds": 3,
+            "rw_timeout_seconds": 3,
+            "pool_size": 256,
+            "pool_keepalive_interval_seconds": 10,
+            "pool_client_max_idle_seconds": 30
+        }
+    ],
 
     "mysql": {
         "host": "",

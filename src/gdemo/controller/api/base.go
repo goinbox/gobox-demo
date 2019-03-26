@@ -4,17 +4,11 @@ import (
 	"gdemo/conf"
 	"gdemo/controller"
 	"gdemo/errno"
-	"gdemo/gvalue"
 	"gdemo/misc"
 
 	"github.com/goinbox/exception"
 	gcontroller "github.com/goinbox/gohttp/controller"
 	"github.com/goinbox/gohttp/query"
-	"github.com/goinbox/gohttp/system"
-	"github.com/goinbox/golog"
-	"github.com/goinbox/mongo"
-	"github.com/goinbox/mysql"
-	"github.com/goinbox/redis"
 
 	"html"
 	"net/http"
@@ -71,15 +65,6 @@ type ApiContext struct {
 		Data interface{}
 		Err  *exception.Exception
 	}
-
-	MysqlClient *mysql.Client
-
-	RedisPool   *redis.Pool
-	RedisClient *redis.Client
-
-	MongoPool   *mongo.Pool
-	MongoClient *mongo.Client
-	MongoLogger golog.ILogger
 }
 
 func (a *ApiContext) Version() string {
@@ -94,35 +79,6 @@ func (a *ApiContext) Err() *exception.Exception {
 	return a.ApiData.Err
 }
 
-func (a *ApiContext) BeforeAction() {
-	a.BaseContext.BeforeAction()
-
-	var err error
-	a.MysqlClient, err = gvalue.NewMysqlClient()
-	if err != nil {
-		a.ApiData.Err = exception.New(errno.E_SYS_MYSQL_ERROR, err.Error())
-		system.JumpOutAction(JumpToApiError)
-	}
-	a.MysqlClient.SetLogger(a.AccessLogger)
-
-	a.RedisPool = gvalue.RedisClientPool
-	a.RedisClient, err = a.RedisPool.Get()
-	if err != nil {
-		a.ApiData.Err = exception.New(errno.E_SYS_REDIS_ERROR, err.Error())
-		system.JumpOutAction(JumpToApiError)
-	}
-	a.RedisClient.SetLogger(a.AccessLogger)
-
-	a.MongoPool = gvalue.MongoClientPool
-	a.MongoClient, err = a.MongoPool.Get()
-	if err != nil {
-		a.ApiData.Err = exception.New(errno.E_SYS_MONGO_ERROR, err.Error())
-		system.JumpOutAction(JumpToApiError)
-	}
-	a.MongoLogger = gvalue.NewAsyncLogger(gvalue.MongoLogWriter, a.LogFormater)
-	a.MongoClient.SetLogger(a.MongoLogger)
-}
-
 func (a *ApiContext) AfterAction() {
 	f := a.QueryValues.Get("fmt")
 	if f == "jsonp" {
@@ -135,31 +91,6 @@ func (a *ApiContext) AfterAction() {
 
 	a.RespBody = misc.ApiJson(a.ApiData.V, a.ApiData.Data, a.ApiData.Err)
 	a.BaseContext.AfterAction()
-}
-
-func (a *ApiContext) Destruct() {
-	if a.MysqlClient != nil {
-		a.MysqlClient.Free()
-	}
-
-	if a.RedisClient != nil {
-		if a.RedisClient.Connected() {
-			a.RedisClient.SetLogger(gvalue.NoopLogger)
-			a.RedisPool.Put(a.RedisClient)
-		}
-	}
-
-	if a.MongoClient != nil {
-		if a.MongoClient.Connected() {
-			a.MongoClient.SetLogger(gvalue.NoopLogger)
-			a.MongoPool.Put(a.MongoClient)
-		}
-		if a.MongoLogger != nil {
-			a.MongoLogger.Free()
-		}
-	}
-
-	a.BaseContext.Destruct()
 }
 
 type BaseController struct {

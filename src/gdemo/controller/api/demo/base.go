@@ -1,7 +1,6 @@
 package demo
 
 import (
-	"gdemo/conf"
 	"gdemo/controller/api"
 	demoSvc "gdemo/svc/demo"
 
@@ -19,12 +18,7 @@ type DemoContext struct {
 func (d *DemoContext) BeforeAction() {
 	d.ApiContext.BeforeAction()
 
-	d.demoSvc = demoSvc.NewDemoSvc(
-		d.AccessLogger,
-		d.MysqlClient,
-		conf.BaseConf.PrjName,
-		d.RedisClient,
-	)
+	d.demoSvc = demoSvc.NewDemoSvc(d.TraceId, d.AccessLogger)
 }
 
 type DemoController struct {

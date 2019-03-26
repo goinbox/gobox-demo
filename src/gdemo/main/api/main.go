@@ -8,9 +8,8 @@ import (
 
 	"gdemo/conf"
 	"gdemo/controller/api/demo"
-	"gdemo/controller/api/mongodemo"
 	"gdemo/errno"
-	"gdemo/gvalue"
+	"gdemo/resource"
 
 	"flag"
 	"fmt"
@@ -46,18 +45,18 @@ func main() {
 		}()
 	}
 
-	e = gvalue.InitLog("api")
+	e = resource.InitLog("api")
 	if e != nil {
 		fmt.Println(e.Error())
 		os.Exit(e.Errno())
 	}
 	defer func() {
-		gvalue.FreeLog()
+		resource.FreeLog()
 	}()
 
-	gvalue.InitMysql()
-	gvalue.InitRedis()
-	gvalue.InitMongo()
+	resource.InitMysql()
+	resource.InitRedis()
+	resource.InitMongo()
 
 	pf, err := pidfile.CreatePidFile(conf.BaseConf.ApiPidFile)
 	if err != nil {
@@ -68,7 +67,7 @@ func main() {
 	r := router.NewSimpleRouter()
 	r.MapRouteItems(
 		new(demo.DemoController),
-		new(mongodemo.MongoDemoController),
+		//new(mongodemo.MongoDemoController),
 	)
 
 	sys := system.NewSystem(r)

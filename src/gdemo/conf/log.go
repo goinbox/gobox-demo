@@ -1,21 +1,21 @@
 package conf
 
-import "time"
+type logConfJson struct {
+	Level          int `json:"level"`
+	AsyncQueueSize int `json:"async_queue_size"`
+	Bufsize        int `json:"bufsize"`
+}
 
 var LogConf struct {
-	RootPath                    string
-	Level                       int
-	MaxAsyncMsgNum              int
-	MaxBufferNum                int
-	Bufsize                     int
-	BufferAutoFlushTimeInterval time.Duration
+	RootPath       string
+	Level          int
+	AsyncQueueSize int
+	Bufsize        int
 }
 
 func initLogConf() {
 	LogConf.RootPath = PrjHome + "/logs"
 	LogConf.Level = scJson.Log.Level
-	LogConf.MaxAsyncMsgNum = scJson.Log.MaxAsyncMsgNum
-	LogConf.MaxBufferNum = scJson.Log.MaxBufferNum
+	LogConf.AsyncQueueSize = scJson.Log.AsyncQueueSize
 	LogConf.Bufsize = scJson.Log.Bufsize
-	LogConf.BufferAutoFlushTimeInterval = time.Duration(scJson.Log.BufferAutoFlushTimeIntervalSeconds) * time.Second
 }

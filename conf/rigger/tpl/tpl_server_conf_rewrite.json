@@ -15,11 +15,13 @@
         "gohttp_port": "${API_GOHTTP_PORT}"
     },
 
-    "redis": {
-        "host": "127.0.0.1",
-        "pass": "123",
-        "port": "6379"
-    },
+    "redis": [
+        {
+            "host": "127.0.0.1",
+            "pass": "123",
+            "port": "6379"
+        }
+    ],
 
     "mysql": {
         "host": "127.0.0.1",

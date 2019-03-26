@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"gdemo/gvalue"
+	"gdemo/resource"
 
 	"github.com/goinbox/encoding"
 	"github.com/goinbox/gohttp/controller"
@@ -37,9 +37,8 @@ type BaseContext struct {
 		Ip   string
 		Port string
 	}
-	Rid []byte
 
-	LogFormater  golog.IFormater
+	TraceId      []byte
 	AccessLogger golog.ILogger
 }
 
@@ -70,10 +69,8 @@ func (b *BaseContext) AfterAction() {
 func (b *BaseContext) Destruct() {
 	b.RespBody = nil
 	b.QueryValues = nil
-	b.Rid = nil
 
 	b.AccessLogger.Free()
-	b.LogFormater = nil
 }
 
 type BaseController struct {
@@ -94,16 +91,20 @@ func (b *BaseController) NewActionContext(req *http.Request, respWriter http.Res
 	context.QueryValues = req.Form
 	context.RemoteRealAddr.Ip, context.RemoteRealAddr.Port = b.parseRemoteAddr(req)
 
+	raddr := []byte(context.RemoteRealAddr.Ip + ":" + context.RemoteRealAddr.Port)
 	now := time.Now()
 	timeInt := now.UnixNano()
 	randInt := gomisc.RandByTime(&now)
 
-	ridStr := context.RemoteRealAddr.Ip + ":" + context.RemoteRealAddr.Port + "," + strconv.FormatInt(timeInt, 10) + "," + strconv.FormatInt(randInt, 10)
-	context.Rid = encoding.Base64Encode([]byte(ridStr))
+	context.TraceId = encoding.Base64Encode(gomisc.AppendBytes(
+		raddr, []byte(","),
+		[]byte(strconv.FormatInt(timeInt, 10)+","),
+		[]byte(strconv.FormatInt(randInt, 10))))
 
-	context.LogFormater = golog.NewWebFormater(context.Rid, []byte(context.RemoteRealAddr.Ip))
+	context.AccessLogger = resource.NewLogger(resource.AccessLogWriter,
+		golog.NewSimpleFormater().SetAddress(raddr).SetTraceId(context.TraceId))
+
 	context.RespWriter.Header().Add("X-Powered-By", "gohttp")
-	context.AccessLogger = gvalue.NewAsyncLogger(gvalue.AccessLogWriter, context.LogFormater)
 
 	return context
 }

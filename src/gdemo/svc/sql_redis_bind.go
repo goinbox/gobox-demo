@@ -7,135 +7,129 @@ import (
 	"strconv"
 )
 
-var LogKindSqlRedisBindSvc = []byte("SqlRedisBindSvc")
-
 type SqlRedisBindSvc struct {
-	*BaseSvc
-	*SqlBaseSvc
-	*RedisBaseSvc
-
-	RedisKeyPrefix string
+	*SqlSvc
+	*RedisSvc
 }
 
-func NewSqlRedisBindSvc(bs *BaseSvc, ss *SqlBaseSvc, rs *RedisBaseSvc, redisKeyPrefix string) *SqlRedisBindSvc {
-	return &SqlRedisBindSvc{bs, ss, rs, redisKeyPrefix}
+func (s *SqlRedisBindSvc) RedisKeyForEntity(id int64, prefix, entityName string) string {
+	return prefix + "_entity_" + entityName + "_id_" + strconv.FormatInt(id, 10)
 }
 
-func (s *SqlRedisBindSvc) RedisKeyForEntity(id int64) string {
-	return s.RedisKeyPrefix + "_entity_" + s.EntityName + "_id_" + strconv.FormatInt(id, 10)
+func (s *SqlRedisBindSvc) RedisKeyForTotalRows(tableName, redisKeyPrefix string) string {
+	return redisKeyPrefix + "_total_rows_" + tableName
 }
 
-func (s *SqlRedisBindSvc) Insert(tableName string, colNames []string, expireSeconds int64, entities ...interface{}) ([]int64, error) {
-	ids, err := s.SqlBaseSvc.Insert(tableName, colNames, entities...)
+func (s *SqlRedisBindSvc) Insert(tableName, entityName, redisKeyPrefix string, colNames []string, expireSeconds int64, entities ...interface{}) ([]int64, error, error) {
+	ids, err := s.SqlSvc.Insert(tableName, entityName, colNames, entities...)
 	if err != nil {
-		return nil, err
+		return nil, err, nil
 	}
 
+	var rerr error
 	for i, id := range ids {
-		s.SaveHashEntityToRedis(s.RedisKeyForEntity(id), entities[i], expireSeconds)
+		rerr = s.RedisSvc.SaveHashEntity(s.RedisKeyForEntity(id, redisKeyPrefix, entityName), entities[i], expireSeconds)
+		if rerr != nil {
+			break
+		}
 	}
 
-	return ids, nil
+	return ids, nil, rerr
 }
 
-func (s *SqlRedisBindSvc) GetById(tableName string, id, expireSeconds int64, entityPtr interface{}) (bool, error) {
-	rk := s.RedisKeyForEntity(id)
+func (s *SqlRedisBindSvc) GetById(tableName, entityName, redisKeyPrefix string, id, expireSeconds int64, entityPtr interface{}) (bool, error, error) {
+	rk := s.RedisKeyForEntity(id, redisKeyPrefix, entityName)
 
-	find, err := s.GetHashEntityFromRedis(rk, entityPtr)
-	if err != nil {
-		return s.SqlBaseSvc.GetById(tableName, id, entityPtr)
+	find, rerr := s.RedisSvc.GetHashEntity(rk, entityPtr)
+	if rerr != nil {
+		find, merr := s.SqlSvc.GetById(tableName, id, entityPtr)
+		return find, merr, rerr
 	}
 	if find {
-		return true, nil
+		return true, nil, nil
 	}
 
-	find, err = s.SqlBaseSvc.GetById(tableName, id, entityPtr)
-	if err != nil {
-		s.ErrorLog(LogKindSqlRedisBindSvc, []byte("getById from mysql error: "+err.Error()))
-		return false, err
+	find, merr := s.SqlSvc.GetById(tableName, id, entityPtr)
+	if merr != nil {
+		return false, merr, nil
 	}
 	if !find {
-		return false, nil
+		return false, nil, nil
 	}
 
-	s.SaveHashEntityToRedis(rk, entityPtr, expireSeconds)
+	rerr = s.RedisSvc.SaveHashEntity(rk, entityPtr, expireSeconds)
 
-	return true, nil
+	return true, nil, rerr
 }
 
-func (s *SqlRedisBindSvc) DeleteById(tableName string, id int64) (bool, error) {
-	result := s.Dao.DeleteById(tableName, id)
+func (s *SqlRedisBindSvc) DeleteById(tableName, entityName, redisKeyPrefix string, id int64) (bool, error, error) {
+	result := s.Dao().DeleteById(tableName, id)
+	defer s.SqlSvc.SendBackClient()
+
 	if result.Err != nil {
-		s.ErrorLog(LogKindSqlRedisBindSvc, []byte("delete from mysql error: "+result.Err.Error()))
-		return false, result.Err
+		return false, result.Err, nil
 	}
 
 	if result.RowsAffected == 0 {
-		return false, nil
+		return false, nil, nil
 	}
 
-	rk := s.RedisKeyForEntity(id)
-	err := s.Rclient.Do("del", rk).Err
-	if err != nil {
-		s.WarningLog(LogKindSqlRedisBindSvc, []byte("del key "+rk+" from redis failed: "+err.Error()))
-	}
+	rk := s.RedisKeyForEntity(id, redisKeyPrefix, entityName)
+	err := s.RedisSvc.Client().Do("del", rk).Err
+	defer s.RedisSvc.SendBackClient()
 
-	return true, nil
+	return true, nil, err
 }
 
-func (s *SqlRedisBindSvc) UpdateById(tableName string, id int64, newEntityPtr interface{}, updateFields map[string]bool, expireSeconds int64) (bool, error) {
-	setItems, err := s.SqlBaseSvc.UpdateById(tableName, id, newEntityPtr, updateFields)
+func (s *SqlRedisBindSvc) UpdateById(tableName, entityName, redisKeyPrefix string, id int64, newEntityPtr interface{}, updateFields map[string]bool, expireSeconds int64) ([]*mysql.SqlColQueryItem, error, error) {
+	setItems, err := s.SqlSvc.UpdateById(tableName, id, newEntityPtr, updateFields)
 
 	if err != nil {
-		return false, err
+		return nil, err, nil
 	}
 	if setItems == nil {
-		return false, nil
+		return nil, nil, nil
 	}
 
-	s.updateSqlHashEntity(s.RedisKeyForEntity(id), setItems, expireSeconds)
+	err = s.UpdateSqlHashEntity(s.RedisKeyForEntity(id, redisKeyPrefix, entityName), setItems, expireSeconds)
 
-	return true, nil
+	return setItems, nil, err
 }
 
-func (s *SqlRedisBindSvc) TotalRows(tableName string, expireSeconds int64) (int64, error) {
-	rk := s.redisKeyForTotalRows(tableName)
+func (s *SqlRedisBindSvc) TotalRows(tableName, redisKeyPrefix string, expireSeconds int64) (int64, error, error) {
+	rk := s.RedisKeyForTotalRows(tableName, redisKeyPrefix)
 
-	reply := s.Rclient.Do("get", rk)
-	if reply.Err == nil {
+	rclient := s.RedisSvc.Client()
+	defer s.RedisSvc.SendBackClient()
+
+	reply := rclient.Do("get", rk)
+	rerr := reply.Err
+	if rerr == nil {
 		if !reply.SimpleReplyIsNil() {
 			total, err := reply.Int64()
 			if err == nil {
-				return total, err
+				return total, nil, nil
 			}
-			s.Rclient.Free()
-			s.WarningLog(LogKindSqlRedisBindSvc, []byte("get "+rk+" reply.Int64() error: "+err.Error()))
-			s.Rclient.Do("del", rk)
+			rclient.Do("del", rk)
 		}
-	} else {
-		s.Rclient.Free()
-		s.WarningLog(LogKindSqlRedisBindSvc, []byte("get "+rk+" from redis error: "+reply.Err.Error()))
 	}
 
-	total, err := s.Dao.SimpleTotalAnd(tableName)
-	if err != nil {
-		s.ErrorLog(LogKindSqlRedisBindSvc, []byte("mysql error: "+err.Error()))
-		return 0, err
+	total, merr := s.Dao().SimpleTotalAnd(tableName)
+	defer s.SqlSvc.SendBackClient()
+
+	if merr != nil {
+		return 0, merr, rerr
 	}
 
-	s.Rclient.Do("set", rk, total, "ex", expireSeconds)
+	reply = rclient.Do("set", rk, total, "ex", expireSeconds)
 
-	return total, nil
+	return total, nil, rerr
 }
 
-func (s *SqlRedisBindSvc) redisKeyForTotalRows(tableName string) string {
-	return s.RedisKeyPrefix + "_total_rows_" + tableName
-}
-
-func (s *SqlRedisBindSvc) updateSqlHashEntity(key string, setItems []*mysql.SqlColQueryItem, expireSeconds int64) error {
+func (s *SqlRedisBindSvc) UpdateSqlHashEntity(redisKey string, setItems []*mysql.SqlColQueryItem, expireSeconds int64) error {
 	cnt := len(setItems)*2 + 1
 	args := make([]interface{}, cnt)
-	args[0] = key
+	args[0] = redisKey
 
 	for si, ai := 0, 1; ai < cnt; si++ {
 		args[ai] = setItems[si].Name
@@ -144,18 +138,20 @@ func (s *SqlRedisBindSvc) updateSqlHashEntity(key string, setItems []*mysql.SqlC
 		ai++
 	}
 
-	s.Rclient.Send("hmset", args...)
+	rclient := s.RedisSvc.Client()
+	defer s.RedisSvc.SendBackClient()
+
+	rclient.Send("hmset", args...)
 	if expireSeconds > 0 {
-		s.Rclient.Send("expire", expireSeconds)
+		rclient.Send("expire", redisKey, expireSeconds)
 	}
-	replies, errIndexes := s.Rclient.ExecPipelining()
+	replies, errIndexes := rclient.ExecPipelining()
 	if len(errIndexes) != 0 {
-		s.Rclient.Free()
-		msg := "hmset key " + key + " to redis error:"
+		rclient.Free()
+		msg := "hmset key " + redisKey + " to redis error:"
 		for _, i := range errIndexes {
 			msg += " " + replies[i].Err.Error()
 		}
-		s.WarningLog(LogKindSqlRedisBindSvc, []byte(msg))
 		return errors.New(msg)
 	}
 

@@ -9,7 +9,7 @@ type MongoIdGenter struct {
 	client *mongo.Client
 }
 
-type IdGenter struct {
+type IdGenterItem struct {
 	Id    bson.ObjectId `bson:"_id,omitempty"`
 	MaxId int64         `bson:"max_id"`
 }
@@ -29,7 +29,7 @@ func (m *MongoIdGenter) GenId(name string) (int64, error) {
 		return 0, err
 	}
 
-	entity := new(IdGenter)
+	entity := new(IdGenterItem)
 	err = m.client.ConvertBsonToStruct(result, entity)
 	if err != nil {
 		return 0, err

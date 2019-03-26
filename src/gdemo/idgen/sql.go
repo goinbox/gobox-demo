@@ -18,6 +18,12 @@ func NewSqlIdGenter(client *mysql.Client) *SqlIdGenter {
 	}
 }
 
+func (s *SqlIdGenter) SetClient(client *mysql.Client) *SqlIdGenter {
+	s.client = client
+
+	return s
+}
+
 func (s *SqlIdGenter) GenId(name string) (int64, error) {
 	_, err := s.client.Exec(s.updateSql, name)
 	if err != nil {

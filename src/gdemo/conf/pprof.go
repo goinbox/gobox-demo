@@ -1,5 +1,10 @@
 package conf
 
+type pprofConfJson struct {
+	OnlineEnableHost string `json:"online_enable_host"`
+	Port             string `json:"port"`
+}
+
 var PprofConf struct {
 	Enable bool
 	Port   string

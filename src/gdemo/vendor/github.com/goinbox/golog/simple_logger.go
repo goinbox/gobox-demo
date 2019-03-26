@@ -6,49 +6,37 @@
 
 package golog
 
-import (
-	"errors"
-	"sync"
-)
-
 type simpleLogger struct {
-	globalLevel  int
-	w            IWriter
-	levelWriters map[int]IWriter
-	formater     IFormater
+	writer   IWriter
+	formater IFormater
 
-	lock *sync.Mutex
+	glevel         int
+	autoFreeWriter bool
 }
 
-func NewSimpleLogger(writer IWriter, globalLevel int, formater IFormater) (*simpleLogger, error) {
-	_, ok := LogLevels[globalLevel]
-	if !ok {
-		return nil, errors.New("Global level not exists")
+func NewSimpleLogger(writer IWriter, formater IFormater) *simpleLogger {
+	return &simpleLogger{
+		writer:   writer,
+		formater: formater,
+
+		glevel:         LEVEL_INFO,
+		autoFreeWriter: false,
+	}
+}
+
+func (s *simpleLogger) SetLogLevel(level int) *simpleLogger {
+	_, ok := LogLevels[level]
+	if ok {
+		s.glevel = level
 	}
 
-	s := &simpleLogger{
-		globalLevel:  globalLevel,
-		w:            writer,
-		levelWriters: make(map[int]IWriter),
+	return s
+}
 
-		lock: new(sync.Mutex),
-	}
+func (s *simpleLogger) SetAutoFreeWriter(autoFreeWriter bool) *simpleLogger {
+	s.autoFreeWriter = autoFreeWriter
 
-	noopWriter := new(NoopWriter)
-	for level, _ := range LogLevels {
-		if level > globalLevel {
-			s.levelWriters[level] = noopWriter
-		} else {
-			s.levelWriters[level] = s.w
-		}
-	}
-
-	if formater == nil {
-		formater = new(NoopFormater)
-	}
-	s.formater = formater
-
-	return s, nil
+	return s
 }
 
 func (s *simpleLogger) Debug(msg []byte) {
@@ -84,24 +72,21 @@ func (s *simpleLogger) Emergency(msg []byte) {
 }
 
 func (s *simpleLogger) Log(level int, msg []byte) error {
-	writer, ok := s.levelWriters[level]
-	if !ok {
-		return errors.New("Level not exists")
+	if level > s.glevel {
+		return nil
 	}
 
-	msg = s.formater.Format(level, msg)
+	_, err := s.writer.Write(s.formater.Format(level, append(msg, '\n')))
 
-	s.lock.Lock()
-	writer.Write(msg)
-	s.lock.Unlock()
-
-	return nil
+	return err
 }
 
 func (s *simpleLogger) Flush() error {
-	return s.w.Flush()
+	return s.writer.Flush()
 }
 
 func (s *simpleLogger) Free() {
-	s.w.Free()
+	if s.autoFreeWriter {
+		s.writer.Free()
+	}
 }

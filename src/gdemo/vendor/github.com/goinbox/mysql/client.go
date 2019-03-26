@@ -49,8 +49,13 @@ func NewClient(config *Config, logger golog.ILogger) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) SetLogger(logger golog.ILogger) {
+func (c *Client) SetLogger(logger golog.ILogger) *Client {
+	if logger == nil {
+		logger = new(golog.NoopLogger)
+	}
 	c.logger = logger
+
+	return c
 }
 
 func (c *Client) Closed() bool {

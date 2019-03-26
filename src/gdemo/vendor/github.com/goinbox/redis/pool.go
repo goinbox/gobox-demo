@@ -45,7 +45,11 @@ func (p *Pool) Get() (*Client, error) {
 }
 
 func (p *Pool) Put(client *Client) error {
-	return p.pl.Put(client)
+	if client.Connected() {
+		return p.pl.Put(client)
+	}
+
+	return nil
 }
 
 func (p *Pool) newConn() (pool.IConn, error) {

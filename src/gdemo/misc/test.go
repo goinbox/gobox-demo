@@ -1,14 +1,14 @@
 package misc
 
 import (
+	"fmt"
+	"gdemo/conf"
+	"gdemo/resource"
 	"github.com/goinbox/color"
 	"github.com/goinbox/golog"
-	"github.com/goinbox/mongo"
-	"github.com/goinbox/mysql"
-	"github.com/goinbox/redis"
-
-	"fmt"
+	"os"
 	"reflect"
+	"sync"
 )
 
 func PrintComplexObjectForTest(v interface{}) {
@@ -24,33 +24,25 @@ func PrintComplexObjectForTest(v interface{}) {
 	}
 }
 
-func MysqlTestClient() *mysql.Client {
-	config := mysql.NewConfig("root", "123", "127.0.0.1", "3306", "gobox-demo")
+var initLock sync.Mutex
+var testInit bool = false
+var TestLogger golog.ILogger = golog.NewSimpleLogger(
+	golog.NewConsoleWriter(),
+	golog.NewConsoleFormater(golog.NewSimpleFormater())).
+	SetLogLevel(golog.LEVEL_DEBUG)
 
-	w, _ := golog.NewFileWriter("/tmp/test_mysql.log")
-	logger, _ := golog.NewSimpleLogger(w, golog.LEVEL_INFO, golog.NewSimpleFormater())
+func InitTestSystem() {
+	initLock.Lock()
+	defer initLock.Unlock()
 
-	client, _ := mysql.NewClient(config, logger)
+	if testInit {
+		return
+	}
 
-	return client
-}
+	_ = conf.Init(os.Getenv("GOPATH"))
+	_ = resource.InitLog("test")
+	resource.InitRedis()
+	resource.InitMysql()
 
-func RedisTestClient() *redis.Client {
-	config := redis.NewConfig("127.0.0.1", "6379", "123")
-
-	w, _ := golog.NewFileWriter("/tmp/test_redis.log")
-	logger, _ := golog.NewSimpleLogger(w, golog.LEVEL_INFO, golog.NewSimpleFormater())
-
-	return redis.NewClient(config, logger)
-}
-
-func MongoTestClient() *mongo.Client {
-	config := mongo.NewConfig([]string{"localhost:myport"}, "myuser", "mypass", "mydb")
-
-	w, _ := golog.NewFileWriter("/tmp/test_mongo.log")
-	logger, _ := golog.NewSimpleLogger(w, golog.LEVEL_INFO, golog.NewSimpleFormater())
-
-	client := mongo.NewClient(config, logger)
-
-	return client
+	testInit = true
 }

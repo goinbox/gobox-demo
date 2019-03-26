@@ -6,63 +6,46 @@ import (
 )
 
 type BaseSvc struct {
-	accessLogger golog.ILogger
+	TraceId      []byte
+	AccessLogger golog.ILogger
 }
 
-func NewBaseSvc() *BaseSvc {
-	return &BaseSvc{
-		accessLogger: new(golog.NoopLogger),
-	}
+func (b *BaseSvc) DebugLog(point, msg []byte) {
+	b.AccessLogger.Debug(b.makeLogMsg(point, msg))
 }
 
-func (b *BaseSvc) SetAccessLogger(logger golog.ILogger) *BaseSvc {
-	if logger != nil {
-		b.accessLogger = logger
-	}
-
-	return b
+func (b *BaseSvc) InfoLog(point, msg []byte) {
+	b.AccessLogger.Info(b.makeLogMsg(point, msg))
 }
 
-func (b *BaseSvc) AccessLogger() golog.ILogger {
-	return b.accessLogger
+func (b *BaseSvc) NoticeLog(point, msg []byte) {
+	b.AccessLogger.Notice(b.makeLogMsg(point, msg))
 }
 
-func (b *BaseSvc) DebugLog(kind, msg []byte) {
-	b.accessLogger.Debug(b.makeLogMsg(kind, msg))
+func (b *BaseSvc) WarningLog(point, msg []byte) {
+	b.AccessLogger.Warning(b.makeLogMsg(point, msg))
 }
 
-func (b *BaseSvc) InfoLog(kind, msg []byte) {
-	b.accessLogger.Info(b.makeLogMsg(kind, msg))
+func (b *BaseSvc) ErrorLog(point, msg []byte) {
+	b.AccessLogger.Error(b.makeLogMsg(point, msg))
 }
 
-func (b *BaseSvc) NoticeLog(kind, msg []byte) {
-	b.accessLogger.Notice(b.makeLogMsg(kind, msg))
+func (b *BaseSvc) CriticalLog(point, msg []byte) {
+	b.AccessLogger.Critical(b.makeLogMsg(point, msg))
 }
 
-func (b *BaseSvc) WarningLog(kind, msg []byte) {
-	b.accessLogger.Warning(b.makeLogMsg(kind, msg))
+func (b *BaseSvc) AlertLog(point, msg []byte) {
+	b.AccessLogger.Alert(b.makeLogMsg(point, msg))
 }
 
-func (b *BaseSvc) ErrorLog(kind, msg []byte) {
-	b.accessLogger.Error(b.makeLogMsg(kind, msg))
+func (b *BaseSvc) EmergencyLog(point, msg []byte) {
+	b.AccessLogger.Emergency(b.makeLogMsg(point, msg))
 }
 
-func (b *BaseSvc) CriticalLog(kind, msg []byte) {
-	b.accessLogger.Critical(b.makeLogMsg(kind, msg))
-}
-
-func (b *BaseSvc) AlertLog(kind, msg []byte) {
-	b.accessLogger.Alert(b.makeLogMsg(kind, msg))
-}
-
-func (b *BaseSvc) EmergencyLog(kind, msg []byte) {
-	b.accessLogger.Emergency(b.makeLogMsg(kind, msg))
-}
-
-func (b *BaseSvc) makeLogMsg(kind, msg []byte) []byte {
+func (b *BaseSvc) makeLogMsg(point, msg []byte) []byte {
 	return gomisc.AppendBytes(
 		[]byte("["),
-		kind,
+		point,
 		[]byte("]"),
 		[]byte("\t"),
 		msg,

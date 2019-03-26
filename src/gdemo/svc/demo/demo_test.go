@@ -4,7 +4,6 @@ import (
 	"gdemo/misc"
 	"gdemo/svc"
 
-	"github.com/goinbox/golog"
 	"github.com/goinbox/gomisc"
 	"github.com/goinbox/mysql"
 
@@ -19,8 +18,9 @@ type testQueryParamsStruct struct {
 }
 
 func TestDemoSvc(t *testing.T) {
-	logger, _ := golog.NewSimpleLogger(golog.NewStdoutWriter(), golog.LEVEL_DEBUG, golog.NewConsoleFormater())
-	demoSvc := NewDemoSvc(logger, misc.MysqlTestClient(), "gdemo", misc.RedisTestClient())
+	misc.InitTestSystem()
+
+	demoSvc := NewDemoSvc([]byte("tracedemosvc"), misc.TestLogger)
 
 	ids, err := demoSvc.Insert(
 		&DemoEntity{Name: "a1", Status: 0},
@@ -66,6 +66,6 @@ func TestDemoSvc(t *testing.T) {
 		t.Log("listByIds", entity, err)
 	}
 
-	total, err := demoSvc.TotalRows(demoSvc.EntityName, DEF_DEMO_TOTAL_ROWS_CACHE_EXPIRE_SECONDS)
-	t.Log("total:", total, err)
+	total, merr, rerr := demoSvc.TotalRows(demoSvc.EntityName, demoSvc.RedisKeyPrefix, DEF_DEMO_TOTAL_ROWS_CACHE_EXPIRE_SECONDS)
+	t.Log("total:", total, merr, rerr)
 }

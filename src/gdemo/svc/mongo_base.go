@@ -114,7 +114,7 @@ func (s *MongoBaseSvc) Insert(tableName string, colNames []string, entities ...i
 			err := s.FillBaseEntityForInsert(baseEntity, rev)
 			if err != nil {
 				s.Mclient.Free()
-				s.AccessLogger().Error([]byte("fill " + ENTITY_MONGO_BASE + " error: " + err.Error()))
+				s.AccessLogger.Error([]byte("fill " + ENTITY_MONGO_BASE + " error: " + err.Error()))
 				return nil, err
 			}
 
@@ -128,7 +128,7 @@ func (s *MongoBaseSvc) Insert(tableName string, colNames []string, entities ...i
 
 	err := s.Dao.InsertRows(tableName, colNames, colsValues...)
 	if err != nil {
-		s.AccessLogger().Error([]byte("insert mongo error: " + err.Error()))
+		s.AccessLogger.Error([]byte("insert mongo error: " + err.Error()))
 		return nil, err
 	}
 
@@ -170,7 +170,7 @@ func (s *MongoBaseSvc) UpdateById(tableName string, id interface{}, newEntityPtr
 	find, err := s.GetById(oldEntity, tableName, id)
 	if err != nil {
 		s.Mclient.Free()
-		s.AccessLogger().Error([]byte("read mysql error"))
+		s.AccessLogger.Error([]byte("read mysql error"))
 		return nil, err
 	}
 	if !find {
@@ -248,7 +248,7 @@ func (s *MongoBaseSvc) SelectAll(entityListPtr interface{}, tableName string, mq
 
 	if err != nil {
 		s.Mclient.Free()
-		s.AccessLogger().Error([]byte("list from mongo error:" + err.Error()))
+		s.AccessLogger.Error([]byte("list from mongo error:" + err.Error()))
 		return err
 	}
 

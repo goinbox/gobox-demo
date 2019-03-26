@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	DEFAULT_CONNECT_TIMEOUT = 30 * time.Second
+	DEFAULT_CONNECT_TIMEOUT = 10 * time.Second
 	DEFAULT_READ_TIMEOUT    = 10 * time.Second
 	DEFAULT_WRITE_TIMEOUT   = 10 * time.Second
 )

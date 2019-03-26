@@ -25,7 +25,7 @@ func (s *SqlDao) Insert(tableName string, colNames []string, colsValues ...[]int
 	sqb.Insert(tableName, colNames...).
 		Values(colsValues...)
 
-	return convertSqlResultToSqlExecResult(s.Exec(sqb.Query(), sqb.Args()...))
+	return ConvertSqlResultToSqlExecResult(s.Exec(sqb.Query(), sqb.Args()...))
 }
 
 func (s *SqlDao) DeleteById(tableName string, id int64) *SqlExecResult {
@@ -33,7 +33,7 @@ func (s *SqlDao) DeleteById(tableName string, id int64) *SqlExecResult {
 	sqb.Delete(tableName).
 		WhereConditionAnd(NewSqlColQueryItem("id", SQL_COND_EQUAL, id))
 
-	return convertSqlResultToSqlExecResult(s.Exec(sqb.Query(), sqb.Args()...))
+	return ConvertSqlResultToSqlExecResult(s.Exec(sqb.Query(), sqb.Args()...))
 }
 
 func (s *SqlDao) UpdateById(tableName string, id int64, setItems ...*SqlColQueryItem) *SqlExecResult {
@@ -42,7 +42,7 @@ func (s *SqlDao) UpdateById(tableName string, id int64, setItems ...*SqlColQuery
 		Set(setItems...).
 		WhereConditionAnd(NewSqlColQueryItem("id", SQL_COND_EQUAL, id))
 
-	return convertSqlResultToSqlExecResult(s.Exec(sqb.Query(), sqb.Args()...))
+	return ConvertSqlResultToSqlExecResult(s.Exec(sqb.Query(), sqb.Args()...))
 }
 
 func (s *SqlDao) SelectById(tableName string, what string, id int64) *sql.Row {
@@ -104,7 +104,7 @@ func (s *SqlDao) SimpleTotalOr(tableName string, condItems ...*SqlColQueryItem) 
 	return total, err
 }
 
-func convertSqlResultToSqlExecResult(sqlResult sql.Result, err error) *SqlExecResult {
+func ConvertSqlResultToSqlExecResult(sqlResult sql.Result, err error) *SqlExecResult {
 	execResult := new(SqlExecResult)
 	if err != nil {
 		execResult.Err = err
