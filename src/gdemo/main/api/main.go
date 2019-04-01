@@ -1,15 +1,15 @@
 package main
 
 import (
-	"github.com/goinbox/gohttp/gracehttp"
-	"github.com/goinbox/gohttp/router"
-	"github.com/goinbox/gohttp/system"
-	"github.com/goinbox/pidfile"
-
 	"gdemo/conf"
 	"gdemo/controller/api/demo"
 	"gdemo/errno"
 	"gdemo/resource"
+
+	"github.com/goinbox/gohttp/gracehttp"
+	"github.com/goinbox/gohttp/router"
+	"github.com/goinbox/gohttp/system"
+	"github.com/goinbox/pidfile"
 
 	"flag"
 	"fmt"
