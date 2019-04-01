@@ -6,7 +6,7 @@ upstream ${API_UPSTREAM} {
 
 server {
     listen ${NGX_HTTPS_PORT} ssl;
-    server_name ${API_HTTPS_DOMAIN};
+    server_name ${API_HTTP_DOMAIN};
     server_tokens on;
 
     keepalive_timeout 5;
@@ -16,8 +16,8 @@ server {
 
     include ${PRJ_HOME}/conf/http/general/gzip.conf;
 
-    access_log logs/${API_HTTPS_ACCESS_LOG} combinedio buffer=${NGX_ACCESS_LOG_BUFFER}k;
-    error_log  logs/${API_HTTPS_ERROR_LOG};
+    access_log logs/${API_HTTP_ACCESS_LOG} combinedio buffer=${NGX_ACCESS_LOG_BUFFER}k;
+    error_log  logs/${API_HTTP_ERROR_LOG};
 
     ssl_session_cache shared:GDEMO_SSL:100m;
     ssl_certificate ${PRJ_HOME}/conf/http/ssl/gdemo.crt.dev;

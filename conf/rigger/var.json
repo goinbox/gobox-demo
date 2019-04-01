@@ -25,15 +25,12 @@
     },
 
     "API_HTTP_DOMAIN": "${USER}.gdemo.com",
-    "API_HTTPS_DOMAIN": "${USER}.gdemo.com",
     "API_UPSTREAM": "gdemo_golang_${USER}",
     "API_GOHTTP_PORT": "__MATH__(6001+${UID})",
     "PPROF_PORT": "__MATH__(6060+${UID})",
 
-    "API_HTTP_ACCESS_LOG": "${API_HTTP_DOMAIN}.log",
-    "API_HTTPS_ACCESS_LOG": "${API_HTTPS_DOMAIN}.log",
-    "API_HTTP_ERROR_LOG": "${API_HTTP_DOMAIN}.error.log",
-    "API_HTTPS_ERROR_LOG": "${API_HTTPS_DOMAIN}.error.log",
+    "API_HTTP_ACCESS_LOG": "${USER}.gdemo.log",
+    "API_HTTP_ERROR_LOG": "${USER}.gdemo.error.log",
     "API_HTTP_CONF_TPL": "${RIGGER_TPL_ROOT}/tpl_api_http.conf.ngx",
     "API_HTTP_CONF_DST": "${PRJ_HOME}/conf/http/${USER}_api_http.conf.ngx",
     "API_HTTP_CONF_LN": "${NGX_DATA_ROOT}/conf/include/${API_HTTP_DOMAIN}.conf"

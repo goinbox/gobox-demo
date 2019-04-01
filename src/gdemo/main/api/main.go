@@ -56,7 +56,7 @@ func main() {
 
 	resource.InitMysql()
 	resource.InitRedis()
-	resource.InitMongo()
+	//resource.InitMongo()
 
 	pf, err := pidfile.CreatePidFile(conf.BaseConf.ApiPidFile)
 	if err != nil {
