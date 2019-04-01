@@ -32,8 +32,8 @@
 
     "API_HTTP_ACCESS_LOG": "${API_HTTP_DOMAIN}.log",
     "API_HTTPS_ACCESS_LOG": "${API_HTTPS_DOMAIN}.log",
-    "API_HTTP_ERROR_LOG": "${API_HTTP_DOMAIN}.log.err",
-    "API_HTTPS_ERROR_LOG": "${API_HTTPS_DOMAIN}.log.err",
+    "API_HTTP_ERROR_LOG": "${API_HTTP_DOMAIN}.error.log",
+    "API_HTTPS_ERROR_LOG": "${API_HTTPS_DOMAIN}.error.log",
     "API_HTTP_CONF_TPL": "${RIGGER_TPL_ROOT}/tpl_api_http.conf.ngx",
     "API_HTTP_CONF_DST": "${PRJ_HOME}/conf/http/${USER}_api_http.conf.ngx",
     "API_HTTP_CONF_LN": "${NGX_DATA_ROOT}/conf/include/${API_HTTP_DOMAIN}.conf"

@@ -20,7 +20,7 @@ curl "$urlPrefix/edit?id=101&name=bbb&status=1" -H "$headerHost"
 echo ""
 echo "====== test get ======"
 
-curl "$urlPrefix/get?id=106" -H "$headerHost"
+curl "$urlPrefix/get?id=61" -H "$headerHost"
 
 echo ""
 echo "====== test del ======"
