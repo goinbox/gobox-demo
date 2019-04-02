@@ -1,9 +1,9 @@
 package controller
 
 import (
+	"gdemo/idgen"
 	"gdemo/resource"
 
-	"github.com/goinbox/encoding"
 	"github.com/goinbox/gohttp/controller"
 	"github.com/goinbox/golog"
 	"github.com/goinbox/gomisc"
@@ -12,9 +12,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strconv"
 	"strings"
-	"time"
 )
 
 const (
@@ -91,16 +89,9 @@ func (b *BaseController) NewActionContext(req *http.Request, respWriter http.Res
 	context.QueryValues = req.Form
 	context.RemoteRealAddr.Ip, context.RemoteRealAddr.Port = b.parseRemoteAddr(req)
 
+	context.TraceId, _ = idgen.DefaultTraceIdGenter.GenId(context.RemoteRealAddr.Ip, context.RemoteRealAddr.Port)
+
 	raddr := []byte(context.RemoteRealAddr.Ip + ":" + context.RemoteRealAddr.Port)
-	now := time.Now()
-	timeInt := now.UnixNano()
-	randInt := gomisc.RandByTime(&now)
-
-	context.TraceId = encoding.Base64Encode(gomisc.AppendBytes(
-		raddr, []byte(","),
-		[]byte(strconv.FormatInt(timeInt, 10)+","),
-		[]byte(strconv.FormatInt(randInt, 10))))
-
 	context.AccessLogger = resource.NewLogger(resource.AccessLogWriter,
 		golog.NewSimpleFormater().SetAddress(raddr).SetTraceId(context.TraceId))
 

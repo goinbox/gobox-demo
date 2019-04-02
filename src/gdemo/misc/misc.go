@@ -1,59 +1,10 @@
 package misc
 
 import (
-	"gdemo/errno"
-
-	"github.com/goinbox/exception"
-	"github.com/goinbox/gomisc"
-
-	"encoding/json"
 	"net/smtp"
 	"reflect"
 	"strings"
 )
-
-type ApiData struct {
-	Errno int    `json:"errno"`
-	Msg   string `json:"msg"`
-	V     string `json:"v"`
-
-	Data interface{} `json:"data"`
-}
-
-func ApiJson(v string, data interface{}, e *exception.Exception) []byte {
-	result := &ApiData{
-		Errno: errno.SUCCESS,
-		Msg:   "",
-		V:     v,
-
-		Data: data,
-	}
-	if e != nil {
-		result.Errno = e.Errno()
-		result.Msg = e.Msg()
-	}
-
-	aj, err := json.Marshal(result)
-	if err != nil {
-		result.Errno = errno.E_COMMON_JSON_ENCODE_ERROR
-		result.Msg = err.Error()
-		result.Data = nil
-
-		aj, _ = json.Marshal(result)
-	}
-
-	return aj
-}
-
-func ApiJsonp(v string, data interface{}, e *exception.Exception, callback string) []byte {
-	return gomisc.AppendBytes(
-		[]byte(" "),
-		[]byte(callback),
-		[]byte("("),
-		[]byte(ApiJson(v, data, e)),
-		[]byte(");"),
-	)
-}
 
 func SendMail(subject, body, from string, to []string) error {
 	auth := smtp.PlainAuth("", "", "", "")

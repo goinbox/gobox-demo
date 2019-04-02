@@ -1,53 +1,15 @@
 package api
 
 import (
-	"gdemo/conf"
 	"gdemo/controller"
-	"gdemo/errno"
 	"gdemo/misc"
 
 	"github.com/goinbox/exception"
 	gcontroller "github.com/goinbox/gohttp/controller"
-	"github.com/goinbox/gohttp/query"
 
 	"html"
 	"net/http"
-	"net/url"
-	"time"
 )
-
-type ApiSignParams struct {
-	T     int64
-	Nonce string
-	Sign  string
-	Debug int
-}
-
-var ApiSignQueryNames = []string{"t", "nonce"}
-
-func SetApiSignParams(qs *query.QuerySet, asp *ApiSignParams) {
-	qs.Int64Var(&asp.T, "t", true, errno.E_COMMON_INVALID_ARG, "invalid sign t", query.CheckInt64IsPositive)
-	qs.StringVar(&asp.Nonce, "nonce", true, errno.E_COMMON_INVALID_ARG, "invalid sign nonce", query.CheckStringNotEmpty)
-	qs.StringVar(&asp.Sign, "sign", true, errno.E_COMMON_INVALID_ARG, "invalid sign sign", query.CheckStringNotEmpty)
-	qs.IntVar(&asp.Debug, "debug", false, errno.E_COMMON_INVALID_ARG, "invalid sign debug", nil)
-}
-
-func VerifyApiSign(asp *ApiSignParams, queryValues url.Values, signQueryNames []string, token string) *exception.Exception {
-	if conf.BaseConf.IsDev && asp.Debug == 1 {
-		return nil
-	}
-
-	if time.Now().Unix()-asp.T > 600 {
-		return exception.New(errno.E_COMMON_INVALID_ARG, "verify sign failed, invalid sign t")
-	}
-
-	sign := misc.CalApiSign(queryValues, signQueryNames, token)
-	if sign != asp.Sign {
-		return exception.New(errno.E_COMMON_INVALID_ARG, "verify sign failed, invalid sign sign")
-	}
-
-	return nil
-}
 
 type IApiDataContext interface {
 	gcontroller.ActionContext

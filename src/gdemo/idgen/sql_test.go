@@ -19,9 +19,7 @@ func TestDemoDaoRead(t *testing.T) {
 func getTestClient() *mysql.Client {
 	config := mysql.NewConfig("root", "123", "127.0.0.1", "3306", "gobox-demo")
 
-	w, _ := golog.NewFileWriter("/tmp/test_mysql.log")
-	logger, _ := golog.NewSimpleLogger(w, golog.LEVEL_INFO, golog.NewSimpleFormater())
-
+	logger := golog.NewSimpleLogger(golog.NewConsoleWriter(), new(golog.NoopFormater))
 	client, _ := mysql.NewClient(config, logger)
 
 	return client
