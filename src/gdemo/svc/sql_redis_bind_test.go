@@ -1,15 +1,15 @@
 package svc
 
 import (
-	"gdemo/misc"
 	"gdemo/resource"
+
 	"testing"
 )
 
 func TestSqlRedisBindSvc(t *testing.T) {
 	srs := &SqlRedisBindSvc{
-		SqlSvc:   NewSqlSvc(misc.TestLogger, resource.MysqlClientPool, true),
-		RedisSvc: NewRedisSvc(misc.TestLogger, resource.RedisClientPoolList[0]),
+		SqlSvc:   NewSqlSvc(resource.TestLogger, resource.MysqlClientPool, true),
+		RedisSvc: NewRedisSvc(resource.TestLogger, resource.RedisClientPoolList[0]),
 	}
 
 	tableName, entityName := "demo", "demo"
@@ -19,7 +19,7 @@ func TestSqlRedisBindSvc(t *testing.T) {
 	var ids []int64
 	var find bool
 
-	misc.TestLogger.Notice([]byte("test Insert"))
+	resource.TestLogger.Notice([]byte("test Insert"))
 
 	item := &demoEntity{
 		Name:   "tdj",
@@ -29,13 +29,13 @@ func TestSqlRedisBindSvc(t *testing.T) {
 	ids, merr, rerr = srs.Insert(tableName, entityName, redisKeyPrefix, demoColNames, 10, item)
 	t.Log(ids, merr, rerr)
 
-	misc.TestLogger.Notice([]byte("test GetById"))
+	resource.TestLogger.Notice([]byte("test GetById"))
 
 	item = &demoEntity{}
 	find, merr, rerr = srs.GetById(tableName, entityName, redisKeyPrefix, ids[0], 10, item)
 	t.Log(find, merr, rerr, item)
 
-	misc.TestLogger.Notice([]byte("test UpdateById"))
+	resource.TestLogger.Notice([]byte("test UpdateById"))
 
 	newDemo := &demoEntity{
 		Name: "new-demo",
@@ -50,12 +50,12 @@ func TestSqlRedisBindSvc(t *testing.T) {
 	find, merr, rerr = srs.GetById(tableName, entityName, redisKeyPrefix, ids[0], 10, item)
 	t.Log(find, merr, rerr, item)
 
-	misc.TestLogger.Notice([]byte("test TotalRows"))
+	resource.TestLogger.Notice([]byte("test TotalRows"))
 
 	total, merr, rerr := srs.TotalRows(tableName, redisKeyPrefix, 10)
 	t.Log(total, merr, rerr)
 
-	misc.TestLogger.Notice([]byte("test TotalRows"))
+	resource.TestLogger.Notice([]byte("test TotalRows"))
 
 	find, merr, rerr = srs.DeleteById(tableName, entityName, redisKeyPrefix, ids[0])
 	t.Log(find, merr, rerr)

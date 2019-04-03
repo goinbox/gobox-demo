@@ -37,14 +37,6 @@
   version = "v1.1.0"
 
 [[projects]]
-  digest = "1:e1b2176808fd1403b35a6c0e1049bcccf4de506d8f021a2e8a7223df919d82f7"
-  name = "github.com/goinbox/encoding"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "4ce5cac4f174809a1e26c02dca3831da1047069e"
-  version = "v1.0.0"
-
-[[projects]]
   digest = "1:c233bdde02d79638d11f4afc5d53de562a5d52c3e3356a187c1a0e5ad0c912f6"
   name = "github.com/goinbox/exception"
   packages = ["."]
@@ -67,12 +59,12 @@
   version = "v4.0.0"
 
 [[projects]]
-  digest = "1:bab8ae89496aaec77ebfb41bd150d092d6cfce180e213f4e4d8dd77430504069"
+  digest = "1:3b066aef90b3efb140761cf9e6d7aae35d7305d0d34afb08ee0e873fdac9d053"
   name = "github.com/goinbox/golog"
   packages = ["."]
   pruneopts = "UT"
-  revision = "0b6cd31acb2bd921a5b935f569aab5c0bc49c4a4"
-  version = "v2.0.0"
+  revision = "3e7b927b184899ac78ca05cbfe2613dbd7acae69"
+  version = "v2.1.0"
 
 [[projects]]
   digest = "1:56840882539fdb14f36e39074729ecf20510a18bd09658317f1a474ea666e406"
@@ -150,7 +142,6 @@
   input-imports = [
     "github.com/goinbox/color",
     "github.com/goinbox/crypto",
-    "github.com/goinbox/encoding",
     "github.com/goinbox/exception",
     "github.com/goinbox/gohttp/controller",
     "github.com/goinbox/gohttp/gracehttp",

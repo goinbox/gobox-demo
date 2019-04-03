@@ -2,13 +2,12 @@ package controller
 
 import (
 	"gdemo/idgen"
+	"gdemo/misc"
 	"gdemo/resource"
 
+	"bytes"
 	"github.com/goinbox/gohttp/controller"
 	"github.com/goinbox/golog"
-	"github.com/goinbox/gomisc"
-
-	"bytes"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -60,15 +59,12 @@ func (b *BaseContext) BeforeAction() {
 }
 
 func (b *BaseContext) AfterAction() {
-	msg := gomisc.AppendBytes([]byte("[response]\t"), b.RespBody)
-	b.AccessLogger.Debug(msg)
+	b.AccessLogger.Debug(misc.FormatAccessLog([]byte("response"), b.RespBody))
 }
 
 func (b *BaseContext) Destruct() {
 	b.RespBody = nil
 	b.QueryValues = nil
-
-	b.AccessLogger.Free()
 }
 
 type BaseController struct {

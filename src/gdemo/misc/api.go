@@ -1,19 +1,18 @@
 package misc
 
 import (
-	"gdemo/conf"
 	"gdemo/errno"
-	"github.com/goinbox/gohttp/query"
-	"time"
 
 	"github.com/goinbox/crypto"
 	"github.com/goinbox/exception"
+	"github.com/goinbox/gohttp/query"
 	"github.com/goinbox/gomisc"
 
 	"encoding/json"
 	"net/url"
 	"sort"
 	"strings"
+	"time"
 )
 
 type ApiData struct {
@@ -76,10 +75,6 @@ func SetApiSignParams(qs *query.QuerySet, asp *ApiSignParams) {
 }
 
 func VerifyApiSign(asp *ApiSignParams, queryValues url.Values, signQueryNames []string, token string) *exception.Exception {
-	if conf.BaseConf.IsDev && asp.Debug == 1 {
-		return nil
-	}
-
 	if time.Now().Unix()-asp.T > 600 {
 		return exception.New(errno.E_COMMON_INVALID_ARG, "verify sign failed, invalid sign t")
 	}

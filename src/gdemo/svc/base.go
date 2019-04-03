@@ -1,8 +1,8 @@
 package svc
 
 import (
+	"gdemo/misc"
 	"github.com/goinbox/golog"
-	"github.com/goinbox/gomisc"
 )
 
 type BaseSvc struct {
@@ -43,11 +43,5 @@ func (b *BaseSvc) EmergencyLog(point, msg []byte) {
 }
 
 func (b *BaseSvc) makeLogMsg(point, msg []byte) []byte {
-	return gomisc.AppendBytes(
-		[]byte("["),
-		point,
-		[]byte("]"),
-		[]byte("\t"),
-		msg,
-	)
+	return misc.FormatAccessLog(point, msg)
 }

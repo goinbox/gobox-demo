@@ -1,7 +1,10 @@
 package svc
 
 import (
-	"gdemo/misc"
+	"gdemo/conf"
+	"gdemo/resource"
+
+	"os"
 	"reflect"
 )
 
@@ -16,5 +19,9 @@ var demoEntityType reflect.Type = reflect.TypeOf(demoEntity{})
 var demoColNames []string = ReflectColNames(demoEntityType)
 
 func init() {
-	misc.InitTestSystem()
+	_ = conf.Init(os.Getenv("GOPATH"))
+
+	_ = resource.InitLog("test")
+	resource.InitRedis()
+	resource.InitMysql()
 }

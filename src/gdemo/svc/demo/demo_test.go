@@ -1,12 +1,14 @@
 package demo
 
 import (
-	"gdemo/misc"
+	"gdemo/conf"
+	"gdemo/resource"
 	"gdemo/svc"
 
 	"github.com/goinbox/gomisc"
 	"github.com/goinbox/mysql"
 
+	"os"
 	"testing"
 	"time"
 )
@@ -17,10 +19,16 @@ type testQueryParamsStruct struct {
 	Status  int      `mysql:"status"`
 }
 
-func TestDemoSvc(t *testing.T) {
-	misc.InitTestSystem()
+func init() {
+	_ = conf.Init(os.Getenv("GOPATH"))
 
-	demoSvc := NewDemoSvc([]byte("tracedemosvc"), misc.TestLogger)
+	_ = resource.InitLog("test")
+	resource.InitRedis()
+	resource.InitMysql()
+}
+
+func TestDemoSvc(t *testing.T) {
+	demoSvc := NewDemoSvc([]byte("tracedemosvc"), resource.TestLogger)
 
 	ids, err := demoSvc.Insert(
 		&DemoEntity{Name: "a1", Status: 0},

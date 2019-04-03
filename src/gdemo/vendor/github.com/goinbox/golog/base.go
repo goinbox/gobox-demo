@@ -41,9 +41,6 @@ type ILogger interface {
 	Emergency(msg []byte)
 
 	Log(level int, msg []byte) error
-
-	Flush() error
-	Free()
 }
 
 type IFormater interface {

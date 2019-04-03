@@ -3,15 +3,16 @@ package svc
 import (
 	"gdemo/misc"
 	"gdemo/resource"
+
 	"github.com/goinbox/mysql"
 
 	"testing"
 )
 
 func TestSqlSvcInsertGetListUpdateDelete(t *testing.T) {
-	ss := NewSqlSvc(misc.TestLogger, resource.MysqlClientPool, true)
+	ss := NewSqlSvc(resource.TestLogger, resource.MysqlClientPool, true)
 
-	misc.TestLogger.Notice([]byte("test Insert"))
+	resource.TestLogger.Notice([]byte("test Insert"))
 
 	item := &demoEntity{
 		Name:   "tdj",
@@ -25,7 +26,7 @@ func TestSqlSvcInsertGetListUpdateDelete(t *testing.T) {
 	}
 	t.Log(ids)
 
-	misc.TestLogger.Notice([]byte("test List"))
+	resource.TestLogger.Notice([]byte("test List"))
 
 	var data []*demoEntity
 	err = ss.ListByIds(tableName, ids, "add_time desc", demoEntityType, &data)
@@ -74,7 +75,7 @@ func TestSqlSvcInsertGetListUpdateDelete(t *testing.T) {
 		t.Log(i, item)
 	}
 
-	misc.TestLogger.Notice([]byte("test Get"))
+	resource.TestLogger.Notice([]byte("test Get"))
 
 	item = &demoEntity{}
 	find, err := ss.GetById(tableName, ids[0], item)
@@ -86,7 +87,7 @@ func TestSqlSvcInsertGetListUpdateDelete(t *testing.T) {
 	}
 	t.Log(item)
 
-	misc.TestLogger.Notice([]byte("test Delete"))
+	resource.TestLogger.Notice([]byte("test Delete"))
 
 	result := ss.Dao().DeleteById(tableName, ids[0])
 	defer ss.SendBackClient()

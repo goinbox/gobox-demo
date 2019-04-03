@@ -12,6 +12,11 @@ var AccessLogWriter golog.IWriter
 
 var NoopLogger golog.ILogger = new(golog.NoopLogger)
 
+var TestLogger golog.ILogger = golog.NewSimpleLogger(
+	golog.NewConsoleWriter(),
+	golog.NewConsoleFormater(golog.NewSimpleFormater())).
+	SetLogLevel(golog.LEVEL_DEBUG)
+
 func InitLog(systemName string) *exception.Exception {
 	if conf.BaseConf.IsDev {
 		AccessLogWriter = golog.NewConsoleWriter()

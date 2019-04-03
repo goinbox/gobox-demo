@@ -10,8 +10,7 @@ type simpleLogger struct {
 	writer   IWriter
 	formater IFormater
 
-	glevel         int
-	autoFreeWriter bool
+	glevel int
 }
 
 func NewSimpleLogger(writer IWriter, formater IFormater) *simpleLogger {
@@ -19,8 +18,7 @@ func NewSimpleLogger(writer IWriter, formater IFormater) *simpleLogger {
 		writer:   writer,
 		formater: formater,
 
-		glevel:         LEVEL_INFO,
-		autoFreeWriter: false,
+		glevel: LEVEL_INFO,
 	}
 }
 
@@ -29,12 +27,6 @@ func (s *simpleLogger) SetLogLevel(level int) *simpleLogger {
 	if ok {
 		s.glevel = level
 	}
-
-	return s
-}
-
-func (s *simpleLogger) SetAutoFreeWriter(autoFreeWriter bool) *simpleLogger {
-	s.autoFreeWriter = autoFreeWriter
 
 	return s
 }
@@ -79,14 +71,4 @@ func (s *simpleLogger) Log(level int, msg []byte) error {
 	_, err := s.writer.Write(s.formater.Format(level, append(msg, '\n')))
 
 	return err
-}
-
-func (s *simpleLogger) Flush() error {
-	return s.writer.Flush()
-}
-
-func (s *simpleLogger) Free() {
-	if s.autoFreeWriter {
-		s.writer.Free()
-	}
 }

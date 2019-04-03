@@ -1,7 +1,6 @@
 package svc
 
 import (
-	"gdemo/misc"
 	"gdemo/resource"
 
 	"github.com/goinbox/gomisc"
@@ -11,7 +10,7 @@ import (
 )
 
 func TestRedisSvcSetGetJson(t *testing.T) {
-	rs := NewRedisSvc(misc.TestLogger, resource.RedisClientPoolList[0])
+	rs := NewRedisSvc(resource.TestLogger, resource.RedisClientPoolList[0])
 
 	item := &demoEntity{
 		SqlBaseEntity: SqlBaseEntity{
@@ -42,7 +41,7 @@ func TestRedisSvcSetGetJson(t *testing.T) {
 }
 
 func TestRedisSvcSetGetHash(t *testing.T) {
-	rs := NewRedisSvc(misc.TestLogger, resource.RedisClientPoolList[0])
+	rs := NewRedisSvc(resource.TestLogger, resource.RedisClientPoolList[0])
 
 	item := &demoEntity{
 		SqlBaseEntity: SqlBaseEntity{

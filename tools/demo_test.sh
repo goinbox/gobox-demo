@@ -5,7 +5,7 @@ headerHost="Host: ${USER}.gdemo.com"
 
 echo "====== test index ======"
 
-curl "$urlPrefix/index?status=1" -H "$headerHost"
+echo curl "$urlPrefix/index?status=1" -H "$headerHost"
 
 echo ""
 echo "====== test add ======"
