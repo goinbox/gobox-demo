@@ -16,7 +16,7 @@ server {
 
     include ${PRJ_HOME}/conf/http/general/gzip.conf;
 
-    access_log logs/${API_HTTP_ACCESS_LOG} combinedio buffer=${NGX_ACCESS_LOG_BUFFER}k;
+    access_log logs/${API_HTTP_ACCESS_LOG} combinediox buffer=${NGX_ACCESS_LOG_BUFFER}k;
     error_log  logs/${API_HTTP_ERROR_LOG};
 
     ssl_session_cache shared:GDEMO_SSL:100m;
@@ -54,7 +54,7 @@ server {
 
     include ${PRJ_HOME}/conf/http/general/gzip.conf;
 
-    access_log logs/${API_HTTP_ACCESS_LOG} combinedio buffer=${NGX_ACCESS_LOG_BUFFER}k;
+    access_log logs/${API_HTTP_ACCESS_LOG} combinediox buffer=${NGX_ACCESS_LOG_BUFFER}k;
     error_log  logs/${API_HTTP_ERROR_LOG};
 
     location / {
