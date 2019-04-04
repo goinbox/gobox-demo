@@ -1,7 +1,6 @@
 package misc
 
 import (
-	"gdemo/conf"
 	"github.com/goinbox/gomisc"
 	"strconv"
 
@@ -65,8 +64,6 @@ func FormatTraceLog(tla *TraceLogArgs) []byte {
 
 	return gomisc.AppendBytes(
 		traceId,
-		[]byte("\t"),
-		[]byte(conf.BaseConf.Hostname),
 		[]byte("\t"),
 		point,
 		[]byte("\t"),
