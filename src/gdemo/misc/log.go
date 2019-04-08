@@ -2,8 +2,8 @@ package misc
 
 import (
 	"github.com/goinbox/gomisc"
-	"strconv"
 
+	"strconv"
 	"time"
 )
 
@@ -20,15 +20,13 @@ type TraceLogArgs struct {
 	Point     []byte
 	StartTime time.Time
 	EndTime   time.Time
-	Username  []byte
-	Appkey    []byte
 	Msg       []byte
 }
 
 var tracePlaceholderBytes = []byte("-")
 
 func FormatTraceLog(tla *TraceLogArgs) []byte {
-	var traceId, point, username, appkey, msg []byte
+	var traceId, point, msg []byte
 
 	if tla.TraceId != nil {
 		traceId = tla.TraceId
@@ -39,16 +37,6 @@ func FormatTraceLog(tla *TraceLogArgs) []byte {
 		point = tla.Point
 	} else {
 		point = tracePlaceholderBytes
-	}
-	if tla.Username != nil {
-		username = tla.Username
-	} else {
-		username = tracePlaceholderBytes
-	}
-	if tla.Appkey != nil {
-		appkey = tla.Appkey
-	} else {
-		appkey = tracePlaceholderBytes
 	}
 	if tla.Msg != nil {
 		msg = tla.Msg
@@ -70,10 +58,6 @@ func FormatTraceLog(tla *TraceLogArgs) []byte {
 		[]byte(strconv.FormatInt(end, 10)),
 		[]byte("\t"),
 		[]byte(strconv.FormatInt(elapse, 10)),
-		[]byte("\t"),
-		username,
-		[]byte("\t"),
-		appkey,
 		[]byte("\t"),
 		msg,
 	)

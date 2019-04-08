@@ -5,12 +5,14 @@ import (
 	"gdemo/misc"
 	"gdemo/resource"
 
-	"bytes"
 	"github.com/goinbox/gohttp/controller"
+
+	"bytes"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
 const (
@@ -37,7 +39,8 @@ type BaseContext struct {
 		Port string
 	}
 
-	TraceId []byte
+	TraceId   []byte
+	StartTime time.Time
 }
 
 func (b *BaseContext) Request() *http.Request {
@@ -61,6 +64,16 @@ func (b *BaseContext) BeforeAction() {
 
 func (b *BaseContext) AfterAction() {
 	b.DebugLog([]byte("Response"), b.RespBody)
+
+	resource.TraceLogger.Info(
+		misc.FormatTraceLog(&misc.TraceLogArgs{
+			TraceId:   b.TraceId,
+			Point:     []byte("AllTime"),
+			StartTime: b.StartTime,
+			EndTime:   time.Now(),
+			Msg:       b.RespBody,
+		}),
+	)
 }
 
 func (b *BaseContext) Destruct() {
@@ -111,6 +124,7 @@ func (b *BaseController) NewActionContext(req *http.Request, respWriter http.Res
 	context := &BaseContext{
 		Req:        req,
 		RespWriter: respWriter,
+		StartTime:  time.Now(),
 	}
 
 	if req.ContentLength < MAX_AUTO_PARSE_BODY_LEN {
