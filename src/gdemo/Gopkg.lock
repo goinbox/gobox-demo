@@ -45,7 +45,7 @@
   version = "v1.0.1"
 
 [[projects]]
-  digest = "1:a1c9825ed3f251ccf779d890089cee8b3bf7a777bbd73d2c9021d762c4430614"
+  digest = "1:a8493979d5417e3ef46d8b8b382b7f6250ac8e7e1639e5e116fe5678246993f8"
   name = "github.com/goinbox/gohttp"
   packages = [
     "controller",
@@ -55,16 +55,16 @@
     "system",
   ]
   pruneopts = "UT"
-  revision = "21595a3dabb6a40746a7213c71f8c5537717fef6"
-  version = "v4.0.0"
+  revision = "72672e91c0b763e9bef5773786f49149829d2f4c"
+  version = "v4.0.1"
 
 [[projects]]
-  digest = "1:3b066aef90b3efb140761cf9e6d7aae35d7305d0d34afb08ee0e873fdac9d053"
+  digest = "1:74870f59f6b586c90c71b61a98284f2c8c87c96396a13cbd87278393a01a2d83"
   name = "github.com/goinbox/golog"
   packages = ["."]
   pruneopts = "UT"
-  revision = "3e7b927b184899ac78ca05cbfe2613dbd7acae69"
-  version = "v2.1.0"
+  revision = "19c013aa8d3beee483e69b2bed4ac128004038b7"
+  version = "v2.1.1"
 
 [[projects]]
   digest = "1:56840882539fdb14f36e39074729ecf20510a18bd09658317f1a474ea666e406"
@@ -83,12 +83,12 @@
   version = "v1.0.7"
 
 [[projects]]
-  digest = "1:6d66343e88bff2f3317b72398d6d7e994bcaad2e011fbb7fd46d83b821b2dbca"
+  digest = "1:d30f6def70f66197737e4db073ce2b2aeb51694a164c0a79b0a9c82a0df750b4"
   name = "github.com/goinbox/mysql"
   packages = ["."]
   pruneopts = "UT"
-  revision = "35411bf5adec68a41f624ea441e961f05f982968"
-  version = "v1.2.1"
+  revision = "9ad108dab56dc52ba518ee65790be4292d6e3acf"
+  version = "v1.2.2"
 
 [[projects]]
   digest = "1:726f339e2eb1bf7a6d71f601c4d9b6e670b1dba485a7b966e9cda8cbc69e6f69"
@@ -107,12 +107,12 @@
   version = "v1.0.1"
 
 [[projects]]
-  digest = "1:18828cb9e0faa733e406696f3ab15825428e1266a86203dc5ccacdc3e1226bff"
+  digest = "1:d01f81820e1faf1d53f1a6b40cd0ffd909da45671ebf1133e36d0f7f9e11412a"
   name = "github.com/goinbox/redis"
   packages = ["."]
   pruneopts = "UT"
-  revision = "01679967f0b8c4b3c230457a23bddde22e9a8292"
-  version = "v1.2.5"
+  revision = "f2e8cf36ca0502aa2703f5213c3206243cc99ae4"
+  version = "v1.2.6"
 
 [[projects]]
   digest = "1:c25289f43ac4a68d88b02245742347c94f1e108c534dda442188015ff80669b3"

@@ -28,7 +28,7 @@ func init() {
 }
 
 func TestDemoSvc(t *testing.T) {
-	demoSvc := NewDemoSvc([]byte("tracedemosvc"), resource.TestLogger)
+	demoSvc := NewDemoSvc([]byte("tracedemosvc"))
 
 	ids, err := demoSvc.Insert(
 		&DemoEntity{Name: "a1", Status: 0},
@@ -48,7 +48,7 @@ func TestDemoSvc(t *testing.T) {
 	}
 
 	baseEntity := svc.SqlBaseEntity{AddTime: time.Now().Format(gomisc.TimeGeneralLayout())}
-	demoSvc.UpdateById(1, &DemoEntity{SqlBaseEntity: baseEntity, Name: "aa", Status: 1}, map[string]bool{"add_time": true, "name": true})
+	_, _ = demoSvc.UpdateById(1, &DemoEntity{SqlBaseEntity: baseEntity, Name: "aa", Status: 1}, map[string]bool{"add_time": true, "name": true})
 
 	entities, err := demoSvc.ListByIds(1, 10, 11)
 	for _, entity := range entities {

@@ -41,7 +41,7 @@ func main() {
 
 	if conf.PprofConf.Enable {
 		go func() {
-			http.ListenAndServe("127.0.0.1:"+conf.PprofConf.Port, nil)
+			_ = http.ListenAndServe("127.0.0.1:"+conf.PprofConf.Port, nil)
 		}()
 	}
 

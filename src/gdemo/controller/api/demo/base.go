@@ -18,7 +18,7 @@ type DemoContext struct {
 func (d *DemoContext) BeforeAction() {
 	d.ApiContext.BeforeAction()
 
-	d.demoSvc = demoSvc.NewDemoSvc(d.TraceId, d.AccessLogger)
+	d.demoSvc = demoSvc.NewDemoSvc(d.TraceId)
 }
 
 type DemoController struct {

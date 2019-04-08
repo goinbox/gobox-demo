@@ -7,12 +7,10 @@ import (
 	"time"
 )
 
-func FormatAccessLog(point, msg []byte) []byte {
+func FormatAccessLog(traceid, point, msg []byte) []byte {
 	return gomisc.AppendBytes(
-		[]byte("["),
-		point,
-		[]byte("]"),
-		[]byte("\t"),
+		traceid, []byte("\t"),
+		[]byte("["), point, []byte("]"), []byte("\t"),
 		msg,
 	)
 }

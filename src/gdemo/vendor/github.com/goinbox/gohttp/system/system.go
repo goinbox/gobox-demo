@@ -36,7 +36,7 @@ func (s *System) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			ji.jf(context, ji.args...)
 		}
 
-		w.Write(context.ResponseBody())
+		_, _ = w.Write(context.ResponseBody())
 		context.Destruct()
 	}()
 

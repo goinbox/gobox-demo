@@ -8,8 +8,8 @@ import (
 
 func TestSqlRedisBindSvc(t *testing.T) {
 	srs := &SqlRedisBindSvc{
-		SqlSvc:   NewSqlSvc(resource.TestLogger, resource.MysqlClientPool, true),
-		RedisSvc: NewRedisSvc(resource.TestLogger, resource.RedisClientPoolList[0]),
+		SqlSvc:   NewSqlSvc([]byte("TestSqlRedisBindSvc"), resource.MysqlClientPool, true),
+		RedisSvc: NewRedisSvc([]byte("TestSqlRedisBindSvc"), resource.RedisClientPoolList[0]),
 	}
 
 	tableName, entityName := "demo", "demo"

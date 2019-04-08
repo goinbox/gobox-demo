@@ -10,7 +10,7 @@ import (
 )
 
 func TestRedisSvcSetGetJson(t *testing.T) {
-	rs := NewRedisSvc(resource.TestLogger, resource.RedisClientPoolList[0])
+	rs := NewRedisSvc([]byte("TestRedisSvcSetGetJson"), resource.RedisClientPoolList[0])
 
 	item := &demoEntity{
 		SqlBaseEntity: SqlBaseEntity{
@@ -41,7 +41,7 @@ func TestRedisSvcSetGetJson(t *testing.T) {
 }
 
 func TestRedisSvcSetGetHash(t *testing.T) {
-	rs := NewRedisSvc(resource.TestLogger, resource.RedisClientPoolList[0])
+	rs := NewRedisSvc([]byte("TestRedisSvcSetGetHash"), resource.RedisClientPoolList[0])
 
 	item := &demoEntity{
 		SqlBaseEntity: SqlBaseEntity{

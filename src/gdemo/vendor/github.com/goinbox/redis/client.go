@@ -20,6 +20,7 @@ type cmdArgs struct {
 type Client struct {
 	config    *Config
 	logger    golog.ILogger
+	traceId   []byte
 	clff      CmdLogFmtFunc
 	logPrefix []byte
 
@@ -39,13 +40,14 @@ func NewClient(config *Config, logger golog.ILogger) *Client {
 	}
 
 	c := &Client{
-		config: config,
-		logger: logger,
+		config:  config,
+		logger:  logger,
+		traceId: []byte("-"),
 
 		pipeCmds: []*cmdArgs{},
 	}
 	c.clff = c.cmdLogFmt
-	c.logPrefix = []byte("[GoinboxRedis " +
+	c.logPrefix = []byte("[RedisClient " +
 		config.Host + ":" + config.Port +
 		"]\t")
 
@@ -57,6 +59,12 @@ func (c *Client) SetLogger(logger golog.ILogger) *Client {
 		logger = new(golog.NoopLogger)
 	}
 	c.logger = logger
+
+	return c
+}
+
+func (c *Client) SetTraceId(traceId []byte) *Client {
+	c.traceId = traceId
 
 	return c
 }
@@ -260,7 +268,7 @@ func (c *Client) log(cmd string, args ...interface{}) {
 
 	msg := c.clff(cmd, args...)
 	if msg != nil {
-		c.logger.Log(c.config.LogLevel, msg)
+		_ = c.logger.Log(c.config.LogLevel, gomisc.AppendBytes(c.traceId, []byte("\t"), c.logPrefix, msg))
 	}
 }
 
@@ -269,7 +277,7 @@ func (c *Client) cmdLogFmt(cmd string, args ...interface{}) []byte {
 		cmd += " " + fmt.Sprint(arg)
 	}
 
-	return gomisc.AppendBytes(c.logPrefix, []byte(cmd))
+	return []byte(cmd)
 }
 
 func (c *Client) reconnect() error {

@@ -1,9 +1,10 @@
 package resource
 
 import (
-	"github.com/goinbox/mysql"
-
 	"gdemo/conf"
+
+	"github.com/goinbox/golog"
+	"github.com/goinbox/mysql"
 )
 
 var MysqlClientPool *mysql.Pool
@@ -18,7 +19,7 @@ func InitMysql() {
 
 func NewMysqlClient() (*mysql.Client, error) {
 	config := mysql.NewConfig(conf.MysqlConf.User, conf.MysqlConf.Pass, conf.MysqlConf.Host, conf.MysqlConf.Port, conf.MysqlConf.Name)
-	config.LogLevel = conf.LogConf.Level
+	config.LogLevel = golog.LEVEL_INFO
 	config.ReadTimeout = conf.MysqlConf.RWTimeout
 	config.WriteTimeout = conf.MysqlConf.RWTimeout
 

@@ -2,7 +2,6 @@ package svc
 
 import (
 	"gdemo/resource"
-	"github.com/goinbox/golog"
 	"github.com/goinbox/redis"
 
 	"encoding/json"
@@ -15,23 +14,23 @@ const (
 )
 
 type RedisSvc struct {
-	logger golog.ILogger
-	pool   *redis.Pool
+	traceId []byte
+	pool    *redis.Pool
 
 	client *redis.Client
 }
 
-func NewRedisSvc(logger golog.ILogger, pool *redis.Pool) *RedisSvc {
+func NewRedisSvc(traceId []byte, pool *redis.Pool) *RedisSvc {
 	return &RedisSvc{
-		logger: logger,
-		pool:   pool,
+		traceId: traceId,
+		pool:    pool,
 	}
 }
 
 func (r *RedisSvc) Client() *redis.Client {
 	if r.client == nil {
 		r.client, _ = r.pool.Get()
-		r.client.SetLogger(r.logger)
+		r.client.SetLogger(resource.AccessLogger).SetTraceId(r.traceId)
 	}
 
 	return r.client
@@ -46,19 +45,19 @@ func (r *RedisSvc) SendBackClient() {
 	r.client = nil
 }
 
-func (r *RedisSvc) Renew(logger golog.ILogger, pool *redis.Pool) *RedisSvc {
+func (r *RedisSvc) Renew(traceId []byte, pool *redis.Pool) *RedisSvc {
 	if r.client != nil {
 		r.SendBackClient()
 	}
 
-	r.logger = logger
+	r.traceId = traceId
 	r.pool = pool
 
 	return r
 }
 
 func (r *RedisSvc) SetPool(pool *redis.Pool) *RedisSvc {
-	return r.Renew(r.logger, pool)
+	return r.Renew(r.traceId, pool)
 }
 
 func (r *RedisSvc) SaveJsonData(key string, v interface{}, expireSeconds int64) error {

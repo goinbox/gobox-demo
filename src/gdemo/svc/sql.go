@@ -3,8 +3,6 @@ package svc
 import (
 	"gdemo/idgen"
 	"gdemo/resource"
-	"github.com/goinbox/golog"
-
 	"github.com/goinbox/gomisc"
 	"github.com/goinbox/mysql"
 
@@ -52,7 +50,7 @@ func ReflectColNames(ret reflect.Type) []string {
 }
 
 type SqlSvc struct {
-	logger   golog.ILogger
+	traceId  []byte
 	pool     *mysql.Pool
 	useIdGen bool
 
@@ -60,9 +58,9 @@ type SqlSvc struct {
 	idGenter *idgen.SqlIdGenter
 }
 
-func NewSqlSvc(logger golog.ILogger, pool *mysql.Pool, useIdGen bool) *SqlSvc {
+func NewSqlSvc(traceId []byte, pool *mysql.Pool, useIdGen bool) *SqlSvc {
 	return &SqlSvc{
-		logger:   logger,
+		traceId:  traceId,
 		pool:     pool,
 		useIdGen: useIdGen,
 	}
@@ -75,7 +73,7 @@ func (s *SqlSvc) Dao() *mysql.SqlDao {
 
 	if s.dao.Client == nil {
 		s.dao.Client, _ = s.pool.Get()
-		s.dao.Client.SetLogger(s.logger)
+		s.dao.Client.SetLogger(resource.AccessLogger).SetTraceId(s.traceId)
 	}
 
 	return s.dao
@@ -105,19 +103,19 @@ func (s *SqlSvc) SendBackClient() {
 	}
 }
 
-func (s *SqlSvc) Renew(logger golog.ILogger, pool *mysql.Pool, useIdGen bool) *SqlSvc {
+func (s *SqlSvc) Renew(traceId []byte, pool *mysql.Pool, useIdGen bool) *SqlSvc {
 	if s.dao != nil && s.dao.Client != nil {
 		s.SendBackClient()
 	}
 
-	s.logger = logger
+	s.traceId = traceId
 	s.pool = pool
 
 	return s
 }
 
 func (s *SqlSvc) SetPool(pool *mysql.Pool) *SqlSvc {
-	return s.Renew(s.logger, pool, s.useIdGen)
+	return s.Renew(s.traceId, pool, s.useIdGen)
 }
 
 func (s *SqlSvc) FillBaseEntityForInsert(entity *SqlBaseEntity, name string) error {

@@ -19,6 +19,7 @@ type Client struct {
 	connClosed bool
 
 	logger    golog.ILogger
+	traceId   []byte
 	logPrefix []byte
 }
 
@@ -42,8 +43,9 @@ func NewClient(config *Config, logger golog.ILogger) (*Client, error) {
 		db: db,
 		tx: nil,
 
-		logger: logger,
-		logPrefix: []byte("[GoinboxMysql " +
+		logger:  logger,
+		traceId: []byte("-"),
+		logPrefix: []byte("[MysqlClient " +
 			config.Addr +
 			"]\t"),
 	}, nil
@@ -54,6 +56,12 @@ func (c *Client) SetLogger(logger golog.ILogger) *Client {
 		logger = new(golog.NoopLogger)
 	}
 	c.logger = logger
+
+	return c
+}
+
+func (c *Client) SetTraceId(traceId []byte) *Client {
+	c.traceId = traceId
 
 	return c
 }
@@ -153,5 +161,5 @@ func (c *Client) log(query string, args ...interface{}) {
 	}
 
 	query = fmt.Sprintf(query, vs...)
-	c.logger.Log(c.config.LogLevel, gomisc.AppendBytes(c.logPrefix, []byte(query)))
+	_ = c.logger.Log(c.config.LogLevel, gomisc.AppendBytes(c.traceId, []byte("\t"), c.logPrefix, []byte(query)))
 }

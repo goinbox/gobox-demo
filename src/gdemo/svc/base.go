@@ -2,46 +2,45 @@ package svc
 
 import (
 	"gdemo/misc"
-	"github.com/goinbox/golog"
+	"gdemo/resource"
 )
 
 type BaseSvc struct {
-	TraceId      []byte
-	AccessLogger golog.ILogger
+	TraceId []byte
 }
 
 func (b *BaseSvc) DebugLog(point, msg []byte) {
-	b.AccessLogger.Debug(b.makeLogMsg(point, msg))
+	resource.AccessLogger.Debug(b.makeLogMsg(point, msg))
 }
 
 func (b *BaseSvc) InfoLog(point, msg []byte) {
-	b.AccessLogger.Info(b.makeLogMsg(point, msg))
+	resource.AccessLogger.Info(b.makeLogMsg(point, msg))
 }
 
 func (b *BaseSvc) NoticeLog(point, msg []byte) {
-	b.AccessLogger.Notice(b.makeLogMsg(point, msg))
+	resource.AccessLogger.Notice(b.makeLogMsg(point, msg))
 }
 
 func (b *BaseSvc) WarningLog(point, msg []byte) {
-	b.AccessLogger.Warning(b.makeLogMsg(point, msg))
+	resource.AccessLogger.Warning(b.makeLogMsg(point, msg))
 }
 
 func (b *BaseSvc) ErrorLog(point, msg []byte) {
-	b.AccessLogger.Error(b.makeLogMsg(point, msg))
+	resource.AccessLogger.Error(b.makeLogMsg(point, msg))
 }
 
 func (b *BaseSvc) CriticalLog(point, msg []byte) {
-	b.AccessLogger.Critical(b.makeLogMsg(point, msg))
+	resource.AccessLogger.Critical(b.makeLogMsg(point, msg))
 }
 
 func (b *BaseSvc) AlertLog(point, msg []byte) {
-	b.AccessLogger.Alert(b.makeLogMsg(point, msg))
+	resource.AccessLogger.Alert(b.makeLogMsg(point, msg))
 }
 
 func (b *BaseSvc) EmergencyLog(point, msg []byte) {
-	b.AccessLogger.Emergency(b.makeLogMsg(point, msg))
+	resource.AccessLogger.Emergency(b.makeLogMsg(point, msg))
 }
 
 func (b *BaseSvc) makeLogMsg(point, msg []byte) []byte {
-	return misc.FormatAccessLog(point, msg)
+	return misc.FormatAccessLog(b.TraceId, point, msg)
 }

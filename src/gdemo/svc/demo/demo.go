@@ -5,8 +5,6 @@ import (
 	"gdemo/resource"
 	"gdemo/svc"
 
-	"github.com/goinbox/golog"
-
 	"reflect"
 )
 
@@ -33,15 +31,14 @@ type DemoSvc struct {
 	RedisKeyPrefix string
 }
 
-func NewDemoSvc(traceId []byte, logger golog.ILogger) *DemoSvc {
+func NewDemoSvc(traceId []byte) *DemoSvc {
 	return &DemoSvc{
 		BaseSvc: &svc.BaseSvc{
-			TraceId:      traceId,
-			AccessLogger: logger,
+			TraceId: traceId,
 		},
 		SqlRedisBindSvc: &svc.SqlRedisBindSvc{
-			SqlSvc:   svc.NewSqlSvc(logger, resource.MysqlClientPool, true),
-			RedisSvc: svc.NewRedisSvc(logger, resource.RedisClientPoolList[0]),
+			SqlSvc:   svc.NewSqlSvc(traceId, resource.MysqlClientPool, true),
+			RedisSvc: svc.NewRedisSvc(traceId, resource.RedisClientPoolList[0]),
 		},
 
 		EntityName:     "demo",

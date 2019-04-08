@@ -39,11 +39,11 @@
 
 [[constraint]]
   name = "github.com/goinbox/gohttp"
-  version = "4.0.0"
+  version = "4.0.1"
 
 [[constraint]]
   name = "github.com/goinbox/golog"
-  version = "2.1.0"
+  version = "2.1.1"
 
 [[constraint]]
   name = "github.com/goinbox/gomisc"
@@ -55,7 +55,7 @@
 
 [[constraint]]
   name = "github.com/goinbox/mysql"
-  version = "1.2.1"
+  version = "1.2.2"
 
 [[constraint]]
   name = "github.com/goinbox/pidfile"
@@ -63,7 +63,7 @@
 
 [[constraint]]
   name = "github.com/goinbox/redis"
-  version = "1.2.5"
+  version = "1.2.6"
 
 [[constraint]]
   branch = "v2"

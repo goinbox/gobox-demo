@@ -7,7 +7,6 @@ import (
 
 	"bytes"
 	"github.com/goinbox/gohttp/controller"
-	"github.com/goinbox/golog"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -21,6 +20,9 @@ const (
 	DOWNSTREAM_SERVER_IP = "127.0.0.1"
 
 	MAX_AUTO_PARSE_BODY_LEN = 1024 * 1024
+
+	TRACE_ID_HEADER_KEY = "TRACE-ID"
+	TRACE_ID_QUERY_KEY  = "traceId"
 )
 
 type BaseContext struct {
@@ -35,8 +37,7 @@ type BaseContext struct {
 		Port string
 	}
 
-	TraceId      []byte
-	AccessLogger golog.ILogger
+	TraceId []byte
 }
 
 func (b *BaseContext) Request() *http.Request {
@@ -59,12 +60,48 @@ func (b *BaseContext) BeforeAction() {
 }
 
 func (b *BaseContext) AfterAction() {
-	b.AccessLogger.Debug(misc.FormatAccessLog([]byte("response"), b.RespBody))
+	b.DebugLog([]byte("Response"), b.RespBody)
 }
 
 func (b *BaseContext) Destruct() {
 	b.RespBody = nil
 	b.QueryValues = nil
+}
+
+func (b *BaseContext) DebugLog(point, msg []byte) {
+	resource.AccessLogger.Debug(b.makeLogMsg(point, msg))
+}
+
+func (b *BaseContext) InfoLog(point, msg []byte) {
+	resource.AccessLogger.Info(b.makeLogMsg(point, msg))
+}
+
+func (b *BaseContext) NoticeLog(point, msg []byte) {
+	resource.AccessLogger.Notice(b.makeLogMsg(point, msg))
+}
+
+func (b *BaseContext) WarningLog(point, msg []byte) {
+	resource.AccessLogger.Warning(b.makeLogMsg(point, msg))
+}
+
+func (b *BaseContext) ErrorLog(point, msg []byte) {
+	resource.AccessLogger.Error(b.makeLogMsg(point, msg))
+}
+
+func (b *BaseContext) CriticalLog(point, msg []byte) {
+	resource.AccessLogger.Critical(b.makeLogMsg(point, msg))
+}
+
+func (b *BaseContext) AlertLog(point, msg []byte) {
+	resource.AccessLogger.Alert(b.makeLogMsg(point, msg))
+}
+
+func (b *BaseContext) EmergencyLog(point, msg []byte) {
+	resource.AccessLogger.Emergency(b.makeLogMsg(point, msg))
+}
+
+func (b *BaseContext) makeLogMsg(point, msg []byte) []byte {
+	return misc.FormatAccessLog(b.TraceId, point, msg)
 }
 
 type BaseController struct {
@@ -81,15 +118,14 @@ func (b *BaseController) NewActionContext(req *http.Request, respWriter http.Res
 		req.Body = ioutil.NopCloser(bytes.NewBuffer(context.ReqRawBody))
 	}
 
-	req.ParseForm()
+	_ = req.ParseForm()
 	context.QueryValues = req.Form
 	context.RemoteRealAddr.Ip, context.RemoteRealAddr.Port = b.parseRemoteAddr(req)
 
-	context.TraceId, _ = idgen.DefaultTraceIdGenter.GenId(context.RemoteRealAddr.Ip, context.RemoteRealAddr.Port)
-
-	raddr := []byte(context.RemoteRealAddr.Ip + ":" + context.RemoteRealAddr.Port)
-	context.AccessLogger = resource.NewLogger(resource.AccessLogWriter,
-		golog.NewSimpleFormater().SetAddress(raddr).SetTraceId(context.TraceId))
+	context.TraceId = b.parseTraceId(context)
+	context.NoticeLog(
+		[]byte("Request from "+context.RemoteRealAddr.Ip+":"+context.RemoteRealAddr.Port),
+		[]byte(req.RequestURI))
 
 	context.RespWriter.Header().Add("X-Powered-By", "gohttp")
 
@@ -107,4 +143,19 @@ func (b *BaseController) parseRemoteAddr(req *http.Request) (string, string) {
 	}
 
 	return rs[0], rs[1]
+}
+
+func (b *BaseController) parseTraceId(context *BaseContext) []byte {
+	traceId := strings.TrimSpace(context.Req.Header.Get(TRACE_ID_HEADER_KEY))
+	if len(traceId) != 0 {
+		return []byte(traceId)
+	}
+
+	traceId = strings.TrimSpace(context.QueryValues.Get(TRACE_ID_QUERY_KEY))
+	if len(traceId) != 0 {
+		return []byte(traceId)
+	}
+
+	traceIdBytes, _ := idgen.DefaultTraceIdGenter.GenId(context.RemoteRealAddr.Ip, context.RemoteRealAddr.Port)
+	return traceIdBytes
 }

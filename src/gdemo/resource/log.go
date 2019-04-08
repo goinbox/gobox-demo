@@ -8,7 +8,11 @@ import (
 	"github.com/goinbox/golog"
 )
 
-var AccessLogWriter golog.IWriter
+var accessLogWriter golog.IWriter
+var AccessLogger golog.ILogger
+
+var traceLogWriter golog.IWriter
+var TraceLogger golog.ILogger
 
 var NoopLogger golog.ILogger = new(golog.NoopLogger)
 
@@ -19,22 +23,31 @@ var TestLogger golog.ILogger = golog.NewSimpleLogger(
 
 func InitLog(systemName string) *exception.Exception {
 	if conf.BaseConf.IsDev {
-		AccessLogWriter = golog.NewConsoleWriter()
+		accessLogWriter = golog.NewConsoleWriter()
 	} else {
 		fw, err := golog.NewFileWriter(conf.LogConf.RootPath+"/"+systemName+"_access.log", conf.LogConf.Bufsize)
 		if err != nil {
 			return exception.New(errno.E_SYS_INIT_LOG_FAIL, err.Error())
 		}
-		AccessLogWriter = golog.NewAsyncWriter(fw, conf.LogConf.AsyncQueueSize)
+		accessLogWriter = golog.NewAsyncWriter(fw, conf.LogConf.AsyncQueueSize)
 	}
+	AccessLogger = NewLogger(accessLogWriter)
+
+	fw, err := golog.NewFileWriter(conf.LogConf.RootPath+"/"+systemName+"_trace.log", conf.LogConf.Bufsize)
+	if err != nil {
+		return exception.New(errno.E_SYS_INIT_LOG_FAIL, err.Error())
+	}
+	traceLogWriter = golog.NewAsyncWriter(fw, conf.LogConf.AsyncQueueSize)
+	TraceLogger = NewLogger(traceLogWriter)
 
 	return nil
 }
 
-func NewLogger(writer golog.IWriter, formater golog.IFormater) golog.ILogger {
-	return golog.NewSimpleLogger(writer, formater).SetLogLevel(conf.LogConf.Level)
+func NewLogger(writer golog.IWriter) golog.ILogger {
+	return golog.NewSimpleLogger(writer, golog.NewSimpleFormater()).SetLogLevel(conf.LogConf.Level)
 }
 
 func FreeLog() {
-	AccessLogWriter.Free()
+	accessLogWriter.Free()
+	traceLogWriter.Free()
 }

@@ -1,7 +1,6 @@
 package svc
 
 import (
-	"gdemo/misc"
 	"gdemo/resource"
 
 	"github.com/goinbox/mysql"
@@ -10,7 +9,7 @@ import (
 )
 
 func TestSqlSvcInsertGetListUpdateDelete(t *testing.T) {
-	ss := NewSqlSvc(resource.TestLogger, resource.MysqlClientPool, true)
+	ss := NewSqlSvc([]byte("TestSqlSvcInsertGetListUpdateDelete"), resource.MysqlClientPool, true)
 
 	resource.TestLogger.Notice([]byte("test Insert"))
 
