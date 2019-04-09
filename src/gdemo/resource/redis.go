@@ -23,7 +23,7 @@ func InitRedis() {
 func NewRedisClientFunc(rconf *conf.RedisConf) func() (*redis.Client, error) {
 	return func() (*redis.Client, error) {
 		config := redis.NewConfig(rconf.Host, rconf.Port, rconf.Pass)
-		config.LogLevel = golog.LEVEL_INFO
+		config.LogLevel = golog.LEVEL_DEBUG
 		config.ConnectTimeout = rconf.ConnectTimeout
 		config.ReadTimeout = rconf.RWTimeout
 		config.WriteTimeout = rconf.RWTimeout

@@ -82,39 +82,35 @@ func (b *BaseContext) Destruct() {
 }
 
 func (b *BaseContext) DebugLog(point, msg []byte) {
-	resource.AccessLogger.Debug(b.makeLogMsg(point, msg))
+	resource.AccessLogger.Debug(misc.FormatAccessLog(b.TraceId, point, msg))
 }
 
 func (b *BaseContext) InfoLog(point, msg []byte) {
-	resource.AccessLogger.Info(b.makeLogMsg(point, msg))
+	resource.AccessLogger.Info(misc.FormatAccessLog(b.TraceId, point, msg))
 }
 
 func (b *BaseContext) NoticeLog(point, msg []byte) {
-	resource.AccessLogger.Notice(b.makeLogMsg(point, msg))
+	resource.AccessLogger.Notice(misc.FormatAccessLog(b.TraceId, point, msg))
 }
 
 func (b *BaseContext) WarningLog(point, msg []byte) {
-	resource.AccessLogger.Warning(b.makeLogMsg(point, msg))
+	resource.AccessLogger.Warning(misc.FormatAccessLog(b.TraceId, point, msg))
 }
 
 func (b *BaseContext) ErrorLog(point, msg []byte) {
-	resource.AccessLogger.Error(b.makeLogMsg(point, msg))
+	resource.AccessLogger.Error(misc.FormatAccessLog(b.TraceId, point, msg))
 }
 
 func (b *BaseContext) CriticalLog(point, msg []byte) {
-	resource.AccessLogger.Critical(b.makeLogMsg(point, msg))
+	resource.AccessLogger.Critical(misc.FormatAccessLog(b.TraceId, point, msg))
 }
 
 func (b *BaseContext) AlertLog(point, msg []byte) {
-	resource.AccessLogger.Alert(b.makeLogMsg(point, msg))
+	resource.AccessLogger.Alert(misc.FormatAccessLog(b.TraceId, point, msg))
 }
 
 func (b *BaseContext) EmergencyLog(point, msg []byte) {
-	resource.AccessLogger.Emergency(b.makeLogMsg(point, msg))
-}
-
-func (b *BaseContext) makeLogMsg(point, msg []byte) []byte {
-	return misc.FormatAccessLog(b.TraceId, point, msg)
+	resource.AccessLogger.Emergency(misc.FormatAccessLog(b.TraceId, point, msg))
 }
 
 type BaseController struct {
