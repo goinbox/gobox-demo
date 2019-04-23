@@ -64,9 +64,12 @@ func TestMongoSvcInsertGetListUpdateDelete(t *testing.T) {
 		Name: "new-demo",
 	}
 	updateFields := map[string]bool{"name": true}
-	err = ms.UpdateById(tableName, ids[0], newDemo, updateFields)
+	setItems, err := ms.UpdateById(tableName, ids[0], newDemo, updateFields)
 	if err != nil {
 		t.Fatal(err)
+	}
+	for i, item := range setItems {
+		t.Log(i, item)
 	}
 
 	resource.TestLogger.Notice([]byte("test Get"))

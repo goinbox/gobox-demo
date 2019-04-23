@@ -42,21 +42,35 @@ func (d *MongoDemoSvc) Insert(entities ...*MongoDemoEntity) ([]interface{}, erro
 	for i, entity := range entities {
 		is[i] = entity
 	}
-
-	return d.MongoSvc.Insert(d.EntityName, demoColNames, is...)
+	ids, err := d.MongoSvc.Insert(d.EntityName, demoColNames, is...)
+	if err != nil {
+		d.ErrorLog([]byte("MongoDemoSvc.Insert"), []byte(err.Error()))
+	}
+	return ids, err
 }
 
 func (d *MongoDemoSvc) DeleteById(id interface{}) (bool, error) {
-	return d.MongoSvc.DeleteById(d.EntityName, id)
+	find, err := d.MongoSvc.DeleteById(d.EntityName, id)
+	if err != nil {
+		d.ErrorLog([]byte("MongoDemoSvc.DeleteById"), []byte(err.Error()))
+	}
+	return find, err
 }
 
-func (d *MongoDemoSvc) UpdateById(id interface{}, newEntity *MongoDemoEntity, updateFields map[string]bool) error {
-	return d.MongoSvc.UpdateById(d.EntityName, id, newEntity, updateFields)
+func (d *MongoDemoSvc) UpdateById(id interface{}, newEntity *MongoDemoEntity, updateFields map[string]bool) (bool, error) {
+	setItems, err := d.MongoSvc.UpdateById(d.EntityName, id, newEntity, updateFields)
+	if err != nil {
+		d.ErrorLog([]byte("MongoDemoSvc.UpdateById"), []byte(err.Error()))
+	}
+	return (setItems != nil), err
 }
 
 func (d *MongoDemoSvc) GetById(id interface{}) (*MongoDemoEntity, error) {
 	entity := new(MongoDemoEntity)
 	find, err := d.MongoSvc.GetById(entity, d.EntityName, id)
+	if err != nil {
+		d.ErrorLog([]byte("MongoDemoSvc.GetById"), []byte(err.Error()))
+	}
 	if err != nil {
 		return nil, err
 	}

@@ -1,12 +1,12 @@
 package mongodemo
 
 import (
-	"gdemo/dao"
 	"gdemo/errno"
 	"gdemo/svc"
 
 	"github.com/goinbox/exception"
 	"github.com/goinbox/gohttp/query"
+	"github.com/goinbox/mongo"
 )
 
 type indexActionParams struct {
@@ -17,7 +17,7 @@ type indexActionParams struct {
 }
 
 var indexQueryConditions map[string]string = map[string]string{
-	"status": dao.MONGO_COND_GREATER_EQUAL,
+	"status": mongo.MONGO_COND_GREATER_EQUAL,
 }
 
 func (d *MongoDemoController) IndexAction(context *MongoDemoContext) {

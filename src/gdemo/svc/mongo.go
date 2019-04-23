@@ -176,31 +176,31 @@ func (s *MongoSvc) DeleteById(tableName string, id interface{}) (bool, error) {
 	return true, nil
 }
 
-func (s *MongoSvc) UpdateById(tableName string, id interface{}, newEntityPtr interface{}, updateFields map[string]bool) error {
+func (s *MongoSvc) UpdateById(tableName string, id interface{}, newEntityPtr interface{}, updateFields map[string]bool) (map[string]interface{}, error) {
 	rnewv := reflect.ValueOf(newEntityPtr).Elem()
 	oldEntity := reflect.New(rnewv.Type()).Interface()
 
 	find, err := s.GetById(oldEntity, tableName, id)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if !find {
-		return nil
+		return nil, nil
 	}
 
 	setItems := s.reflectUpdateSetItems(reflect.ValueOf(oldEntity).Elem(), rnewv, updateFields)
 	if len(setItems) == 0 {
-		return nil
+		return nil, nil
 	}
 
 	setItems["edit_time"] = time.Now()
 
 	err = s.Dao().UpdateById(tableName, id, setItems)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return setItems, nil
 }
 
 func (s *MongoSvc) reflectUpdateSetItems(roldv, rnewv reflect.Value, updateFields map[string]bool) map[string]interface{} {

@@ -18,10 +18,7 @@ type MongoDemoContext struct {
 func (d *MongoDemoContext) BeforeAction() {
 	d.ApiContext.BeforeAction()
 
-	d.demoSvc = demoSvc.NewMongoDemoSvc(
-		d.AccessLogger,
-		d.MongoClient,
-	)
+	d.demoSvc = demoSvc.NewMongoDemoSvc(d.TraceId)
 }
 
 type MongoDemoController struct {
