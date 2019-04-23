@@ -1,10 +1,9 @@
 package mongodemo
 
 import (
-	"gdemo/dao"
+	"gdemo/resource"
 	"gdemo/svc"
 
-	"github.com/goinbox/golog"
 	"github.com/goinbox/mongo"
 
 	"reflect"
@@ -21,15 +20,20 @@ type MongoDemoEntity struct {
 }
 
 type MongoDemoSvc struct {
-	*svc.MongoBaseSvc
+	*svc.BaseSvc
+	*svc.MongoSvc
+	EntityName string
 }
 
-func NewMongoDemoSvc(alogger golog.ILogger, mclient *mongo.Client) *MongoDemoSvc {
-	bs := svc.NewBaseSvc().SetAccessLogger(alogger)
-	sbs := svc.NewMongoBaseSvc(bs, mclient, "mycoll")
+func NewMongoDemoSvc(traceId []byte) *MongoDemoSvc {
+	ms := svc.NewMongoSvc(traceId, resource.MongoClientPool, true)
 
 	return &MongoDemoSvc{
-		sbs,
+		BaseSvc: &svc.BaseSvc{
+			TraceId: traceId,
+		},
+		MongoSvc:   ms,
+		EntityName: "demo",
 	}
 }
 
@@ -39,20 +43,20 @@ func (d *MongoDemoSvc) Insert(entities ...*MongoDemoEntity) ([]interface{}, erro
 		is[i] = entity
 	}
 
-	return d.MongoBaseSvc.Insert(d.EntityName, demoColNames, is...)
+	return d.MongoSvc.Insert(d.EntityName, demoColNames, is...)
 }
 
 func (d *MongoDemoSvc) DeleteById(id interface{}) (bool, error) {
-	return d.MongoBaseSvc.DeleteById(d.EntityName, id)
+	return d.MongoSvc.DeleteById(d.EntityName, id)
 }
 
-func (d *MongoDemoSvc) UpdateById(id interface{}, newEntity *MongoDemoEntity, updateFields map[string]bool) (error, error) {
-	return d.MongoBaseSvc.UpdateById(d.EntityName, id, newEntity, updateFields)
+func (d *MongoDemoSvc) UpdateById(id interface{}, newEntity *MongoDemoEntity, updateFields map[string]bool) error {
+	return d.MongoSvc.UpdateById(d.EntityName, id, newEntity, updateFields)
 }
 
 func (d *MongoDemoSvc) GetById(id interface{}) (*MongoDemoEntity, error) {
 	entity := new(MongoDemoEntity)
-	find, err := d.MongoBaseSvc.GetById(entity, d.EntityName, id)
+	find, err := d.MongoSvc.GetById(entity, d.EntityName, id)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +69,7 @@ func (d *MongoDemoSvc) GetById(id interface{}) (*MongoDemoEntity, error) {
 
 func (d *MongoDemoSvc) SelectAll(mqp *svc.MongoQueryParams) (*[]MongoDemoEntity, error) {
 	entities := new([]MongoDemoEntity)
-	err := d.MongoBaseSvc.SelectAll(entities, d.EntityName, mqp, nil)
+	err := d.MongoSvc.SelectAll(entities, d.EntityName, mqp, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -75,10 +79,10 @@ func (d *MongoDemoSvc) SelectAll(mqp *svc.MongoQueryParams) (*[]MongoDemoEntity,
 func (d *MongoDemoSvc) SelectRegex(mqp *svc.MongoQueryParams) (*[]MongoDemoEntity, error) {
 	entities := new([]MongoDemoEntity)
 
-	setItems := d.MongoBaseSvc.ReflectQuerySetItems(reflect.ValueOf(mqp.ParamsStructPtr).Elem(), mqp.Exists, mqp.Conditions)
-	setItems["name"].(map[string]interface{})[dao.MONGO_COND_OPTIONS] = "i"
+	setItems := d.MongoSvc.ReflectQuerySetItems(reflect.ValueOf(mqp.ParamsStructPtr).Elem(), mqp.Exists, mqp.Conditions)
+	setItems["name"].(map[string]interface{})[mongo.MONGO_COND_OPTIONS] = "i"
 
-	err := d.MongoBaseSvc.SelectAll(entities, d.EntityName, mqp, setItems)
+	err := d.MongoSvc.SelectAll(entities, d.EntityName, mqp, setItems)
 	if err != nil {
 		return nil, err
 	}

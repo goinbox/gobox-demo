@@ -3,21 +3,18 @@ package mongo
 import (
 	"encoding/json"
 
-	mgo "gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
-
 	"github.com/goinbox/golog"
+	"github.com/goinbox/gomisc"
+
+	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
 
 	"fmt"
 	"strings"
 )
 
-type CmdLogFmtFunc func(cmd string, args ...interface{}) []byte
-
 type Client struct {
 	config *Config
-	logger golog.ILogger
-	clff   CmdLogFmtFunc
 
 	conn      *mgo.Session
 	db        *mgo.Database
@@ -25,6 +22,10 @@ type Client struct {
 	connected bool
 
 	pipeCnt int
+
+	logger    golog.ILogger
+	traceId   []byte
+	logPrefix []byte
 }
 
 func NewClient(config *Config, logger golog.ILogger) *Client {
@@ -38,29 +39,34 @@ func NewClient(config *Config, logger golog.ILogger) *Client {
 
 	c := &Client{
 		config: config,
-		logger: logger,
+
+		logger:  logger,
+		traceId: []byte("-"),
+		logPrefix: []byte("[MongoClient " +
+			strings.Join(config.Hosts, ",") +
+			"]\t"),
 	}
-	c.clff = c.cmdLogFmt
-	c.SetLogger(logger)
 
 	return c
 }
 
 func (c *Client) SetLogger(logger golog.ILogger) *Client {
+	if logger == nil {
+		logger = new(golog.NoopLogger)
+	}
 	c.logger = logger
-	mgo.SetLogger(NewMongoLogger(logger))
+
+	return c
+}
+
+func (c *Client) SetTraceId(traceId []byte) *Client {
+	c.traceId = traceId
 
 	return c
 }
 
 func (c *Client) SetDebug(debug bool) {
 	mgo.SetDebug(debug)
-}
-
-func (c *Client) SetCmdLogFmtFunc(clff CmdLogFmtFunc) *Client {
-	c.clff = clff
-
-	return c
 }
 
 func (c *Client) Connected() bool {
@@ -76,15 +82,19 @@ func (c *Client) Free() {
 }
 
 func (c *Client) Connect() error {
-	url := "mongodb://" + c.config.User + ":" + c.config.Pass + "@" + strings.Join(c.config.Hosts, ",")
+	url := "mongodb://"
+	if c.config.User == "" && c.config.Pass == "" {
+		url += strings.Join(c.config.Hosts, ",")
+	} else {
+		url += c.config.User + ":" + c.config.Pass + "@" + strings.Join(c.config.Hosts, ",")
+	}
 
 	session, err := mgo.Dial(url)
 	if err != nil {
 		return err
 	}
 
-	//session.SetMode(mgo.Monotonic, true)
-	session.SetMode(mgo.Eventual, true)
+	session.SetMode(c.config.Mode, true)
 	session.SetSocketTimeout(c.config.SocketTimeout)
 	session.SetSyncTimeout(c.config.SyncTimeout)
 
@@ -144,18 +154,22 @@ func (c *Client) BuildQuery(coll string, query *Query) *mgo.Query {
 }
 
 func (c *Client) Query(coll string, query *Query) *mgo.Query {
+	c.log("Query", coll, query)
 	return c.BuildQuery(coll, query)
 }
 
 func (c *Client) Find(coll string, finder interface{}) *mgo.Query {
+	c.log("Find", coll, finder)
 	return c.Collection(coll).Find(finder)
 }
 
 func (c *Client) FindId(coll string, id interface{}) *mgo.Query {
+	c.log("FindId", coll, id)
 	return c.Collection(coll).FindId(id)
 }
 
 func (c *Client) FindAndModify(coll string, finder interface{}, updater interface{}) (result bson.M, err error) {
+	c.log("FindAndModify", coll, finder, updater)
 	change := mgo.Change{
 		Update:    updater,
 		Upsert:    true,
@@ -164,130 +178,78 @@ func (c *Client) FindAndModify(coll string, finder interface{}, updater interfac
 
 	result = bson.M{}
 	_, err = c.Collection(coll).Find(finder).Apply(change, result)
-	if err != nil {
-		c.log("FindAndModify Fail, Error:", err)
-	}
 	return result, err
 }
 
 func (c *Client) Indexes(coll string) (indexes []mgo.Index, err error) {
+	c.log("Indexes", coll)
 	indexes, err = c.Collection(coll).Indexes()
-	if err != nil {
-		c.log("Indexes Fail, Indexes:", indexes,
-			", Error:", err)
-	}
 	return indexes, err
 }
 
 func (c *Client) Insert(coll string, docs ...interface{}) error {
+	c.log("Insert", coll, docs)
 	err := c.Collection(coll).Insert(docs...)
-	if err != nil {
-		c.log("Insert Fail, docs:", docs,
-			", Error:", err)
-	}
 	return err
 }
 
 func (c *Client) Update(coll string, selector, updater interface{}) error {
+	c.log("Update", coll, selector, updater)
 	err := c.Collection(coll).Update(selector, updater)
-	if err != nil {
-		c.log("Update Fail, Selector:", selector,
-			", Updater:", updater,
-			", Error:", err)
-	}
 	return err
 }
 
 func (c *Client) UpdateAll(coll string, selector, updater interface{}) error {
+	c.log("UpdateAll", coll, selector, updater)
 	_, err := c.Collection(coll).UpdateAll(selector, updater)
-	if err != nil {
-		c.log("UpdateAll Fail, Selector:", selector,
-			", Updater:", updater,
-			", Error:", err)
-	}
 	return err
 }
 
 func (c *Client) UpdateId(coll string, id interface{}, updater interface{}) error {
+	c.log("UpdateId", coll, id, updater)
 	err := c.Collection(coll).UpdateId(id, updater)
-	if err != nil {
-		c.log("UpdateId Fail, Id:", id,
-			", Updater:", updater,
-			", Error:", err)
-	}
 	return err
 }
 
 func (c *Client) Upsert(coll string, selector, updater interface{}) error {
+	c.log("Upsert", coll, selector, updater)
 	_, err := c.Collection(coll).Upsert(selector, updater)
-	if err != nil {
-		c.log("Upsert Fail, Selector:", selector,
-			", Updater:", updater,
-			", Error:", err)
-	}
 	return err
 }
 
 func (c *Client) Remove(coll string, selector interface{}) error {
+	c.log("Remove", coll, selector)
 	err := c.Collection(coll).Remove(selector)
-	if err != nil {
-		c.log("Remove Fail, Selector:", selector,
-			", Error:", err)
-	}
 	return err
 }
 
 func (c *Client) RemoveAll(coll string, selector interface{}) error {
+	c.log("RemoveAll", coll, selector)
 	_, err := c.Collection(coll).RemoveAll(selector)
-	if err != nil {
-		c.log("RemoveAll Fail, Selector:", selector,
-			", Error:", err)
-	}
 	return err
 }
 
 func (c *Client) RemoveId(coll string, id interface{}) error {
+	c.log("RemoveId", coll, id)
 	err := c.Collection(coll).RemoveId(id)
-	if err != nil {
-		c.log("RemoveId Fail, Id:", id,
-			", Error:", err)
-	}
 	return err
-}
-
-func (c *Client) log(cmd string, args ...interface{}) {
-	if len(cmd) == 0 {
-		return
-	}
-
-	msg := c.clff(cmd, args...)
-	if msg != nil {
-		c.logger.Log(c.config.LogLevel, msg)
-	}
-}
-
-func (c *Client) cmdLogFmt(cmd string, args ...interface{}) []byte {
-	for _, arg := range args {
-		cmd += " " + fmt.Sprint(arg)
-	}
-
-	return []byte(cmd)
 }
 
 func (c *Client) ConvertBsonToStruct(doc interface{}, entity interface{}) error {
 	bsonBytes, _ := bson.Marshal(doc)
 	err := bson.Unmarshal(bsonBytes, entity)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func (c *Client) ConvertJsonToStruct(doc interface{}, entity interface{}) error {
 	jsonBytes, _ := json.Marshal(doc)
 	err := json.Unmarshal(jsonBytes, entity)
-	if err != nil {
-		return err
+	return err
+}
+
+func (c *Client) log(query string, args ...interface{}) {
+	for _, arg := range args {
+		query += " " + fmt.Sprint(arg)
 	}
-	return nil
+	_ = c.logger.Log(c.config.LogLevel, gomisc.AppendBytes(c.traceId, []byte("\t"), c.logPrefix, []byte(query)))
 }

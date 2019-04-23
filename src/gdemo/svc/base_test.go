@@ -24,4 +24,5 @@ func init() {
 	_ = resource.InitLog("test")
 	resource.InitRedis()
 	resource.InitMysql()
+	resource.InitMongo()
 }

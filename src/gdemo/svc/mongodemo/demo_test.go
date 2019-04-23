@@ -1,9 +1,12 @@
 package mongodemo
 
 import (
-	"gdemo/dao"
-	"gdemo/misc"
+	"github.com/goinbox/mongo"
+
+	"gdemo/conf"
+	"gdemo/resource"
 	"gdemo/svc"
+	"os"
 	"time"
 
 	"testing"
@@ -14,8 +17,15 @@ type testQueryParamsStruct struct {
 	Status int    `bson:"status" json:"status"`
 }
 
+func init() {
+	_ = conf.Init(os.Getenv("GOPATH"))
+
+	_ = resource.InitLog("test")
+	resource.InitMongo()
+}
+
 func TestDemoSvc(t *testing.T) {
-	demoSvc := NewMongoDemoSvc(nil, misc.MongoTestClient())
+	demoSvc := NewMongoDemoSvc([]byte("traceMongoDemoSvc"))
 
 	ids, err := demoSvc.Insert(
 		&MongoDemoEntity{Name: "a1", Status: 0},
@@ -32,9 +42,9 @@ func TestDemoSvc(t *testing.T) {
 	}
 
 	baseEntity := svc.MongoBaseEntity{AddTime: time.Now()}
-	demoSvc.UpdateById(11, &MongoDemoEntity{MongoBaseEntity: baseEntity, Name: "ccc", Status: 1}, map[string]bool{"name": true, "status": true, "add_time": true})
+	demoSvc.UpdateById(1, &MongoDemoEntity{MongoBaseEntity: baseEntity, Name: "ccc", Status: 1}, map[string]bool{"name": true, "status": true, "add_time": true})
 
-	entity, err := demoSvc.GetById(11)
+	entity, err := demoSvc.GetById(1)
 	t.Log(entity, err)
 
 	mqp := &svc.MongoQueryParams{
@@ -44,8 +54,8 @@ func TestDemoSvc(t *testing.T) {
 		},
 		Exists: map[string]bool{"name": true, "status": true},
 		Conditions: map[string]string{
-			"name":   dao.MONGO_COND_EQUAL,
-			"status": dao.MONGO_COND_GREATER_EQUAL,
+			"name":   mongo.MONGO_COND_EQUAL,
+			"status": mongo.MONGO_COND_LESS_EQUAL,
 		},
 		OrderBy: []string{"name", "-_id"}, Offset: 0, Cnt: 10,
 	}
@@ -59,8 +69,8 @@ func TestDemoSvc(t *testing.T) {
 		},
 		Exists: map[string]bool{"name": true, "status": true},
 		Conditions: map[string]string{
-			"name":   dao.MONGO_COND_REGEX,
-			"status": dao.MONGO_COND_GREATER_EQUAL,
+			"name":   mongo.MONGO_COND_REGEX,
+			"status": mongo.MONGO_COND_LESS_EQUAL,
 		},
 		OrderBy: []string{"name", "-_id"}, Offset: 0, Cnt: 10,
 	}

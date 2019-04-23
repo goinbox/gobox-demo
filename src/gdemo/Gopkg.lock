@@ -13,12 +13,26 @@
   version = "v1.6.0"
 
 [[projects]]
-  digest = "1:ec6f9bf5e274c833c911923c9193867f3f18788c461f76f05f62bb1510e0ae65"
+  branch = "master"
+  digest = "1:78102ee4d536347316bc42e818340cc50902e45dbd7fdd524c5a1fc0cb07b588"
+  name = "github.com/globalsign/mgo"
+  packages = [
+    ".",
+    "bson",
+    "internal/json",
+    "internal/sasl",
+    "internal/scram",
+  ]
+  pruneopts = "UT"
+  revision = "eeefdecb41b842af6dc652aaea4026e8403e62df"
+
+[[projects]]
+  digest = "1:850c49ca338a10fec2cb9e78f793043ed23965489d09e30bcc19fe29719da313"
   name = "github.com/go-sql-driver/mysql"
   packages = ["."]
   pruneopts = "UT"
-  revision = "72cd26f257d44c1114970e19afddcd812016007e"
-  version = "v1.4.1"
+  revision = "a0583e0143b1624142adab07e0e97fe106d99561"
+  version = "v1.3.0"
 
 [[projects]]
   digest = "1:7f2f830c2881d935ae6ead14ca1b875b7a66669394fd18f182d582592e8c1b43"
@@ -55,8 +69,8 @@
     "system",
   ]
   pruneopts = "UT"
-  revision = "72672e91c0b763e9bef5773786f49149829d2f4c"
-  version = "v4.0.1"
+  revision = "4801d20572e52a28546328a0378d2e0a0275b744"
+  version = "v4.1.0"
 
 [[projects]]
   digest = "1:74870f59f6b586c90c71b61a98284f2c8c87c96396a13cbd87278393a01a2d83"
@@ -75,12 +89,12 @@
   version = "v1.2.0"
 
 [[projects]]
-  digest = "1:396bf0dc8a092ee4ab8783d1522905240e6e5aa0f8dd7381e14a0d9bb611fc27"
+  digest = "1:d0033fbc8d779bf432f867d3686b1d65909fb74190e118b8bc915609cf50415b"
   name = "github.com/goinbox/mongo"
   packages = ["."]
   pruneopts = "UT"
-  revision = "948e0eb35b75187ac670948b8fcbe63985465882"
-  version = "v1.0.7"
+  revision = "e8b9c0f2d7c5ab41970ea4efa379e8751c4a8cbb"
+  version = "v1.1.3"
 
 [[projects]]
   digest = "1:d30f6def70f66197737e4db073ce2b2aeb51694a164c0a79b0a9c82a0df750b4"
@@ -114,32 +128,12 @@
   revision = "f2e8cf36ca0502aa2703f5213c3206243cc99ae4"
   version = "v1.2.6"
 
-[[projects]]
-  digest = "1:c25289f43ac4a68d88b02245742347c94f1e108c534dda442188015ff80669b3"
-  name = "google.golang.org/appengine"
-  packages = ["cloudsql"]
-  pruneopts = "UT"
-  revision = "54a98f90d1c46b7731eb8fb305d2a321c30ef610"
-  version = "v1.5.0"
-
-[[projects]]
-  branch = "v2"
-  digest = "1:988de7520a09024d5d94cd99bd545afbf194893994ec759b1cda0a0bbb6adb80"
-  name = "gopkg.in/mgo.v2"
-  packages = [
-    ".",
-    "bson",
-    "internal/json",
-    "internal/sasl",
-    "internal/scram",
-  ]
-  pruneopts = "UT"
-  revision = "9856a29383ce1c59f308dd1cf0363a79b5bef6b5"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/globalsign/mgo",
+    "github.com/globalsign/mgo/bson",
     "github.com/goinbox/color",
     "github.com/goinbox/crypto",
     "github.com/goinbox/exception",
@@ -154,8 +148,6 @@
     "github.com/goinbox/mysql",
     "github.com/goinbox/pidfile",
     "github.com/goinbox/redis",
-    "gopkg.in/mgo.v2",
-    "gopkg.in/mgo.v2/bson",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

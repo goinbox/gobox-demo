@@ -1,8 +1,8 @@
 package idgen
 
 import (
+	"github.com/globalsign/mgo/bson"
 	"github.com/goinbox/mongo"
-	"gopkg.in/mgo.v2/bson"
 )
 
 type MongoIdGenter struct {
@@ -20,8 +20,8 @@ func NewMongoIdGenter(client *mongo.Client) *MongoIdGenter {
 	}
 }
 
-func (m *MongoIdGenter) GenId(name string) (int64, error) {
-	finder := bson.M{"_id": name}
+func (m *MongoIdGenter) GenId(tableName string) (int64, error) {
+	finder := bson.M{"_id": tableName}
 	updater := bson.M{"$inc": bson.M{"max_id": 1}}
 
 	result, err := m.client.FindAndModify("id_genter", finder, updater)
