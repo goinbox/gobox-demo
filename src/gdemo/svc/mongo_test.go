@@ -20,7 +20,7 @@ type MongoDemoEntity struct {
 }
 
 func TestMongoSvcInsertGetListUpdateDelete(t *testing.T) {
-
+	resource.InitMongoTest()
 	ms := NewMongoSvc([]byte("TestMongoSvcInsertGetListUpdateDelete"), resource.MongoClientPool, true)
 
 	resource.TestLogger.Notice([]byte("test Insert"))

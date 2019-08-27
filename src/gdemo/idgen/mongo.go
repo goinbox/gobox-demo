@@ -20,6 +20,12 @@ func NewMongoIdGenter(client *mongo.Client) *MongoIdGenter {
 	}
 }
 
+func (m *MongoIdGenter) SetClient(client *mongo.Client) *MongoIdGenter {
+	m.client = client
+
+	return m
+}
+
 func (m *MongoIdGenter) GenId(tableName string) (int64, error) {
 	finder := bson.M{"_id": tableName}
 	updater := bson.M{"$inc": bson.M{"max_id": 1}}

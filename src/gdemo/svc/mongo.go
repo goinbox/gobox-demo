@@ -92,6 +92,18 @@ func (s *MongoSvc) IdGenter() *idgen.MongoIdGenter {
 	return s.idGenter
 }
 
+func (s *MongoSvc) SendBackClient() {
+	if !s.dao.Client.Closed() {
+		s.dao.Client.SetLogger(resource.NoopLogger)
+		_ = s.pool.Put(s.dao.Client)
+	}
+
+	s.dao.Client = nil
+	if s.idGenter != nil {
+		s.idGenter.SetClient(nil)
+	}
+}
+
 func (s *MongoSvc) FillBaseEntityForInsert(baseEntity *MongoBaseEntity, rev reflect.Value, tableName string) error {
 	ts := time.Now()
 	entityId := rev.FieldByName("Id").Interface()
@@ -141,6 +153,7 @@ func (s *MongoSvc) Insert(tableName string, colNames []string, entities ...inter
 	}
 
 	err := s.Dao().InsertRows(tableName, colNames, colsValues...)
+	defer s.SendBackClient()
 	if err != nil {
 		return nil, err
 	}
@@ -170,6 +183,7 @@ func (s *MongoSvc) reflectInsertColValues(rev reflect.Value) []interface{} {
 
 func (s *MongoSvc) DeleteById(tableName string, id interface{}) (bool, error) {
 	err := s.Dao().DeleteById(tableName, id)
+	defer s.SendBackClient()
 	if err != nil {
 		return false, err
 	}
@@ -196,6 +210,7 @@ func (s *MongoSvc) UpdateById(tableName string, id interface{}, newEntityPtr int
 	setItems["edit_time"] = time.Now()
 
 	err = s.Dao().UpdateById(tableName, id, setItems)
+	defer s.SendBackClient()
 	if err != nil {
 		return nil, err
 	}
@@ -232,6 +247,7 @@ func (s *MongoSvc) reflectUpdateSetItems(roldv, rnewv reflect.Value, updateField
 
 func (s *MongoSvc) GetById(entityPtr interface{}, tableName string, id interface{}) (bool, error) {
 	result, err := s.Dao().SelectById(tableName, id)
+	defer s.SendBackClient()
 	if err != nil && err != mgo.ErrNotFound {
 		return false, err
 	}
@@ -254,6 +270,7 @@ func (s *MongoSvc) SelectAll(entityListPtr interface{}, tableName string, mqp *M
 
 	query := mongo.NewQuery().Find(setItems).Sort(mqp.OrderBy...).Skip(mqp.Offset).Limit(mqp.Cnt)
 	result, err := s.Dao().SelectAll(tableName, query)
+	defer s.SendBackClient()
 
 	if err != nil {
 		return err

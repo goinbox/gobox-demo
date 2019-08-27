@@ -36,7 +36,7 @@ func (s *simpleFormater) Format(level int, msg []byte) []byte {
 	}
 
 	return gomisc.AppendBytes(
-		[]byte("["), lm, []byte("]\t"),
+		lm, []byte("\t"),
 		[]byte("["), []byte(time.Now().Format(s.timeLayout)), []byte("]\t"),
 		msg,
 	)

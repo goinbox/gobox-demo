@@ -27,12 +27,12 @@
   revision = "eeefdecb41b842af6dc652aaea4026e8403e62df"
 
 [[projects]]
-  digest = "1:850c49ca338a10fec2cb9e78f793043ed23965489d09e30bcc19fe29719da313"
+  digest = "1:ec6f9bf5e274c833c911923c9193867f3f18788c461f76f05f62bb1510e0ae65"
   name = "github.com/go-sql-driver/mysql"
   packages = ["."]
   pruneopts = "UT"
-  revision = "a0583e0143b1624142adab07e0e97fe106d99561"
-  version = "v1.3.0"
+  revision = "72cd26f257d44c1114970e19afddcd812016007e"
+  version = "v1.4.1"
 
 [[projects]]
   digest = "1:7f2f830c2881d935ae6ead14ca1b875b7a66669394fd18f182d582592e8c1b43"
@@ -73,12 +73,12 @@
   version = "v4.1.0"
 
 [[projects]]
-  digest = "1:74870f59f6b586c90c71b61a98284f2c8c87c96396a13cbd87278393a01a2d83"
+  digest = "1:c0f8782c0ccad16617d6471729ebc8bbe38477e462ea034d260186dedf30c025"
   name = "github.com/goinbox/golog"
   packages = ["."]
   pruneopts = "UT"
-  revision = "19c013aa8d3beee483e69b2bed4ac128004038b7"
-  version = "v2.1.1"
+  revision = "3302911616979697b86610bfe69ea1604cd2c2b2"
+  version = "v2.1.2"
 
 [[projects]]
   digest = "1:56840882539fdb14f36e39074729ecf20510a18bd09658317f1a474ea666e406"
@@ -89,12 +89,12 @@
   version = "v1.2.0"
 
 [[projects]]
-  digest = "1:d0033fbc8d779bf432f867d3686b1d65909fb74190e118b8bc915609cf50415b"
+  digest = "1:90d646a81191c975520090ef11fc521d0053b0ae16c50b389ffd4c20b13165cb"
   name = "github.com/goinbox/mongo"
   packages = ["."]
   pruneopts = "UT"
-  revision = "e8b9c0f2d7c5ab41970ea4efa379e8751c4a8cbb"
-  version = "v1.1.3"
+  revision = "4089bc9be13d3fc04b8434c1f38df80cedec98ae"
+  version = "v1.1.4"
 
 [[projects]]
   digest = "1:d30f6def70f66197737e4db073ce2b2aeb51694a164c0a79b0a9c82a0df750b4"
@@ -127,6 +127,14 @@
   pruneopts = "UT"
   revision = "f2e8cf36ca0502aa2703f5213c3206243cc99ae4"
   version = "v1.2.6"
+
+[[projects]]
+  digest = "1:c25289f43ac4a68d88b02245742347c94f1e108c534dda442188015ff80669b3"
+  name = "google.golang.org/appengine"
+  packages = ["cloudsql"]
+  pruneopts = "UT"
+  revision = "b2f4a3cf3c67576a2ee09e1fe62656a5086ce880"
+  version = "v1.6.1"
 
 [solve-meta]
   analyzer-name = "dep"

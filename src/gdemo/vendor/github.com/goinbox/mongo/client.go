@@ -16,10 +16,12 @@ import (
 type Client struct {
 	config *Config
 
-	conn      *mgo.Session
-	db        *mgo.Database
-	coll      *mgo.Collection
-	connected bool
+	conn *mgo.Session
+	db   *mgo.Database
+	coll *mgo.Collection
+
+	connected  bool
+	connClosed bool
 
 	pipeCnt int
 
@@ -73,12 +75,17 @@ func (c *Client) Connected() bool {
 	return c.connected
 }
 
+func (c *Client) Closed() bool {
+	return c.connClosed
+}
+
 func (c *Client) Free() {
 	if c.conn != nil {
 		c.conn.Close()
 	}
 
 	c.connected = false
+	c.connClosed = true
 }
 
 func (c *Client) Connect() error {
