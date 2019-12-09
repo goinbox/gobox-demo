@@ -15,12 +15,12 @@ curl "$urlPrefix/add?name=aaa&status=1" -H "$headerHost"
 echo ""
 echo "====== test edit ======"
 
-curl "$urlPrefix/edit?id=101&name=bbb&status=1" -H "$headerHost"
+curl "$urlPrefix/edit?id=63&name=bbb&status=1" -H "$headerHost"
 
 echo ""
 echo "====== test get ======"
 
-curl "$urlPrefix/get?id=61" -H "$headerHost"
+curl "$urlPrefix/get?id=63" -H "$headerHost"
 
 echo ""
 echo "====== test del ======"

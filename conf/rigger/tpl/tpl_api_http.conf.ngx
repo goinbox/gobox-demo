@@ -1,5 +1,5 @@
 upstream ${API_UPSTREAM} {
-    server 127.0.0.1:${API_GOHTTP_PORT};
+    server ${API_GOHTTP_HOST}:${API_GOHTTP_PORT};
 
     keepalive 1000;
 }

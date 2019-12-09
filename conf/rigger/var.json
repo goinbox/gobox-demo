@@ -1,5 +1,5 @@
 {
-    "PRJ_NAME" : "gdemo",
+    "PRJ_NAME": "gdemo",
     "PRJ_HOME": "__ARG__(prjHome)",
     "RIGGER_TPL_ROOT": "${PRJ_HOME}/conf/rigger/tpl",
 
@@ -13,19 +13,23 @@
 
     "NGX_DATA_ROOT": {
         "ligang": "/data/nginx",
+        "gibsonli": "/data/nginx",
         "default": "/usr/local/nginx"
     },
-    "NGX_LOG_ROOT": {
-        "ligang": "${NGX_DATA_ROOT}/logs",
-        "default": "/usr/local/nginx/logs"
-    },
+    "NGX_LOG_ROOT": "${NGX_DATA_ROOT}/logs",
     "NGX_EXEC_PREFIX": {
         "ligang": "/usr/local/bin/dbox exec nginx nginx",
+        "gibsonli": "/usr/local/bin/dbox exec nginx nginx",
         "default": "sudo /usr/local/nginx/sbin/nginx"
     },
 
     "API_HTTP_DOMAIN": "${USER}.gdemo.com",
     "API_UPSTREAM": "gdemo_golang_${USER}",
+    "API_GOHTTP_HOST": {
+        "ligang": "docker.for.mac.host.internal",
+        "gibsonli": "docker.for.mac.host.internal",
+        "default": "127.0.0.1"
+    },
     "API_GOHTTP_PORT": "__MATH__(6001+${UID})",
     "PPROF_PORT": "__MATH__(6060+${UID})",
 
