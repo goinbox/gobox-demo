@@ -5,7 +5,7 @@ import (
 	"gdemo/misc"
 	"gdemo/resource"
 
-	"github.com/goinbox/gohttp/controller"
+	gcontroller "github.com/goinbox/gohttp/controller"
 
 	"bytes"
 	"io/ioutil"
@@ -28,10 +28,9 @@ const (
 )
 
 type BaseContext struct {
-	Req        *http.Request
+	*gcontroller.BaseContext
+
 	ReqRawBody []byte
-	RespWriter http.ResponseWriter
-	RespBody   []byte
 
 	QueryValues    url.Values
 	RemoteRealAddr struct {
@@ -43,27 +42,9 @@ type BaseContext struct {
 	StartTime time.Time
 }
 
-func (b *BaseContext) Request() *http.Request {
-	return b.Req
-}
-
-func (b *BaseContext) ResponseWriter() http.ResponseWriter {
-	return b.RespWriter
-}
-
-func (b *BaseContext) ResponseBody() []byte {
-	return b.RespBody
-}
-
-func (b *BaseContext) SetResponseBody(body []byte) {
-	b.RespBody = body
-}
-
-func (b *BaseContext) BeforeAction() {
-}
-
 func (b *BaseContext) AfterAction() {
-	b.DebugLog([]byte("Response"), b.RespBody)
+	body := b.ResponseBody()
+	b.DebugLog([]byte("Response"), body)
 
 	resource.TraceLogger.Info(
 		misc.FormatTraceLog(&misc.TraceLogArgs{
@@ -71,14 +52,9 @@ func (b *BaseContext) AfterAction() {
 			Point:     []byte("AllTime"),
 			StartTime: b.StartTime,
 			EndTime:   time.Now(),
-			Msg:       b.RespBody,
+			Msg:       body,
 		}),
 	)
-}
-
-func (b *BaseContext) Destruct() {
-	b.RespBody = nil
-	b.QueryValues = nil
 }
 
 func (b *BaseContext) DebugLog(point, msg []byte) {
@@ -116,11 +92,11 @@ func (b *BaseContext) EmergencyLog(point, msg []byte) {
 type BaseController struct {
 }
 
-func (b *BaseController) NewActionContext(req *http.Request, respWriter http.ResponseWriter) controller.ActionContext {
+func (b *BaseController) NewActionContext(req *http.Request, respWriter http.ResponseWriter) gcontroller.ActionContext {
 	context := &BaseContext{
-		Req:        req,
-		RespWriter: respWriter,
-		StartTime:  time.Now(),
+		BaseContext: gcontroller.NewBaseContext(req, respWriter),
+
+		StartTime: time.Now(),
 	}
 
 	if req.ContentLength < MAX_AUTO_PARSE_BODY_LEN {
@@ -137,7 +113,7 @@ func (b *BaseController) NewActionContext(req *http.Request, respWriter http.Res
 		[]byte("Request from "+context.RemoteRealAddr.Ip+":"+context.RemoteRealAddr.Port),
 		[]byte(req.RequestURI))
 
-	context.RespWriter.Header().Add("X-Powered-By", "gohttp")
+	context.ResponseWriter().Header().Add("X-Powered-By", "gohttp")
 
 	return context
 }
@@ -156,7 +132,7 @@ func (b *BaseController) parseRemoteAddr(req *http.Request) (string, string) {
 }
 
 func (b *BaseController) parseTraceId(context *BaseContext) []byte {
-	traceId := strings.TrimSpace(context.Req.Header.Get(TRACE_ID_HEADER_KEY))
+	traceId := strings.TrimSpace(context.Request().Header.Get(TRACE_ID_HEADER_KEY))
 	if len(traceId) != 0 {
 		return []byte(traceId)
 	}

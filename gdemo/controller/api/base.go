@@ -46,12 +46,12 @@ func (a *ApiContext) AfterAction() {
 	if f == "jsonp" {
 		callback := a.QueryValues.Get("_callback")
 		if callback != "" {
-			a.RespBody = misc.ApiJsonp(a.ApiData.V, a.ApiData.Data, a.ApiData.Err, html.EscapeString(callback))
+			a.SetResponseBody(misc.ApiJsonp(a.ApiData.V, a.ApiData.Data, a.ApiData.Err, html.EscapeString(callback)))
 			return
 		}
 	}
 
-	a.RespBody = misc.ApiJson(a.ApiData.V, a.ApiData.Data, a.ApiData.Err)
+	a.SetResponseBody(misc.ApiJson(a.ApiData.V, a.ApiData.Data, a.ApiData.Err))
 	a.BaseContext.AfterAction()
 }
 
