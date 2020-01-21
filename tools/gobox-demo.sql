@@ -1,4 +1,4 @@
--- Adminer 4.2.5 MySQL dump
+-- Adminer 4.6.2 MySQL dump
 
 SET NAMES utf8;
 SET time_zone = '+00:00';
@@ -14,10 +14,10 @@ USE `gobox-demo`;
 DROP TABLE IF EXISTS `demo`;
 CREATE TABLE `demo` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `add_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `edit_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `add_time` timestamp NOT NULL DEFAULT current_timestamp(),
+  `edit_time` timestamp NOT NULL DEFAULT current_timestamp(),
   `name` varchar(20) COLLATE utf8mb4_bin NOT NULL DEFAULT '',
-  `status` tinyint(4) unsigned NOT NULL DEFAULT '0',
+  `status` tinyint(4) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `status` (`status`),
@@ -26,26 +26,18 @@ CREATE TABLE `demo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 INSERT INTO `demo` (`id`, `add_time`, `edit_time`, `name`, `status`) VALUES
-(1,	'2018-03-20 08:24:15',	'2018-03-20 08:24:15',	'aa',	0),
-(2,	'2017-10-31 11:52:29',	'2018-02-01 09:56:09',	'tbvgtt',	3),
-(10,	'2017-10-26 17:06:30',	'2017-10-26 17:06:30',	'a',	0),
-(11,	'2017-10-26 17:06:30',	'2017-10-26 17:06:30',	'b',	1),
-(12,	'2017-11-02 10:45:28',	'2017-11-02 10:50:19',	'abcdefg',	3),
-(24,	'2017-11-09 17:09:51',	'2017-11-09 17:09:51',	'ttttttttt',	1),
-(25,	'2017-11-09 17:10:09',	'2017-11-09 17:10:09',	'tttt',	1),
-(27,	'2017-11-09 17:12:36',	'2017-11-09 17:12:36',	'ttttt',	1),
-(32,	'2018-02-01 09:55:50',	'2018-02-01 09:55:50',	'ttttaaaa',	1),
-(461,	'2017-10-27 08:20:49',	'2017-10-27 08:20:49',	'test',	1);
+(63,	'2019-12-09 07:28:34',	'2019-12-09 07:32:52',	'bbb',	1),
+(65,	'2019-12-09 07:32:52',	'2019-12-09 07:32:52',	'aaa',	1);
 
 DROP TABLE IF EXISTS `id_gen`;
 CREATE TABLE `id_gen` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(20) COLLATE utf8mb4_bin NOT NULL DEFAULT '',
-  `max_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `max_id` bigint(20) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 INSERT INTO `id_gen` (`id`, `name`, `max_id`) VALUES
-(1,	'demo',	60);
+(1,	'demo',	65);
 
--- 2018-03-22 01:56:21
+-- 2020-01-21 02:48:41
