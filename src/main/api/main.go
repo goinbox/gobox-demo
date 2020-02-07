@@ -31,7 +31,7 @@ func main() {
 	if prjHome == "" {
 		fmt.Println("missing flag prjHome: ")
 		flag.PrintDefaults()
-		os.Exit(errno.E_SYS_INVALID_PRJ_HOME)
+		os.Exit(errno.ESysInvalidPrjHome)
 	}
 
 	e := conf.Init(prjHome)
@@ -62,7 +62,7 @@ func main() {
 	pf, err := pidfile.CreatePidFile(conf.BaseConf.ApiPidFile)
 	if err != nil {
 		fmt.Printf("create pid file %s failed, error: %s\n", conf.BaseConf.ApiPidFile, err.Error())
-		os.Exit(errno.E_SYS_SAVE_PID_FILE_FAIL)
+		os.Exit(errno.ESysSavePidFileFail)
 	}
 
 	r := router.NewSimpleRouter()

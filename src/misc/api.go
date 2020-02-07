@@ -25,7 +25,7 @@ type ApiData struct {
 
 func ApiJson(v string, data interface{}, e *exception.Exception) []byte {
 	result := &ApiData{
-		Errno: errno.SUCCESS,
+		Errno: errno.Success,
 		Msg:   "",
 		V:     v,
 
@@ -38,7 +38,7 @@ func ApiJson(v string, data interface{}, e *exception.Exception) []byte {
 
 	aj, err := json.Marshal(result)
 	if err != nil {
-		result.Errno = errno.E_COMMON_JSON_ENCODE_ERROR
+		result.Errno = errno.ECommonJsonEncodeError
 		result.Msg = err.Error()
 		result.Data = nil
 
@@ -68,20 +68,20 @@ type ApiSignParams struct {
 var ApiSignQueryNames = []string{"t", "nonce"}
 
 func SetApiSignParams(qs *query.QuerySet, asp *ApiSignParams) {
-	qs.Int64Var(&asp.T, "t", true, errno.E_COMMON_INVALID_ARG, "invalid sign t", query.CheckInt64IsPositive)
-	qs.StringVar(&asp.Nonce, "nonce", true, errno.E_COMMON_INVALID_ARG, "invalid sign nonce", query.CheckStringNotEmpty)
-	qs.StringVar(&asp.Sign, "sign", true, errno.E_COMMON_INVALID_ARG, "invalid sign sign", query.CheckStringNotEmpty)
-	qs.IntVar(&asp.Debug, "debug", false, errno.E_COMMON_INVALID_ARG, "invalid sign debug", nil)
+	qs.Int64Var(&asp.T, "t", true, errno.ECommonInvalidArg, "invalid sign t", query.CheckInt64IsPositive)
+	qs.StringVar(&asp.Nonce, "nonce", true, errno.ECommonInvalidArg, "invalid sign nonce", query.CheckStringNotEmpty)
+	qs.StringVar(&asp.Sign, "sign", true, errno.ECommonInvalidArg, "invalid sign sign", query.CheckStringNotEmpty)
+	qs.IntVar(&asp.Debug, "debug", false, errno.ECommonInvalidArg, "invalid sign debug", nil)
 }
 
 func VerifyApiSign(asp *ApiSignParams, queryValues url.Values, signQueryNames []string, token string) *exception.Exception {
 	if time.Now().Unix()-asp.T > 600 {
-		return exception.New(errno.E_COMMON_INVALID_ARG, "verify sign failed, invalid sign t")
+		return exception.New(errno.ECommonInvalidArg, "verify sign failed, invalid sign t")
 	}
 
 	sign := CalApiSign(queryValues, signQueryNames, token)
 	if sign != asp.Sign {
-		return exception.New(errno.E_COMMON_INVALID_ARG, "verify sign failed, invalid sign sign")
+		return exception.New(errno.ECommonInvalidArg, "verify sign failed, invalid sign sign")
 	}
 
 	return nil

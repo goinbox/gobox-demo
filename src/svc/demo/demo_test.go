@@ -74,6 +74,6 @@ func TestDemoSvc(t *testing.T) {
 		t.Log("listByIds", entity, err)
 	}
 
-	total, merr, rerr := demoSvc.TotalRows(demoSvc.EntityName, demoSvc.RedisKeyPrefix, DEF_DEMO_TOTAL_ROWS_CACHE_EXPIRE_SECONDS)
+	total, merr, rerr := demoSvc.TotalRows(demoSvc.EntityName, demoSvc.RedisKeyPrefix, DefDemoTotalRowsCacheExpireSeconds)
 	t.Log("total:", total, merr, rerr)
 }

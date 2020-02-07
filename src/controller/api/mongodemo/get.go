@@ -20,7 +20,7 @@ func (d *MongoDemoController) GetAction(context *MongoDemoContext) {
 
 	entity, err := context.demoSvc.GetById(ap.id)
 	if err != nil {
-		context.ApiData.Err = exception.New(errno.E_SYS_MONGO_ERROR, err.Error())
+		context.ApiData.Err = exception.New(errno.ESysMongoError, err.Error())
 		return
 	}
 	context.ApiData.Data = entity
@@ -30,7 +30,7 @@ func (d *MongoDemoController) parseGetActionParams(context *MongoDemoContext) (*
 	ap := new(getActionParams)
 
 	qs := query.NewQuerySet()
-	qs.Int64Var(&ap.id, "id", true, errno.E_COMMON_INVALID_ARG, "invalid id", query.CheckInt64IsPositive)
+	qs.Int64Var(&ap.id, "id", true, errno.ECommonInvalidArg, "invalid id", query.CheckInt64IsPositive)
 	e := qs.Parse(context.QueryValues)
 
 	return ap, e

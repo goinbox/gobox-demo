@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	ENTITY_REDIS_HASH_FIELD_TAG = "redis"
+	EntityRedisHashFieldTag = "redis"
 )
 
 type RedisSvc struct {
@@ -162,7 +162,7 @@ func (r *RedisSvc) ReflectSaveHashEntityArgs(rev reflect.Value) []interface{} {
 		}
 
 		retf := ret.Field(i)
-		fn, ok := retf.Tag.Lookup(ENTITY_REDIS_HASH_FIELD_TAG)
+		fn, ok := retf.Tag.Lookup(EntityRedisHashFieldTag)
 		if ok {
 			args = append(args, fn, revf.Interface())
 		}

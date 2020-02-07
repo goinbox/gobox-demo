@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	DEF_DEMO_ENTITY_CACHE_EXPIRE_SECONDS     = 60 * 30
-	DEF_DEMO_TOTAL_ROWS_CACHE_EXPIRE_SECONDS = 60 * 10
+	DefDemoEntityCacheExpireSeconds    = 60 * 30
+	DefDemoTotalRowsCacheExpireSeconds = 60 * 10
 )
 
 var demoEntityType reflect.Type = reflect.TypeOf(DemoEntity{})
@@ -52,7 +52,7 @@ func (d *DemoSvc) Insert(entities ...*DemoEntity) ([]int64, error) {
 		is[i] = entity
 	}
 
-	ids, merr, rerr := d.SqlRedisBindSvc.Insert(d.EntityName, d.EntityName, d.RedisKeyPrefix, demoColNames, DEF_DEMO_ENTITY_CACHE_EXPIRE_SECONDS, is...)
+	ids, merr, rerr := d.SqlRedisBindSvc.Insert(d.EntityName, d.EntityName, d.RedisKeyPrefix, demoColNames, DefDemoEntityCacheExpireSeconds, is...)
 	if rerr != nil {
 		d.ErrorLog([]byte("DemoSvc.Insert"), []byte(rerr.Error()))
 	}
@@ -63,7 +63,7 @@ func (d *DemoSvc) Insert(entities ...*DemoEntity) ([]int64, error) {
 func (d *DemoSvc) GetById(id int64) (*DemoEntity, error) {
 	entity := new(DemoEntity)
 
-	find, merr, rerr := d.SqlRedisBindSvc.GetById(d.EntityName, d.EntityName, d.RedisKeyPrefix, id, DEF_DEMO_ENTITY_CACHE_EXPIRE_SECONDS, entity)
+	find, merr, rerr := d.SqlRedisBindSvc.GetById(d.EntityName, d.EntityName, d.RedisKeyPrefix, id, DefDemoEntityCacheExpireSeconds, entity)
 	if rerr != nil {
 		d.ErrorLog([]byte("DemoSvc.GetById"), []byte(rerr.Error()))
 	}
@@ -88,7 +88,7 @@ func (d *DemoSvc) DeleteById(id int64) (bool, error) {
 }
 
 func (d *DemoSvc) UpdateById(id int64, newEntity *DemoEntity, updateFields map[string]bool) (bool, error) {
-	setItems, merr, rerr := d.SqlRedisBindSvc.UpdateById(d.EntityName, d.EntityName, d.RedisKeyPrefix, id, newEntity, updateFields, DEF_DEMO_ENTITY_CACHE_EXPIRE_SECONDS)
+	setItems, merr, rerr := d.SqlRedisBindSvc.UpdateById(d.EntityName, d.EntityName, d.RedisKeyPrefix, id, newEntity, updateFields, DefDemoEntityCacheExpireSeconds)
 	if rerr != nil {
 		d.ErrorLog([]byte("DemoSvc.UpdateById"), []byte(rerr.Error()))
 	}

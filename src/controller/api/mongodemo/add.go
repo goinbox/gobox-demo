@@ -17,7 +17,7 @@ func (d *MongoDemoController) AddAction(context *MongoDemoContext) {
 
 	ids, err := context.demoSvc.Insert(ap)
 	if err != nil {
-		context.ApiData.Err = exception.New(errno.E_COMMON_INSERT_ENTITY_FAILED, err.Error())
+		context.ApiData.Err = exception.New(errno.ECommonInsertEntityFailed, err.Error())
 		return
 	}
 
@@ -30,15 +30,15 @@ func (d *MongoDemoController) parseAddActionParams(context *MongoDemoContext) (*
 	ap := new(demoSvc.MongoDemoEntity)
 
 	qs := query.NewQuerySet()
-	qs.StringVar(&ap.Name, "name", true, errno.E_COMMON_INVALID_ARG, "invalid name", query.CheckStringNotEmpty)
-	qs.IntVar(&ap.Status, "status", true, errno.E_COMMON_INVALID_ARG, "invalid status", nil)
+	qs.StringVar(&ap.Name, "name", true, errno.ECommonInvalidArg, "invalid name", query.CheckStringNotEmpty)
+	qs.IntVar(&ap.Status, "status", true, errno.ECommonInvalidArg, "invalid status", nil)
 	e := qs.Parse(context.QueryValues)
 	if e != nil {
 		return ap, e
 	}
 
 	if ap.Status < 0 {
-		return ap, exception.New(errno.E_COMMON_INVALID_ARG, "invalid status")
+		return ap, exception.New(errno.ECommonInvalidArg, "invalid status")
 	}
 
 	return ap, nil

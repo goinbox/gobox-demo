@@ -1,23 +1,23 @@
 package errno
 
 const (
-	SUCCESS = 0
+	Success = 0
 
-	E_SYS_INVALID_PRJ_HOME      = 11
-	E_SYS_INIT_SERVER_CONF_FAIL = 12
-	E_SYS_INIT_LOG_FAIL         = 13
-	E_SYS_SAVE_PID_FILE_FAIL    = 14
-	E_SYS_MYSQL_ERROR           = 15
-	E_SYS_REDIS_ERROR           = 16
-	E_SYS_MONGO_ERROR           = 17
+	ESysInvalidPrjHome     = 11
+	ESysInitServerConfFail = 12
+	ESysInitLogFail        = 13
+	ESysSavePidFileFail    = 14
+	ESysMysqlError         = 15
+	ESysRedisError         = 16
+	ESysMongoError         = 17
 
-	E_COMMON_FILE_NOT_EXIST             = 101
-	E_COMMON_READ_FILE_ERROR            = 102
-	E_COMMON_JSON_ENCODE_ERROR          = 103
-	E_COMMON_JSON_DECODE_ERROR          = 104
-	E_COMMON_INVALID_API_FMT            = 105
-	E_COMMON_INVALID_API_JSONP_CALLBACK = 106
-	E_COMMON_INVALID_ARG                = 107
-	E_COMMON_INSERT_ENTITY_FAILED       = 108
-	E_COMMON_UPDATE_ENTITY_FAILED       = 109
+	ECommonFileNotExist            = 101
+	ECommonReadFileError           = 102
+	ECommonJsonEncodeError         = 103
+	ECommonJsonDecodeError         = 104
+	ECommonInvalidApiFmt           = 105
+	ECommonInvalidApiJsonpCallback = 106
+	ECommonInvalidArg              = 107
+	ECommonInsertEntityFailed      = 108
+	ECommonUpdateEntityFailed      = 109
 )

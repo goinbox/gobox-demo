@@ -39,7 +39,7 @@ func (d *DemoController) IndexAction(context *DemoContext) {
 
 	entities, err := context.demoSvc.SimpleQueryAnd(sqp)
 	if err != nil {
-		context.ApiData.Err = exception.New(errno.E_SYS_MYSQL_ERROR, err.Error())
+		context.ApiData.Err = exception.New(errno.ESysMysqlError, err.Error())
 		return
 	}
 
@@ -50,22 +50,22 @@ func (d *DemoController) parseIndexActionParams(context *DemoContext) (*indexAct
 	ap := new(indexActionParams)
 
 	qs := query.NewQuerySet()
-	qs.IntVar(&ap.Status, "status", false, errno.E_COMMON_INVALID_ARG, "invalid status", nil)
-	qs.Int64Var(&ap.offset, "offset", false, errno.E_COMMON_INVALID_ARG, "invalid offset", nil)
-	qs.Int64Var(&ap.cnt, "cnt", false, errno.E_COMMON_INVALID_ARG, "invalid cnt", nil)
+	qs.IntVar(&ap.Status, "status", false, errno.ECommonInvalidArg, "invalid status", nil)
+	qs.Int64Var(&ap.offset, "offset", false, errno.ECommonInvalidArg, "invalid offset", nil)
+	qs.Int64Var(&ap.cnt, "cnt", false, errno.ECommonInvalidArg, "invalid cnt", nil)
 	e := qs.Parse(context.QueryValues)
 	if e != nil {
 		return ap, nil, e
 	}
 
 	if ap.Status < 0 {
-		return ap, nil, exception.New(errno.E_COMMON_INVALID_ARG, "invalid status")
+		return ap, nil, exception.New(errno.ECommonInvalidArg, "invalid status")
 	}
 	if ap.offset < 0 {
-		return ap, nil, exception.New(errno.E_COMMON_INVALID_ARG, "invalid offset")
+		return ap, nil, exception.New(errno.ECommonInvalidArg, "invalid offset")
 	}
 	if ap.cnt < 0 {
-		return ap, nil, exception.New(errno.E_COMMON_INVALID_ARG, "invalid cnt")
+		return ap, nil, exception.New(errno.ECommonInvalidArg, "invalid cnt")
 	}
 
 	return ap, qs.ExistsInfo(), nil

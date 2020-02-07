@@ -16,15 +16,15 @@ import (
 )
 
 const (
-	REMOTE_REAL_IP_HEADER_KEY   = "REMOTE-REAL-IP"
-	REMOTE_REAL_PORT_HEADER_KEY = "REMOTE-REAL-PORT"
+	RemoteRealIpHeaderKey   = "REMOTE-REAL-IP"
+	RemoteRealPortHeaderKey = "REMOTE-REAL-PORT"
 
-	DOWNSTREAM_SERVER_IP = "127.0.0.1"
+	DownstreamServerIp = "127.0.0.1"
 
-	MAX_AUTO_PARSE_BODY_LEN = 1024 * 1024
+	MaxAutoParseBodyLen = 1024 * 1024
 
-	TRACE_ID_HEADER_KEY = "TRACE-ID"
-	TRACE_ID_QUERY_KEY  = "traceId"
+	TraceIdHeaderKey = "TRACE-ID"
+	TraceIdQueryKey  = "traceId"
 )
 
 type BaseContext struct {
@@ -99,7 +99,7 @@ func (b *BaseController) NewActionContext(req *http.Request, respWriter http.Res
 		StartTime: time.Now(),
 	}
 
-	if req.ContentLength < MAX_AUTO_PARSE_BODY_LEN {
+	if req.ContentLength < MaxAutoParseBodyLen {
 		context.ReqRawBody, _ = ioutil.ReadAll(req.Body)
 		req.Body = ioutil.NopCloser(bytes.NewBuffer(context.ReqRawBody))
 	}
@@ -120,9 +120,9 @@ func (b *BaseController) NewActionContext(req *http.Request, respWriter http.Res
 
 func (b *BaseController) parseRemoteAddr(req *http.Request) (string, string) {
 	rs := strings.Split(req.RemoteAddr, ":")
-	if rs[0] == DOWNSTREAM_SERVER_IP {
-		ip := strings.TrimSpace(req.Header.Get(REMOTE_REAL_IP_HEADER_KEY))
-		port := strings.TrimSpace(req.Header.Get(REMOTE_REAL_PORT_HEADER_KEY))
+	if rs[0] == DownstreamServerIp {
+		ip := strings.TrimSpace(req.Header.Get(RemoteRealIpHeaderKey))
+		port := strings.TrimSpace(req.Header.Get(RemoteRealPortHeaderKey))
 		if ip != "" && port != "" {
 			return ip, port
 		}
@@ -132,12 +132,12 @@ func (b *BaseController) parseRemoteAddr(req *http.Request) (string, string) {
 }
 
 func (b *BaseController) parseTraceId(context *BaseContext) []byte {
-	traceId := strings.TrimSpace(context.Request().Header.Get(TRACE_ID_HEADER_KEY))
+	traceId := strings.TrimSpace(context.Request().Header.Get(TraceIdHeaderKey))
 	if len(traceId) != 0 {
 		return []byte(traceId)
 	}
 
-	traceId = strings.TrimSpace(context.QueryValues.Get(TRACE_ID_QUERY_KEY))
+	traceId = strings.TrimSpace(context.QueryValues.Get(TraceIdQueryKey))
 	if len(traceId) != 0 {
 		return []byte(traceId)
 	}

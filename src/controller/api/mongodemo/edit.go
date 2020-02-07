@@ -27,7 +27,7 @@ func (d *MongoDemoController) EditAction(context *MongoDemoContext) {
 
 	updated, err := context.demoSvc.UpdateById(ap.Id, ap, exists)
 	if err != nil {
-		context.ApiData.Err = exception.New(errno.E_COMMON_UPDATE_ENTITY_FAILED, err.Error())
+		context.ApiData.Err = exception.New(errno.ECommonUpdateEntityFailed, err.Error())
 		return
 	}
 
@@ -39,9 +39,9 @@ func (d *MongoDemoController) parseEditActionParams(context *MongoDemoContext) (
 
 	qs := query.NewQuerySet()
 
-	qs.Int64Var(&ap.tid, "id", true, errno.E_COMMON_INVALID_ARG, "invalid id", query.CheckInt64IsPositive)
-	qs.StringVar(&ap.entiry.Name, "name", false, errno.E_COMMON_INVALID_ARG, "invalid name", query.CheckStringNotEmpty)
-	qs.IntVar(&ap.entiry.Status, "status", false, errno.E_COMMON_INVALID_ARG, "invalid status", nil)
+	qs.Int64Var(&ap.tid, "id", true, errno.ECommonInvalidArg, "invalid id", query.CheckInt64IsPositive)
+	qs.StringVar(&ap.entiry.Name, "name", false, errno.ECommonInvalidArg, "invalid name", query.CheckStringNotEmpty)
+	qs.IntVar(&ap.entiry.Status, "status", false, errno.ECommonInvalidArg, "invalid status", nil)
 	e := qs.Parse(context.QueryValues)
 
 	if e != nil {
@@ -51,7 +51,7 @@ func (d *MongoDemoController) parseEditActionParams(context *MongoDemoContext) (
 	ap.entiry.Id = ap.tid
 
 	if ap.entiry.Status < 0 {
-		return &ap.entiry, nil, exception.New(errno.E_COMMON_INVALID_ARG, "invalid status")
+		return &ap.entiry, nil, exception.New(errno.ECommonInvalidArg, "invalid status")
 	}
 
 	return &ap.entiry, qs.ExistsInfo(), nil

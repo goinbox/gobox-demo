@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	ENTITY_MONGO_FIELD_TAG = "bson"
-	ENTITY_MONGO_BASE      = "MongoBaseEntity"
+	EntityMongoFieldTag = "bson"
+	EntityMongoBase     = "MongoBaseEntity"
 )
 
 type MongoBaseEntity struct {
@@ -46,12 +46,12 @@ func ReflectMongoColNames(ret reflect.Type) []string {
 
 	for i := 0; i < ret.NumField(); i++ {
 		retf := ret.Field(i)
-		if retf.Type.Kind() == reflect.Struct && retf.Name == ENTITY_MONGO_BASE {
+		if retf.Type.Kind() == reflect.Struct && retf.Name == EntityMongoBase {
 			cns = ReflectMongoColNames(retf.Type)
 			continue
 		}
 
-		if name, ok := retf.Tag.Lookup(ENTITY_MONGO_FIELD_TAG); ok {
+		if name, ok := retf.Tag.Lookup(EntityMongoFieldTag); ok {
 			cns = append(cns, name)
 		}
 	}
@@ -137,8 +137,8 @@ func (s *MongoSvc) Insert(tableName string, colNames []string, entities ...inter
 	ids := make([]interface{}, cnt)
 	for i, entity := range entities {
 		rev := reflect.ValueOf(entity).Elem()
-		if rev.FieldByName(ENTITY_MONGO_BASE).IsValid() {
-			baseEntity := rev.FieldByName(ENTITY_MONGO_BASE).Addr().Interface().(*MongoBaseEntity)
+		if rev.FieldByName(EntityMongoBase).IsValid() {
+			baseEntity := rev.FieldByName(EntityMongoBase).Addr().Interface().(*MongoBaseEntity)
 			err := s.FillBaseEntityForInsert(baseEntity, rev, tableName)
 			if err != nil {
 				return nil, err
@@ -167,12 +167,12 @@ func (s *MongoSvc) reflectInsertColValues(rev reflect.Value) []interface{} {
 	ret := rev.Type()
 	for i := 0; i < rev.NumField(); i++ {
 		revf := rev.Field(i)
-		if revf.Kind() == reflect.Struct && revf.Type().Name() == ENTITY_MONGO_BASE {
+		if revf.Kind() == reflect.Struct && revf.Type().Name() == EntityMongoBase {
 			colValues = s.reflectInsertColValues(revf)
 			continue
 		}
 
-		_, ok := ret.Field(i).Tag.Lookup(ENTITY_MONGO_FIELD_TAG)
+		_, ok := ret.Field(i).Tag.Lookup(EntityMongoFieldTag)
 		if ok {
 			colValues = append(colValues, revf.Interface())
 		}
@@ -224,13 +224,13 @@ func (s *MongoSvc) reflectUpdateSetItems(roldv, rnewv reflect.Value, updateField
 	rnewt := rnewv.Type()
 	for i := 0; i < rnewv.NumField(); i++ {
 		rnewvf := rnewv.Field(i)
-		if rnewvf.Kind() == reflect.Struct && rnewvf.Type().Name() == ENTITY_MONGO_BASE {
+		if rnewvf.Kind() == reflect.Struct && rnewvf.Type().Name() == EntityMongoBase {
 			setItems = s.reflectUpdateSetItems(roldv.Field(i), rnewvf, updateFields)
 			continue
 		}
 
 		rnewtf := rnewt.Field(i)
-		colName, ok := rnewtf.Tag.Lookup(ENTITY_MONGO_FIELD_TAG)
+		colName, ok := rnewtf.Tag.Lookup(EntityMongoFieldTag)
 		if !ok {
 			continue
 		}
@@ -290,13 +290,13 @@ func (s *MongoSvc) ReflectQuerySetItems(rev reflect.Value, exists map[string]boo
 
 	for i := 0; i < rev.NumField(); i++ {
 		revf := rev.Field(i)
-		if revf.Kind() == reflect.Struct && revf.Type().Name() == ENTITY_MONGO_BASE {
+		if revf.Kind() == reflect.Struct && revf.Type().Name() == EntityMongoBase {
 			setItems = s.ReflectQuerySetItems(revf, exists, conditions)
 			continue
 		}
 
 		retf := ret.Field(i)
-		name, ok := retf.Tag.Lookup(ENTITY_MONGO_FIELD_TAG)
+		name, ok := retf.Tag.Lookup(EntityMongoFieldTag)
 		if !ok {
 			continue
 		}

@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	ENTITY_MYSQL_FIELD_TAG = "mysql"
+	EntityMysqlFieldTag = "mysql"
 )
 
 type SqlBaseEntity struct {
@@ -41,7 +41,7 @@ func ReflectColNames(ret reflect.Type) []string {
 			continue
 		}
 
-		if name, ok := retf.Tag.Lookup(ENTITY_MYSQL_FIELD_TAG); ok {
+		if name, ok := retf.Tag.Lookup(EntityMysqlFieldTag); ok {
 			cns = append(cns, name)
 		}
 	}
@@ -171,7 +171,7 @@ func (s *SqlSvc) ReflectInsertColValues(rev reflect.Value) []interface{} {
 			continue
 		}
 
-		_, ok := ret.Field(i).Tag.Lookup(ENTITY_MYSQL_FIELD_TAG)
+		_, ok := ret.Field(i).Tag.Lookup(EntityMysqlFieldTag)
 		if ok {
 			colValues = append(colValues, revf.Interface())
 		}
@@ -207,7 +207,7 @@ func (s *SqlSvc) ReflectEntityScanDests(rev reflect.Value) []interface{} {
 			continue
 		}
 
-		_, ok := ret.Field(i).Tag.Lookup(ENTITY_MYSQL_FIELD_TAG)
+		_, ok := ret.Field(i).Tag.Lookup(EntityMysqlFieldTag)
 		if ok {
 			dests = append(dests, revf.Addr().Interface())
 		}
@@ -259,7 +259,7 @@ func (s *SqlSvc) ReflectUpdateSetItems(roldv, rnewv reflect.Value, updateFields 
 		}
 
 		rnewtf := rnewt.Field(i)
-		colName, ok := rnewtf.Tag.Lookup(ENTITY_MYSQL_FIELD_TAG)
+		colName, ok := rnewtf.Tag.Lookup(EntityMysqlFieldTag)
 		if !ok {
 			continue
 		}
@@ -354,7 +354,7 @@ func (s *SqlSvc) ReflectQuerySetItems(rev reflect.Value, exists map[string]bool,
 		}
 
 		retf := ret.Field(i)
-		name, ok := retf.Tag.Lookup(ENTITY_MYSQL_FIELD_TAG)
+		name, ok := retf.Tag.Lookup(EntityMysqlFieldTag)
 		if !ok {
 			continue
 		}
