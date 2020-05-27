@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestDemoDaoRead(t *testing.T) {
+func TestSqlIdGenter(t *testing.T) {
 	idGenter := NewSqlIdGenter(getTestClient())
 
 	for i := 0; i < 10; i++ {
