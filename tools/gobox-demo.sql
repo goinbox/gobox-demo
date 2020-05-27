@@ -33,8 +33,9 @@ DROP TABLE IF EXISTS `id_gen`;
 CREATE TABLE `id_gen` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(20) COLLATE utf8mb4_bin NOT NULL DEFAULT '',
-  `max_id` bigint(20) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`)
+  `max_id` bigint(20) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 INSERT INTO `id_gen` (`id`, `name`, `max_id`) VALUES
