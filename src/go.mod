@@ -9,7 +9,7 @@ require (
 	github.com/goinbox/color v1.0.0
 	github.com/goinbox/crypto v1.1.0
 	github.com/goinbox/exception v1.0.1
-	github.com/goinbox/gohttp v4.3.0+incompatible
+	github.com/goinbox/gohttp v4.4.0+incompatible
 	github.com/goinbox/golog v2.1.2+incompatible
 	github.com/goinbox/gomisc v1.2.0
 	github.com/goinbox/mongo v1.1.4
