@@ -3,7 +3,7 @@ module gdemo
 go 1.13
 
 require (
-	github.com/garyburd/redigo v1.6.0 // indirect
+	github.com/garyburd/redigo v1.6.2 // indirect
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
 	github.com/goinbox/color v1.0.0

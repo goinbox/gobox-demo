@@ -3,7 +3,6 @@ package resource
 import (
 	"gdemo/conf"
 
-	"github.com/goinbox/golog"
 	"github.com/goinbox/mongo"
 )
 
@@ -20,7 +19,7 @@ func InitMongo() {
 func NewMongoClient() (*mongo.Client, error) {
 	config := mongo.NewConfig([]string{conf.MongoConf.Host + ":" + conf.MongoConf.Port}, conf.MongoConf.User, conf.MongoConf.Pass, conf.MongoConf.Name)
 
-	config.LogLevel = golog.LEVEL_DEBUG
+	config.LogLevel = conf.MongoConf.LogLevel
 	config.QueryTimeout = conf.MongoConf.RWTimeout
 
 	return mongo.NewClient(config, nil), nil
@@ -37,7 +36,7 @@ func InitMongoTest() {
 func NewMongoTestClient() (*mongo.Client, error) {
 	config := mongo.NewConfig([]string{"myhost:myport"}, "myname", "mypass", "mydb")
 
-	config.LogLevel = golog.LEVEL_DEBUG
+	config.LogLevel = conf.MongoConf.LogLevel
 	config.QueryTimeout = conf.MongoConf.RWTimeout
 
 	return mongo.NewClient(config, nil), nil

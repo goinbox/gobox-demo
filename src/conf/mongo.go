@@ -8,6 +8,7 @@ type mongoConfJson struct {
 	Pass                     string `json:"pass"`
 	Port                     string `json:"port"`
 	Name                     string `json:"name"`
+	LogLevel                 int    `json:"log_level"`
 	RWTimeoutSeconds         int    `json:"rw_timeout_seconds"`
 	PoolSize                 int    `json:"pool_size"`
 	PoolClientMaxIdleSeconds int    `json:"pool_client_max_idle_seconds"`
@@ -19,6 +20,7 @@ var MongoConf struct {
 	Pass                  string
 	Port                  string
 	Name                  string
+	LogLevel              int
 	RWTimeout             time.Duration
 	PoolSize              int
 	PoolClientMaxIdleTime time.Duration
@@ -30,6 +32,7 @@ func initMongoConf() {
 	MongoConf.Pass = scJson.Mongo.Pass
 	MongoConf.Port = scJson.Mongo.Port
 	MongoConf.Name = scJson.Mongo.Name
+	MongoConf.LogLevel = scJson.Mongo.LogLevel
 	MongoConf.RWTimeout = time.Duration(scJson.Mongo.RWTimeoutSeconds) * time.Second
 	MongoConf.PoolSize = scJson.Mongo.PoolSize
 	MongoConf.PoolClientMaxIdleTime = time.Duration(scJson.Mongo.PoolClientMaxIdleSeconds) * time.Second

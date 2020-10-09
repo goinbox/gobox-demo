@@ -13,7 +13,7 @@
 
     "NGX_DATA_ROOT": {
         "ligang": "/data/nginx",
-        "gibsonli": "/data/nginx",
+        "gibsonli": "${HOME}/data/nginx",
         "default": "/usr/local/nginx"
     },
     "NGX_LOG_ROOT": "${NGX_DATA_ROOT}/logs",

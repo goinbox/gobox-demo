@@ -4,12 +4,10 @@
 
 ## 需要的第三方工具
 
-1. 安装[dep](https://golang.github.io/dep/)
 1. 安装[rigger](https://github.com/ligang1109/rigger)
 
 ```
-ligang@vm-centos7 ~ $ which dep rigger
-/usr/local/bin/dep
+ligang@vm-centos7 ~ $ which rigger
 /usr/local/bin/rigger
 ```
 

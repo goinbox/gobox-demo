@@ -3,7 +3,6 @@ package resource
 import (
 	"gdemo/conf"
 
-	"github.com/goinbox/golog"
 	"github.com/goinbox/mysql"
 )
 
@@ -19,7 +18,7 @@ func InitMysql() {
 
 func NewMysqlClient() (*mysql.Client, error) {
 	config := mysql.NewConfig(conf.MysqlConf.User, conf.MysqlConf.Pass, conf.MysqlConf.Host, conf.MysqlConf.Port, conf.MysqlConf.Name)
-	config.LogLevel = golog.LEVEL_DEBUG
+	config.LogLevel = conf.MysqlConf.LogLevel
 	config.ReadTimeout = conf.MysqlConf.RWTimeout
 	config.WriteTimeout = conf.MysqlConf.RWTimeout
 

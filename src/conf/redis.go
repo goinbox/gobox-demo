@@ -6,6 +6,7 @@ type redisConfJson struct {
 	Host                         string `json:"host"`
 	Pass                         string `json:"pass"`
 	Port                         string `json:"port"`
+	LogLevel                     int    `json:"log_level"`
 	ConnectTimeoutSeconds        int    `json:"connect_timeout_seconds"`
 	RWTimeoutSeconds             int    `json:"rw_timeout_seconds"`
 	PoolSize                     int    `json:"pool_size"`
@@ -17,6 +18,7 @@ type RedisConf struct {
 	Host                  string
 	Pass                  string
 	Port                  string
+	LogLevel              int
 	ConnectTimeout        time.Duration
 	RWTimeout             time.Duration
 	PoolSize              int
@@ -33,6 +35,7 @@ func initRedisConf() {
 				Host:                  item.Host,
 				Pass:                  item.Pass,
 				Port:                  item.Port,
+				LogLevel:              item.LogLevel,
 				ConnectTimeout:        time.Duration(item.ConnectTimeoutSeconds) * time.Second,
 				RWTimeout:             time.Duration(item.RWTimeoutSeconds) * time.Second,
 				PoolSize:              item.PoolSize,
