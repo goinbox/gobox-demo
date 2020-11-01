@@ -63,9 +63,9 @@ func TestDemoSvc(t *testing.T) {
 		},
 		Exists: map[string]bool{"add_time": true, "name": true, "status": false},
 		Conditions: map[string]string{
-			"add_time": mysql.SQL_COND_BETWEEN,
-			"name":     mysql.SQL_COND_LIKE,
-			"status":   mysql.SQL_COND_EQUAL,
+			"add_time": mysql.SqlCondBetween,
+			"name":     mysql.SqlCondLike,
+			"status":   mysql.SqlCondEqual,
 		},
 		OrderBy: "id desc", Offset: 0, Cnt: 10,
 	}

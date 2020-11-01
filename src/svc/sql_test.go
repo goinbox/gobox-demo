@@ -41,7 +41,7 @@ func TestSqlSvcInsertGetListUpdateDelete(t *testing.T) {
 			Status: 1,
 		},
 		Exists:     map[string]bool{"status": true},
-		Conditions: map[string]string{"status": mysql.SQL_COND_EQUAL},
+		Conditions: map[string]string{"status": mysql.SqlCondEqual},
 
 		OrderBy: "add_time desc",
 		Offset:  0,

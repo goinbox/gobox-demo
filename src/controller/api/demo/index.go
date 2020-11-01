@@ -17,7 +17,7 @@ type indexActionParams struct {
 }
 
 var indexQueryConditions map[string]string = map[string]string{
-	"status": mysql.SQL_COND_EQUAL,
+	"status": mysql.SqlCondEqual,
 }
 
 func (d *DemoController) IndexAction(context *DemoContext) {

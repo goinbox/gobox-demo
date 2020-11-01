@@ -13,7 +13,7 @@ require (
 	github.com/goinbox/golog v2.2.0+incompatible
 	github.com/goinbox/gomisc v1.2.0
 	github.com/goinbox/mongo v1.1.5
-	github.com/goinbox/mysql v1.2.3
+	github.com/goinbox/mysql v1.3.0
 	github.com/goinbox/pidfile v1.0.1
 	github.com/goinbox/pool v1.0.1 // indirect
 	github.com/goinbox/redis v1.2.7
