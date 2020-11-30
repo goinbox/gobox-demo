@@ -4,7 +4,7 @@ import (
 	"gdemo/errno"
 	demoSvc "gdemo/svc/mongodemo"
 
-	"github.com/goinbox/exception"
+	"github.com/goinbox/goerror"
 	"github.com/goinbox/gohttp/query"
 )
 
@@ -17,7 +17,7 @@ func (d *MongoDemoController) AddAction(context *MongoDemoContext) {
 
 	ids, err := context.demoSvc.Insert(ap)
 	if err != nil {
-		context.ApiData.Err = exception.New(errno.ECommonInsertEntityFailed, err.Error())
+		context.ApiData.Err = goerror.New(errno.ECommonInsertEntityFailed, err.Error())
 		return
 	}
 
@@ -26,7 +26,7 @@ func (d *MongoDemoController) AddAction(context *MongoDemoContext) {
 	}
 }
 
-func (d *MongoDemoController) parseAddActionParams(context *MongoDemoContext) (*demoSvc.MongoDemoEntity, *exception.Exception) {
+func (d *MongoDemoController) parseAddActionParams(context *MongoDemoContext) (*demoSvc.MongoDemoEntity, *goerror.Error) {
 	ap := new(demoSvc.MongoDemoEntity)
 
 	qs := query.NewQuerySet()
@@ -38,7 +38,7 @@ func (d *MongoDemoController) parseAddActionParams(context *MongoDemoContext) (*
 	}
 
 	if ap.Status < 0 {
-		return ap, exception.New(errno.ECommonInvalidArg, "invalid status")
+		return ap, goerror.New(errno.ECommonInvalidArg, "invalid status")
 	}
 
 	return ap, nil

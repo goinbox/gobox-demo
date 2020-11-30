@@ -3,7 +3,7 @@ package demo
 import (
 	"gdemo/errno"
 
-	"github.com/goinbox/exception"
+	"github.com/goinbox/goerror"
 	"github.com/goinbox/gohttp/query"
 )
 
@@ -20,14 +20,14 @@ func (d *DemoController) DelAction(context *DemoContext) {
 
 	deleted, err := context.demoSvc.DeleteById(ap.id)
 	if err != nil {
-		context.ApiData.Err = exception.New(errno.ESysMysqlError, err.Error())
+		context.ApiData.Err = goerror.New(errno.ESysMysqlError, err.Error())
 		return
 	}
 
 	context.ApiData.Data = deleted
 }
 
-func (d *DemoController) parseDelActionParams(context *DemoContext) (*delActionParams, *exception.Exception) {
+func (d *DemoController) parseDelActionParams(context *DemoContext) (*delActionParams, *goerror.Error) {
 	ap := new(delActionParams)
 
 	qs := query.NewQuerySet()

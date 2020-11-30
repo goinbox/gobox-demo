@@ -4,7 +4,7 @@ import (
 	"gdemo/conf"
 	"gdemo/errno"
 
-	"github.com/goinbox/exception"
+	"github.com/goinbox/goerror"
 	"github.com/goinbox/golog"
 )
 
@@ -21,13 +21,13 @@ var TestLogger golog.ILogger = golog.NewSimpleLogger(
 	golog.NewConsoleFormater(golog.NewSimpleFormater())).
 	SetLogLevel(golog.LevelDebug)
 
-func InitLog(systemName string) *exception.Exception {
+func InitLog(systemName string) *goerror.Error {
 	if conf.BaseConf.IsDev {
 		accessLogWriter = golog.NewConsoleWriter()
 	} else {
 		fw, err := golog.NewFileWriter(conf.LogConf.RootPath+"/"+systemName+"_access.log", conf.LogConf.Bufsize)
 		if err != nil {
-			return exception.New(errno.ESysInitLogFail, err.Error())
+			return goerror.New(errno.ESysInitLogFail, err.Error())
 		}
 		accessLogWriter = golog.NewAsyncWriter(fw, conf.LogConf.AsyncQueueSize)
 	}
@@ -35,7 +35,7 @@ func InitLog(systemName string) *exception.Exception {
 
 	fw, err := golog.NewFileWriter(conf.LogConf.RootPath+"/"+systemName+"_trace.log", conf.LogConf.Bufsize)
 	if err != nil {
-		return exception.New(errno.ESysInitLogFail, err.Error())
+		return goerror.New(errno.ESysInitLogFail, err.Error())
 	}
 	traceLogWriter = golog.NewAsyncWriter(fw, conf.LogConf.AsyncQueueSize)
 	TraceLogger = NewLogger(traceLogWriter)

@@ -3,7 +3,7 @@ package mongodemo
 import (
 	"gdemo/errno"
 
-	"github.com/goinbox/exception"
+	"github.com/goinbox/goerror"
 	"github.com/goinbox/gohttp/query"
 )
 
@@ -20,14 +20,14 @@ func (d *MongoDemoController) DelAction(context *MongoDemoContext) {
 
 	deleted, err := context.demoSvc.DeleteById(ap.id)
 	if err != nil {
-		context.ApiData.Err = exception.New(errno.ESysMongoError, err.Error())
+		context.ApiData.Err = goerror.New(errno.ESysMongoError, err.Error())
 		return
 	}
 
 	context.ApiData.Data = deleted
 }
 
-func (d *MongoDemoController) parseDelActionParams(context *MongoDemoContext) (*delActionParams, *exception.Exception) {
+func (d *MongoDemoController) parseDelActionParams(context *MongoDemoContext) (*delActionParams, *goerror.Error) {
 	ap := new(delActionParams)
 
 	qs := query.NewQuerySet()

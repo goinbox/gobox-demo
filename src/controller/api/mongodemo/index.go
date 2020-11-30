@@ -4,7 +4,7 @@ import (
 	"gdemo/errno"
 	"gdemo/svc"
 
-	"github.com/goinbox/exception"
+	"github.com/goinbox/goerror"
 	"github.com/goinbox/gohttp/query"
 	"github.com/goinbox/mongo"
 )
@@ -39,14 +39,14 @@ func (d *MongoDemoController) IndexAction(context *MongoDemoContext) {
 
 	entities, err := context.demoSvc.SelectAll(mqp)
 	if err != nil {
-		context.ApiData.Err = exception.New(errno.ESysMongoError, err.Error())
+		context.ApiData.Err = goerror.New(errno.ESysMongoError, err.Error())
 		return
 	}
 
 	context.ApiData.Data = entities
 }
 
-func (d *MongoDemoController) parseIndexActionParams(context *MongoDemoContext) (*indexActionParams, map[string]bool, *exception.Exception) {
+func (d *MongoDemoController) parseIndexActionParams(context *MongoDemoContext) (*indexActionParams, map[string]bool, *goerror.Error) {
 	ap := new(indexActionParams)
 
 	qs := query.NewQuerySet()
@@ -59,13 +59,13 @@ func (d *MongoDemoController) parseIndexActionParams(context *MongoDemoContext) 
 	}
 
 	if ap.Status < 0 {
-		return ap, nil, exception.New(errno.ECommonInvalidArg, "invalid status")
+		return ap, nil, goerror.New(errno.ECommonInvalidArg, "invalid status")
 	}
 	if ap.offset < 0 {
-		return ap, nil, exception.New(errno.ECommonInvalidArg, "invalid offset")
+		return ap, nil, goerror.New(errno.ECommonInvalidArg, "invalid offset")
 	}
 	if ap.cnt < 0 {
-		return ap, nil, exception.New(errno.ECommonInvalidArg, "invalid cnt")
+		return ap, nil, goerror.New(errno.ECommonInvalidArg, "invalid cnt")
 	}
 
 	return ap, qs.ExistsInfo(), nil

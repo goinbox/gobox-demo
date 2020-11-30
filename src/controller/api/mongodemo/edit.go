@@ -4,7 +4,7 @@ import (
 	"gdemo/errno"
 	demoSvc "gdemo/svc/mongodemo"
 
-	"github.com/goinbox/exception"
+	"github.com/goinbox/goerror"
 	"github.com/goinbox/gohttp/query"
 )
 
@@ -27,14 +27,14 @@ func (d *MongoDemoController) EditAction(context *MongoDemoContext) {
 
 	updated, err := context.demoSvc.UpdateById(ap.Id, ap, exists)
 	if err != nil {
-		context.ApiData.Err = exception.New(errno.ECommonUpdateEntityFailed, err.Error())
+		context.ApiData.Err = goerror.New(errno.ECommonUpdateEntityFailed, err.Error())
 		return
 	}
 
 	context.ApiData.Data = updated
 }
 
-func (d *MongoDemoController) parseEditActionParams(context *MongoDemoContext) (*demoSvc.MongoDemoEntity, map[string]bool, *exception.Exception) {
+func (d *MongoDemoController) parseEditActionParams(context *MongoDemoContext) (*demoSvc.MongoDemoEntity, map[string]bool, *goerror.Error) {
 	ap := new(editActionParams)
 
 	qs := query.NewQuerySet()
@@ -51,7 +51,7 @@ func (d *MongoDemoController) parseEditActionParams(context *MongoDemoContext) (
 	ap.entiry.Id = ap.tid
 
 	if ap.entiry.Status < 0 {
-		return &ap.entiry, nil, exception.New(errno.ECommonInvalidArg, "invalid status")
+		return &ap.entiry, nil, goerror.New(errno.ECommonInvalidArg, "invalid status")
 	}
 
 	return &ap.entiry, qs.ExistsInfo(), nil

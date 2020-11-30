@@ -3,7 +3,7 @@ package mongodemo
 import (
 	"gdemo/errno"
 
-	"github.com/goinbox/exception"
+	"github.com/goinbox/goerror"
 	"github.com/goinbox/gohttp/query"
 )
 
@@ -20,13 +20,13 @@ func (d *MongoDemoController) GetAction(context *MongoDemoContext) {
 
 	entity, err := context.demoSvc.GetById(ap.id)
 	if err != nil {
-		context.ApiData.Err = exception.New(errno.ESysMongoError, err.Error())
+		context.ApiData.Err = goerror.New(errno.ESysMongoError, err.Error())
 		return
 	}
 	context.ApiData.Data = entity
 }
 
-func (d *MongoDemoController) parseGetActionParams(context *MongoDemoContext) (*getActionParams, *exception.Exception) {
+func (d *MongoDemoController) parseGetActionParams(context *MongoDemoContext) (*getActionParams, *goerror.Error) {
 	ap := new(getActionParams)
 
 	qs := query.NewQuerySet()

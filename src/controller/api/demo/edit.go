@@ -4,7 +4,7 @@ import (
 	"gdemo/errno"
 	demoSvc "gdemo/svc/demo"
 
-	"github.com/goinbox/exception"
+	"github.com/goinbox/goerror"
 	"github.com/goinbox/gohttp/query"
 )
 
@@ -21,14 +21,14 @@ func (d *DemoController) EditAction(context *DemoContext) {
 
 	updated, err := context.demoSvc.UpdateById(ap.Id, ap, exists)
 	if err != nil {
-		context.ApiData.Err = exception.New(errno.ECommonUpdateEntityFailed, err.Error())
+		context.ApiData.Err = goerror.New(errno.ECommonUpdateEntityFailed, err.Error())
 		return
 	}
 
 	context.ApiData.Data = updated
 }
 
-func (d *DemoController) parseEditActionParams(context *DemoContext) (*demoSvc.DemoEntity, map[string]bool, *exception.Exception) {
+func (d *DemoController) parseEditActionParams(context *DemoContext) (*demoSvc.DemoEntity, map[string]bool, *goerror.Error) {
 	ap := new(demoSvc.DemoEntity)
 
 	qs := query.NewQuerySet()
@@ -41,7 +41,7 @@ func (d *DemoController) parseEditActionParams(context *DemoContext) (*demoSvc.D
 	}
 
 	if ap.Status < 0 {
-		return ap, nil, exception.New(errno.ECommonInvalidArg, "invalid status")
+		return ap, nil, goerror.New(errno.ECommonInvalidArg, "invalid status")
 	}
 
 	return ap, qs.ExistsInfo(), nil

@@ -1,7 +1,7 @@
 package conf
 
 import (
-	"github.com/goinbox/exception"
+	"github.com/goinbox/goerror"
 	"github.com/goinbox/gomisc"
 
 	"gdemo/errno"
@@ -9,16 +9,16 @@ import (
 
 var PrjHome string
 
-func Init(prjHome string) *exception.Exception {
+func Init(prjHome string) *goerror.Error {
 	if !gomisc.DirExist(prjHome) {
-		return exception.New(errno.ESysInvalidPrjHome, "prjHome not exists")
+		return goerror.New(errno.ESysInvalidPrjHome, "prjHome not exists")
 	}
 
 	PrjHome = prjHome
 
 	err := initServerConfJson()
 	if err != nil {
-		return exception.New(errno.ESysInitServerConfFail, "init serverConfJson error: "+err.Error())
+		return goerror.New(errno.ESysInitServerConfFail, "init serverConfJson error: "+err.Error())
 	}
 
 	initBaseConf()
