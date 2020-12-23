@@ -1,19 +1,20 @@
-package svc
+package store
 
 import (
-	"gdemo/resource"
+	"testing"
+	"time"
 
 	"github.com/goinbox/gomisc"
 
-	"testing"
-	"time"
+	"gdemo/define/entity"
+	"gdemo/resource"
 )
 
-func TestRedisSvcSetGetJson(t *testing.T) {
-	rs := NewRedisSvc([]byte("TestRedisSvcSetGetJson"), resource.RedisClientPoolList[0])
+func TestRedisStoreSetGetJson(t *testing.T) {
+	rs := NewRedisStore([]byte("TestRedisStoreSetGetJson"), resource.RedisClientPoolList[0])
 
-	item := &demoEntity{
-		SqlBaseEntity: SqlBaseEntity{
+	item := &entity.DemoEntity{
+		SqlBaseEntity: entity.SqlBaseEntity{
 			Id:       1,
 			AddTime:  time.Now().Format(gomisc.TimeGeneralLayout()),
 			EditTime: time.Now().Format(gomisc.TimeGeneralLayout()),
@@ -28,7 +29,7 @@ func TestRedisSvcSetGetJson(t *testing.T) {
 		t.Error(err)
 	}
 
-	item = &demoEntity{}
+	item = &entity.DemoEntity{}
 	find, err := rs.GetJsonData(key, item)
 	if !find {
 		t.Error("not found")
@@ -40,11 +41,11 @@ func TestRedisSvcSetGetJson(t *testing.T) {
 	t.Log(item)
 }
 
-func TestRedisSvcSetGetHash(t *testing.T) {
-	rs := NewRedisSvc([]byte("TestRedisSvcSetGetHash"), resource.RedisClientPoolList[0])
+func TestRedisStoreSetGetHash(t *testing.T) {
+	rs := NewRedisStore([]byte("TestRedisStoreSetGetHash"), resource.RedisClientPoolList[0])
 
-	item := &demoEntity{
-		SqlBaseEntity: SqlBaseEntity{
+	item := &entity.DemoEntity{
+		SqlBaseEntity: entity.SqlBaseEntity{
 			Id:       1,
 			AddTime:  time.Now().Format(gomisc.TimeGeneralLayout()),
 			EditTime: time.Now().Format(gomisc.TimeGeneralLayout()),
@@ -59,7 +60,7 @@ func TestRedisSvcSetGetHash(t *testing.T) {
 		t.Error(err)
 	}
 
-	item = &demoEntity{}
+	item = &entity.DemoEntity{}
 	find, err := rs.GetHashEntity(key, item)
 	if !find {
 		t.Error("not found")

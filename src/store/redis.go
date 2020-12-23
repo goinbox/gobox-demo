@@ -1,33 +1,34 @@
-package svc
+package store
 
 import (
-	"gdemo/resource"
-	"github.com/goinbox/redis"
-
 	"encoding/json"
 	"errors"
 	"reflect"
+
+	"github.com/goinbox/redis"
+
+	"gdemo/resource"
 )
 
 const (
 	EntityRedisHashFieldTag = "redis"
 )
 
-type RedisSvc struct {
+type RedisStore struct {
 	traceId []byte
 	pool    *redis.Pool
 
 	client *redis.Client
 }
 
-func NewRedisSvc(traceId []byte, pool *redis.Pool) *RedisSvc {
-	return &RedisSvc{
+func NewRedisStore(traceId []byte, pool *redis.Pool) *RedisStore {
+	return &RedisStore{
 		traceId: traceId,
 		pool:    pool,
 	}
 }
 
-func (r *RedisSvc) Client() *redis.Client {
+func (r *RedisStore) Client() *redis.Client {
 	if r.client == nil {
 		r.client, _ = r.pool.Get()
 		r.client.SetLogger(resource.AccessLogger).SetTraceId(r.traceId)
@@ -36,7 +37,7 @@ func (r *RedisSvc) Client() *redis.Client {
 	return r.client
 }
 
-func (r *RedisSvc) SendBackClient() {
+func (r *RedisStore) SendBackClient() {
 	if r.client.Connected() {
 		r.client.SetLogger(resource.NoopLogger)
 		_ = r.pool.Put(r.client)
@@ -45,7 +46,7 @@ func (r *RedisSvc) SendBackClient() {
 	r.client = nil
 }
 
-func (r *RedisSvc) Renew(traceId []byte, pool *redis.Pool) *RedisSvc {
+func (r *RedisStore) Renew(traceId []byte, pool *redis.Pool) *RedisStore {
 	if r.client != nil {
 		r.SendBackClient()
 	}
@@ -56,11 +57,11 @@ func (r *RedisSvc) Renew(traceId []byte, pool *redis.Pool) *RedisSvc {
 	return r
 }
 
-func (r *RedisSvc) SetPool(pool *redis.Pool) *RedisSvc {
+func (r *RedisStore) SetPool(pool *redis.Pool) *RedisStore {
 	return r.Renew(r.traceId, pool)
 }
 
-func (r *RedisSvc) SaveJsonData(key string, v interface{}, expireSeconds int64) error {
+func (r *RedisStore) SaveJsonData(key string, v interface{}, expireSeconds int64) error {
 	jsonBytes, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -78,7 +79,7 @@ func (r *RedisSvc) SaveJsonData(key string, v interface{}, expireSeconds int64) 
 	return err
 }
 
-func (r *RedisSvc) GetJsonData(key string, v interface{}) (bool, error) {
+func (r *RedisStore) GetJsonData(key string, v interface{}) (bool, error) {
 	reply := r.Client().Do("get", key)
 	defer r.SendBackClient()
 
@@ -103,7 +104,7 @@ func (r *RedisSvc) GetJsonData(key string, v interface{}) (bool, error) {
 	return true, nil
 }
 
-func (r *RedisSvc) SaveHashEntity(key string, entityPtr interface{}, expireSeconds int64) error {
+func (r *RedisStore) SaveHashEntity(key string, entityPtr interface{}, expireSeconds int64) error {
 	eargs := r.ReflectSaveHashEntityArgs(reflect.ValueOf(entityPtr).Elem())
 	args := make([]interface{}, len(eargs)+1)
 	args[0] = key
@@ -130,7 +131,7 @@ func (r *RedisSvc) SaveHashEntity(key string, entityPtr interface{}, expireSecon
 	return nil
 }
 
-func (r *RedisSvc) GetHashEntity(key string, entityPtr interface{}) (bool, error) {
+func (r *RedisStore) GetHashEntity(key string, entityPtr interface{}) (bool, error) {
 	reply := r.Client().Do("hgetall", key)
 	defer r.SendBackClient()
 
@@ -150,7 +151,7 @@ func (r *RedisSvc) GetHashEntity(key string, entityPtr interface{}) (bool, error
 	return true, nil
 }
 
-func (r *RedisSvc) ReflectSaveHashEntityArgs(rev reflect.Value) []interface{} {
+func (r *RedisStore) ReflectSaveHashEntityArgs(rev reflect.Value) []interface{} {
 	var args []interface{}
 	ret := rev.Type()
 
@@ -171,7 +172,7 @@ func (r *RedisSvc) ReflectSaveHashEntityArgs(rev reflect.Value) []interface{} {
 	return args
 }
 
-func (r *RedisSvc) Del(key string) error {
+func (r *RedisStore) Del(key string) error {
 	err := r.Client().Do("del", key).Err
 	defer r.SendBackClient()
 

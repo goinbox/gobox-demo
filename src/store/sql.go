@@ -1,55 +1,20 @@
-package svc
+package store
 
 import (
-	"gdemo/idgen"
-	"gdemo/resource"
-	"github.com/goinbox/gomisc"
-	"github.com/goinbox/mysql"
-
 	"database/sql"
 	"reflect"
 	"time"
+
+	"github.com/goinbox/gomisc"
+	"github.com/goinbox/mysql"
+
+	"gdemo/define"
+	"gdemo/define/entity"
+	"gdemo/idgen"
+	"gdemo/resource"
 )
 
-const (
-	EntityMysqlFieldTag = "mysql"
-)
-
-type SqlBaseEntity struct {
-	Id       int64  `mysql:"id" json:"id" redis:"id"`
-	AddTime  string `mysql:"add_time" json:"add_time" redis:"add_time"`
-	EditTime string `mysql:"edit_time" json:"edit_time" redis:"edit_time"`
-}
-
-type SqlQueryParams struct {
-	ParamsStructPtr interface{}
-	Exists          map[string]bool
-	Conditions      map[string]string
-
-	OrderBy string
-	Offset  int64
-	Cnt     int64
-}
-
-func ReflectColNames(ret reflect.Type) []string {
-	var cns []string
-
-	for i := 0; i < ret.NumField(); i++ {
-		retf := ret.Field(i)
-		if retf.Type.Kind() == reflect.Struct {
-			cns = ReflectColNames(retf.Type)
-			continue
-		}
-
-		if name, ok := retf.Tag.Lookup(EntityMysqlFieldTag); ok {
-			cns = append(cns, name)
-		}
-	}
-
-	return cns
-}
-
-type SqlSvc struct {
+type SqlStore struct {
 	traceId  []byte
 	pool     *mysql.Pool
 	useIdGen bool
@@ -58,15 +23,15 @@ type SqlSvc struct {
 	idGenter *idgen.SqlIdGenter
 }
 
-func NewSqlSvc(traceId []byte, pool *mysql.Pool, useIdGen bool) *SqlSvc {
-	return &SqlSvc{
+func NewSqlStore(traceId []byte, pool *mysql.Pool, useIdGen bool) *SqlStore {
+	return &SqlStore{
 		traceId:  traceId,
 		pool:     pool,
 		useIdGen: useIdGen,
 	}
 }
 
-func (s *SqlSvc) Dao() *mysql.SqlDao {
+func (s *SqlStore) Dao() *mysql.SqlDao {
 	if s.dao == nil {
 		s.dao = &mysql.SqlDao{}
 	}
@@ -79,7 +44,7 @@ func (s *SqlSvc) Dao() *mysql.SqlDao {
 	return s.dao
 }
 
-func (s *SqlSvc) IdGenter() *idgen.SqlIdGenter {
+func (s *SqlStore) IdGenter() *idgen.SqlIdGenter {
 	if !s.useIdGen {
 		return nil
 	}
@@ -91,7 +56,7 @@ func (s *SqlSvc) IdGenter() *idgen.SqlIdGenter {
 	return s.idGenter
 }
 
-func (s *SqlSvc) SendBackClient() {
+func (s *SqlStore) SendBackClient() {
 	if !s.dao.Client.Closed() {
 		s.dao.Client.SetLogger(resource.NoopLogger)
 		_ = s.pool.Put(s.dao.Client)
@@ -103,7 +68,7 @@ func (s *SqlSvc) SendBackClient() {
 	}
 }
 
-func (s *SqlSvc) Renew(traceId []byte, pool *mysql.Pool, useIdGen bool) *SqlSvc {
+func (s *SqlStore) Renew(traceId []byte, pool *mysql.Pool, useIdGen bool) *SqlStore {
 	if s.dao != nil && s.dao.Client != nil {
 		s.SendBackClient()
 	}
@@ -114,11 +79,11 @@ func (s *SqlSvc) Renew(traceId []byte, pool *mysql.Pool, useIdGen bool) *SqlSvc 
 	return s
 }
 
-func (s *SqlSvc) SetPool(pool *mysql.Pool) *SqlSvc {
+func (s *SqlStore) SetPool(pool *mysql.Pool) *SqlStore {
 	return s.Renew(s.traceId, pool, s.useIdGen)
 }
 
-func (s *SqlSvc) FillBaseEntityForInsert(entity *SqlBaseEntity, name string) error {
+func (s *SqlStore) FillBaseEntityForInsert(entity *entity.SqlBaseEntity, name string) error {
 	if s.useIdGen {
 		id, err := s.IdGenter().GenId(name)
 		if err != nil {
@@ -134,13 +99,13 @@ func (s *SqlSvc) FillBaseEntityForInsert(entity *SqlBaseEntity, name string) err
 	return nil
 }
 
-func (s *SqlSvc) Insert(tableName, entityName string, colNames []string, entities ...interface{}) ([]int64, error) {
+func (s *SqlStore) Insert(tableName, entityName string, colNames []string, entities ...interface{}) ([]int64, error) {
 	cnt := len(entities)
 	colsValues := make([][]interface{}, cnt)
 	ids := make([]int64, cnt)
-	for i, entity := range entities {
-		rev := reflect.ValueOf(entity).Elem()
-		baseEntity := rev.FieldByName("SqlBaseEntity").Addr().Interface().(*SqlBaseEntity)
+	for i, ent := range entities {
+		rev := reflect.ValueOf(ent).Elem()
+		baseEntity := rev.FieldByName("SqlBaseEntity").Addr().Interface().(*entity.SqlBaseEntity)
 		err := s.FillBaseEntityForInsert(baseEntity, entityName)
 		if err != nil {
 			return nil, err
@@ -160,7 +125,7 @@ func (s *SqlSvc) Insert(tableName, entityName string, colNames []string, entitie
 	return ids, nil
 }
 
-func (s *SqlSvc) ReflectInsertColValues(rev reflect.Value) []interface{} {
+func (s *SqlStore) ReflectInsertColValues(rev reflect.Value) []interface{} {
 	var colValues []interface{}
 
 	ret := rev.Type()
@@ -171,7 +136,7 @@ func (s *SqlSvc) ReflectInsertColValues(rev reflect.Value) []interface{} {
 			continue
 		}
 
-		_, ok := ret.Field(i).Tag.Lookup(EntityMysqlFieldTag)
+		_, ok := ret.Field(i).Tag.Lookup(entity.EntityMysqlFieldTag)
 		if ok {
 			colValues = append(colValues, revf.Interface())
 		}
@@ -180,7 +145,7 @@ func (s *SqlSvc) ReflectInsertColValues(rev reflect.Value) []interface{} {
 	return colValues
 }
 
-func (s *SqlSvc) GetById(tableName string, id int64, entityPtr interface{}) (bool, error) {
+func (s *SqlStore) GetById(tableName string, id int64, entityPtr interface{}) (bool, error) {
 	dests := s.ReflectEntityScanDests(reflect.ValueOf(entityPtr).Elem())
 
 	err := s.Dao().SelectById(tableName, "*", id).Scan(dests...)
@@ -196,7 +161,7 @@ func (s *SqlSvc) GetById(tableName string, id int64, entityPtr interface{}) (boo
 	return true, nil
 }
 
-func (s *SqlSvc) ReflectEntityScanDests(rev reflect.Value) []interface{} {
+func (s *SqlStore) ReflectEntityScanDests(rev reflect.Value) []interface{} {
 	var dests []interface{}
 
 	ret := rev.Type()
@@ -207,7 +172,7 @@ func (s *SqlSvc) ReflectEntityScanDests(rev reflect.Value) []interface{} {
 			continue
 		}
 
-		_, ok := ret.Field(i).Tag.Lookup(EntityMysqlFieldTag)
+		_, ok := ret.Field(i).Tag.Lookup(entity.EntityMysqlFieldTag)
 		if ok {
 			dests = append(dests, revf.Addr().Interface())
 		}
@@ -216,7 +181,7 @@ func (s *SqlSvc) ReflectEntityScanDests(rev reflect.Value) []interface{} {
 	return dests
 }
 
-func (s *SqlSvc) UpdateById(tableName string, id int64, newEntityPtr interface{}, updateFields map[string]bool) ([]*mysql.SqlColQueryItem, error) {
+func (s *SqlStore) UpdateById(tableName string, id int64, newEntityPtr interface{}, updateFields map[string]bool) ([]*mysql.SqlColQueryItem, error) {
 	rnewv := reflect.ValueOf(newEntityPtr).Elem()
 	oldEntity := reflect.New(rnewv.Type()).Interface()
 
@@ -247,7 +212,7 @@ func (s *SqlSvc) UpdateById(tableName string, id int64, newEntityPtr interface{}
 	return setItems, nil
 }
 
-func (s *SqlSvc) ReflectUpdateSetItems(roldv, rnewv reflect.Value, updateFields map[string]bool) []*mysql.SqlColQueryItem {
+func (s *SqlStore) ReflectUpdateSetItems(roldv, rnewv reflect.Value, updateFields map[string]bool) []*mysql.SqlColQueryItem {
 	var setItems []*mysql.SqlColQueryItem
 
 	rnewt := rnewv.Type()
@@ -259,7 +224,7 @@ func (s *SqlSvc) ReflectUpdateSetItems(roldv, rnewv reflect.Value, updateFields 
 		}
 
 		rnewtf := rnewt.Field(i)
-		colName, ok := rnewtf.Tag.Lookup(EntityMysqlFieldTag)
+		colName, ok := rnewtf.Tag.Lookup(entity.EntityMysqlFieldTag)
 		if !ok {
 			continue
 		}
@@ -276,7 +241,7 @@ func (s *SqlSvc) ReflectUpdateSetItems(roldv, rnewv reflect.Value, updateFields 
 	return setItems
 }
 
-func (s *SqlSvc) ListByIds(tableName string, ids []int64, orderBy string, entityType reflect.Type, listPtr interface{}) error {
+func (s *SqlStore) ListByIds(tableName string, ids []int64, orderBy string, entityType reflect.Type, listPtr interface{}) error {
 	rows, err := s.Dao().SelectByIds(tableName, "*", orderBy, ids...)
 	defer s.SendBackClient()
 
@@ -287,7 +252,7 @@ func (s *SqlSvc) ListByIds(tableName string, ids []int64, orderBy string, entity
 	return s.ReflectQueryRowsToEntityList(rows, entityType, listPtr)
 }
 
-func (s *SqlSvc) ReflectQueryRowsToEntityList(rows *sql.Rows, ret reflect.Type, listPtr interface{}) error {
+func (s *SqlStore) ReflectQueryRowsToEntityList(rows *sql.Rows, ret reflect.Type, listPtr interface{}) error {
 	if rows.Next() == false {
 		return nil
 	}
@@ -314,13 +279,21 @@ func (s *SqlSvc) ReflectQueryRowsToEntityList(rows *sql.Rows, ret reflect.Type, 
 	return nil
 }
 
-func (s *SqlSvc) SimpleQueryAnd(tableName string, sqp *SqlQueryParams, entityType reflect.Type, listPtr interface{}) error {
+func (s *SqlStore) SimpleQueryAnd(tableName string, sqp *define.SqlQueryParams, entityType reflect.Type, listPtr interface{}) error {
+	var orderBy string
+	var offset, cnt int64
 	var setItems []*mysql.SqlColQueryItem
-	if sqp != nil && sqp.ParamsStructPtr != nil {
-		setItems = s.ReflectQuerySetItems(reflect.ValueOf(sqp.ParamsStructPtr).Elem(), sqp.Exists, sqp.Conditions)
+
+	if sqp != nil {
+		orderBy = sqp.OrderBy
+		offset = sqp.Offset
+		cnt = sqp.Cnt
+		if sqp.ParamsStructPtr != nil {
+			setItems = s.ReflectQuerySetItems(reflect.ValueOf(sqp.ParamsStructPtr).Elem(), sqp.Exists, sqp.Conditions)
+		}
 	}
 
-	rows, err := s.Dao().SimpleQueryAnd(tableName, "*", sqp.OrderBy, sqp.Offset, sqp.Cnt, setItems...)
+	rows, err := s.Dao().SimpleQueryAnd(tableName, "*", orderBy, offset, cnt, setItems...)
 	defer s.SendBackClient()
 
 	if err != nil {
@@ -330,7 +303,7 @@ func (s *SqlSvc) SimpleQueryAnd(tableName string, sqp *SqlQueryParams, entityTyp
 	return s.ReflectQueryRowsToEntityList(rows, entityType, listPtr)
 }
 
-func (s *SqlSvc) SimpleTotalAnd(tableName string, sqp *SqlQueryParams) (int64, error) {
+func (s *SqlStore) SimpleTotalAnd(tableName string, sqp *define.SqlQueryParams) (int64, error) {
 	var setItems []*mysql.SqlColQueryItem
 	if sqp != nil && sqp.ParamsStructPtr != nil {
 		setItems = s.ReflectQuerySetItems(reflect.ValueOf(sqp.ParamsStructPtr).Elem(), sqp.Exists, sqp.Conditions)
@@ -342,7 +315,7 @@ func (s *SqlSvc) SimpleTotalAnd(tableName string, sqp *SqlQueryParams) (int64, e
 	return total, err
 }
 
-func (s *SqlSvc) ReflectQuerySetItems(rev reflect.Value, exists map[string]bool, conditions map[string]string) []*mysql.SqlColQueryItem {
+func (s *SqlStore) ReflectQuerySetItems(rev reflect.Value, exists map[string]bool, conditions map[string]string) []*mysql.SqlColQueryItem {
 	var setItems []*mysql.SqlColQueryItem
 	ret := rev.Type()
 
@@ -354,7 +327,7 @@ func (s *SqlSvc) ReflectQuerySetItems(rev reflect.Value, exists map[string]bool,
 		}
 
 		retf := ret.Field(i)
-		name, ok := retf.Tag.Lookup(EntityMysqlFieldTag)
+		name, ok := retf.Tag.Lookup(entity.EntityMysqlFieldTag)
 		if !ok {
 			continue
 		}

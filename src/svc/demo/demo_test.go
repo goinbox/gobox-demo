@@ -1,16 +1,18 @@
 package demo
 
 import (
+	"os"
+	"path/filepath"
+	"testing"
+	"time"
+
 	"gdemo/conf"
+	"gdemo/define"
+	"gdemo/define/entity"
 	"gdemo/resource"
-	"gdemo/svc"
 
 	"github.com/goinbox/gomisc"
 	"github.com/goinbox/mysql"
-
-	"os"
-	"testing"
-	"time"
 )
 
 type testQueryParamsStruct struct {
@@ -20,7 +22,11 @@ type testQueryParamsStruct struct {
 }
 
 func init() {
-	_ = conf.Init(os.Getenv("GOPATH"))
+	curDir, _ := os.Getwd()
+	prjHome := curDir + "/../../../"
+	prjHome, _ = filepath.Abs(prjHome)
+
+	_ = conf.Init(prjHome)
 
 	_ = resource.InitLog("test")
 	resource.InitRedis()
@@ -31,31 +37,31 @@ func TestDemoSvc(t *testing.T) {
 	demoSvc := NewDemoSvc([]byte("tracedemosvc"))
 
 	ids, err := demoSvc.Insert(
-		&DemoEntity{Name: "a1", Status: 0},
-		&DemoEntity{Name: "a2", Status: 1},
+		&entity.DemoEntity{Name: "a1", Status: 0},
+		&entity.DemoEntity{Name: "a2", Status: 1},
 	)
 	t.Log(ids, err)
 
-	entity, err := demoSvc.GetById(1)
-	t.Log(entity)
+	item, err := demoSvc.GetById(1)
+	t.Log(item)
 
 	for _, id := range ids {
-		entity, err := demoSvc.GetById(id)
-		t.Log(entity, err)
+		item, err := demoSvc.GetById(id)
+		t.Log(item, err)
 
 		deleted, err := demoSvc.DeleteById(id)
 		t.Log(deleted, err)
 	}
 
-	baseEntity := svc.SqlBaseEntity{AddTime: time.Now().Format(gomisc.TimeGeneralLayout())}
-	_, _ = demoSvc.UpdateById(1, &DemoEntity{SqlBaseEntity: baseEntity, Name: "aa", Status: 1}, map[string]bool{"add_time": true, "name": true})
+	baseEntity := entity.SqlBaseEntity{AddTime: time.Now().Format(gomisc.TimeGeneralLayout())}
+	_, _ = demoSvc.UpdateById(1, &entity.DemoEntity{SqlBaseEntity: baseEntity, Name: "aa", Status: 1}, map[string]bool{"add_time": true, "name": true})
 
 	entities, err := demoSvc.ListByIds(1, 10, 11)
-	for _, entity := range entities {
-		t.Log("listByIds", entity, err)
+	for _, item := range entities {
+		t.Log("listByIds", item, err)
 	}
 
-	sqp := &svc.SqlQueryParams{
+	sqp := &define.SqlQueryParams{
 		ParamsStructPtr: &testQueryParamsStruct{
 			Addtime: []string{"2017-10-01 17:06:30", "2017-10-30 17:06:30"},
 			Name:    "%a%",

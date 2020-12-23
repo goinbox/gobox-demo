@@ -1,17 +1,6 @@
 package main
 
 import (
-	"gdemo/conf"
-	"gdemo/controller/api/demo"
-	"gdemo/controller/api/mongodemo"
-	"gdemo/errno"
-	"gdemo/resource"
-
-	"github.com/goinbox/gohttp/gracehttp"
-	"github.com/goinbox/gohttp/router"
-	"github.com/goinbox/gohttp/system"
-	"github.com/goinbox/pidfile"
-
 	"flag"
 	"fmt"
 	"net/http"
@@ -19,12 +8,23 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/goinbox/gohttp/gracehttp"
+	"github.com/goinbox/gohttp/router"
+	"github.com/goinbox/gohttp/system"
+	"github.com/goinbox/pidfile"
+
+	"gdemo/conf"
+	"gdemo/controller/api/demo"
+	"gdemo/controller/api/mongodemo"
+	"gdemo/errno"
+	"gdemo/resource"
 )
 
 func main() {
 	var prjHome string
 
-	flag.StringVar(&prjHome, "prjHome", "", "prjHome absolute path")
+	flag.StringVar(&prjHome, "prj-home", "", "prj-home absolute path")
 	flag.Parse()
 
 	prjHome = strings.TrimRight(prjHome, "/")

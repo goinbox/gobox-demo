@@ -1,25 +1,27 @@
-package svc
+package store
 
 import (
-	"gdemo/resource"
+	"testing"
 
 	"github.com/goinbox/mysql"
 
-	"testing"
+	"gdemo/define"
+	"gdemo/define/entity"
+	"gdemo/resource"
 )
 
-func TestSqlSvcInsertGetListUpdateDelete(t *testing.T) {
-	ss := NewSqlSvc([]byte("TestSqlSvcInsertGetListUpdateDelete"), resource.MysqlClientPool, true)
+func TestSqlStoreInsertGetListUpdateDelete(t *testing.T) {
+	ss := NewSqlStore([]byte("TestSqlStoreInsertGetListUpdateDelete"), resource.MysqlClientPool, true)
 
 	resource.TestLogger.Notice([]byte("test Insert"))
 
-	item := &demoEntity{
+	item := &entity.DemoEntity{
 		Name:   "tdj",
 		Status: 1,
 	}
 
 	tableName, entityName := "demo", "demo"
-	ids, err := ss.Insert(tableName, entityName, demoColNames, item)
+	ids, err := ss.Insert(tableName, entityName, entity.DemoColNames, item)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -27,8 +29,8 @@ func TestSqlSvcInsertGetListUpdateDelete(t *testing.T) {
 
 	resource.TestLogger.Notice([]byte("test List"))
 
-	var data []*demoEntity
-	err = ss.ListByIds(tableName, ids, "add_time desc", demoEntityType, &data)
+	var data []*entity.DemoEntity
+	err = ss.ListByIds(tableName, ids, "add_time desc", entity.DemoEntityType, &data)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -36,8 +38,8 @@ func TestSqlSvcInsertGetListUpdateDelete(t *testing.T) {
 		t.Log(i, item)
 	}
 
-	sqp := &SqlQueryParams{
-		ParamsStructPtr: &demoEntity{
+	sqp := &define.SqlQueryParams{
+		ParamsStructPtr: &entity.DemoEntity{
 			Status: 1,
 		},
 		Exists:     map[string]bool{"status": true},
@@ -53,8 +55,8 @@ func TestSqlSvcInsertGetListUpdateDelete(t *testing.T) {
 	}
 	t.Log(cnt)
 
-	data = []*demoEntity{}
-	err = ss.SimpleQueryAnd(tableName, sqp, demoEntityType, &data)
+	data = []*entity.DemoEntity{}
+	err = ss.SimpleQueryAnd(tableName, sqp, entity.DemoEntityType, &data)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -62,7 +64,7 @@ func TestSqlSvcInsertGetListUpdateDelete(t *testing.T) {
 		t.Log(i, item)
 	}
 
-	newDemo := &demoEntity{
+	newDemo := &entity.DemoEntity{
 		Name: "new-demo",
 	}
 	updateFields := map[string]bool{"name": true}
@@ -76,7 +78,7 @@ func TestSqlSvcInsertGetListUpdateDelete(t *testing.T) {
 
 	resource.TestLogger.Notice([]byte("test Get"))
 
-	item = &demoEntity{}
+	item = &entity.DemoEntity{}
 	find, err := ss.GetById(tableName, ids[0], item)
 	if !find {
 		t.Fatal("not found")

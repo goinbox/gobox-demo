@@ -2,10 +2,11 @@ package demo
 
 import (
 	"gdemo/conf"
+	"gdemo/define"
+	"gdemo/define/entity"
 	"gdemo/resource"
+	"gdemo/store"
 	"gdemo/svc"
-
-	"reflect"
 )
 
 const (
@@ -13,19 +14,9 @@ const (
 	DefDemoTotalRowsCacheExpireSeconds = 60 * 10
 )
 
-var demoEntityType reflect.Type = reflect.TypeOf(DemoEntity{})
-var demoColNames []string = svc.ReflectColNames(demoEntityType)
-
-type DemoEntity struct {
-	svc.SqlBaseEntity
-
-	Name   string `mysql:"name" json:"name" redis:"name"`
-	Status int    `mysql:"status" json:"status" redis:"status"`
-}
-
 type DemoSvc struct {
 	*svc.BaseSvc
-	*svc.SqlRedisBindSvc
+	*store.SqlRedisBindStore
 
 	EntityName     string
 	RedisKeyPrefix string
@@ -36,9 +27,9 @@ func NewDemoSvc(traceId []byte) *DemoSvc {
 		BaseSvc: &svc.BaseSvc{
 			TraceId: traceId,
 		},
-		SqlRedisBindSvc: &svc.SqlRedisBindSvc{
-			SqlSvc:   svc.NewSqlSvc(traceId, resource.MysqlClientPool, true),
-			RedisSvc: svc.NewRedisSvc(traceId, resource.RedisClientPoolList[0]),
+		SqlRedisBindStore: &store.SqlRedisBindStore{
+			SqlStore:   store.NewSqlStore(traceId, resource.MysqlClientPool, true),
+			RedisStore: store.NewRedisStore(traceId, resource.RedisClientPoolList[0]),
 		},
 
 		EntityName:     "demo",
@@ -46,13 +37,13 @@ func NewDemoSvc(traceId []byte) *DemoSvc {
 	}
 }
 
-func (d *DemoSvc) Insert(entities ...*DemoEntity) ([]int64, error) {
+func (d *DemoSvc) Insert(entities ...*entity.DemoEntity) ([]int64, error) {
 	is := make([]interface{}, len(entities))
 	for i, entity := range entities {
 		is[i] = entity
 	}
 
-	ids, merr, rerr := d.SqlRedisBindSvc.Insert(d.EntityName, d.EntityName, d.RedisKeyPrefix, demoColNames, DefDemoEntityCacheExpireSeconds, is...)
+	ids, merr, rerr := d.SqlRedisBindStore.Insert(d.EntityName, d.EntityName, d.RedisKeyPrefix, entity.DemoColNames, DefDemoEntityCacheExpireSeconds, is...)
 	if rerr != nil {
 		d.ErrorLog([]byte("DemoSvc.Insert"), []byte(rerr.Error()))
 	}
@@ -60,10 +51,10 @@ func (d *DemoSvc) Insert(entities ...*DemoEntity) ([]int64, error) {
 	return ids, merr
 }
 
-func (d *DemoSvc) GetById(id int64) (*DemoEntity, error) {
-	entity := new(DemoEntity)
+func (d *DemoSvc) GetById(id int64) (*entity.DemoEntity, error) {
+	entity := new(entity.DemoEntity)
 
-	find, merr, rerr := d.SqlRedisBindSvc.GetById(d.EntityName, d.EntityName, d.RedisKeyPrefix, id, DefDemoEntityCacheExpireSeconds, entity)
+	find, merr, rerr := d.SqlRedisBindStore.GetById(d.EntityName, d.EntityName, d.RedisKeyPrefix, id, DefDemoEntityCacheExpireSeconds, entity)
 	if rerr != nil {
 		d.ErrorLog([]byte("DemoSvc.GetById"), []byte(rerr.Error()))
 	}
@@ -79,7 +70,7 @@ func (d *DemoSvc) GetById(id int64) (*DemoEntity, error) {
 }
 
 func (d *DemoSvc) DeleteById(id int64) (bool, error) {
-	find, merr, rerr := d.SqlRedisBindSvc.DeleteById(d.EntityName, d.EntityName, d.RedisKeyPrefix, id)
+	find, merr, rerr := d.SqlRedisBindStore.DeleteById(d.EntityName, d.EntityName, d.RedisKeyPrefix, id)
 	if rerr != nil {
 		d.ErrorLog([]byte("DemoSvc.DeleteById"), []byte(rerr.Error()))
 	}
@@ -87,19 +78,19 @@ func (d *DemoSvc) DeleteById(id int64) (bool, error) {
 	return find, merr
 }
 
-func (d *DemoSvc) UpdateById(id int64, newEntity *DemoEntity, updateFields map[string]bool) (bool, error) {
-	setItems, merr, rerr := d.SqlRedisBindSvc.UpdateById(d.EntityName, d.EntityName, d.RedisKeyPrefix, id, newEntity, updateFields, DefDemoEntityCacheExpireSeconds)
+func (d *DemoSvc) UpdateById(id int64, newEntity *entity.DemoEntity, updateFields map[string]bool) (bool, error) {
+	setItems, merr, rerr := d.SqlRedisBindStore.UpdateById(d.EntityName, d.EntityName, d.RedisKeyPrefix, id, newEntity, updateFields, DefDemoEntityCacheExpireSeconds)
 	if rerr != nil {
 		d.ErrorLog([]byte("DemoSvc.UpdateById"), []byte(rerr.Error()))
 	}
 
-	return (setItems != nil), merr
+	return setItems != nil, merr
 }
 
-func (d *DemoSvc) ListByIds(ids ...int64) ([]*DemoEntity, error) {
-	var entities []*DemoEntity
+func (d *DemoSvc) ListByIds(ids ...int64) ([]*entity.DemoEntity, error) {
+	var entities []*entity.DemoEntity
 
-	err := d.SqlSvc.ListByIds(d.EntityName, ids, "id desc", demoEntityType, &entities)
+	err := d.SqlStore.ListByIds(d.EntityName, ids, "id desc", entity.DemoEntityType, &entities)
 	if err != nil {
 		return nil, err
 	}
@@ -107,10 +98,10 @@ func (d *DemoSvc) ListByIds(ids ...int64) ([]*DemoEntity, error) {
 	return entities, nil
 }
 
-func (d *DemoSvc) SimpleQueryAnd(sqp *svc.SqlQueryParams) ([]*DemoEntity, error) {
-	var entities []*DemoEntity
+func (d *DemoSvc) SimpleQueryAnd(sqp *define.SqlQueryParams) ([]*entity.DemoEntity, error) {
+	var entities []*entity.DemoEntity
 
-	err := d.SqlSvc.SimpleQueryAnd(d.EntityName, sqp, demoEntityType, &entities)
+	err := d.SqlStore.SimpleQueryAnd(d.EntityName, sqp, entity.DemoEntityType, &entities)
 	if err != nil {
 		return nil, err
 	}

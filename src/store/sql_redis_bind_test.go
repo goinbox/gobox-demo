@@ -1,15 +1,16 @@
-package svc
+package store
 
 import (
-	"gdemo/resource"
-
 	"testing"
+
+	"gdemo/define/entity"
+	"gdemo/resource"
 )
 
-func TestSqlRedisBindSvc(t *testing.T) {
-	srs := &SqlRedisBindSvc{
-		SqlSvc:   NewSqlSvc([]byte("TestSqlRedisBindSvc"), resource.MysqlClientPool, true),
-		RedisSvc: NewRedisSvc([]byte("TestSqlRedisBindSvc"), resource.RedisClientPoolList[0]),
+func TestSqlRedisBindStore(t *testing.T) {
+	srs := &SqlRedisBindStore{
+		SqlStore:   NewSqlStore([]byte("TestSqlRedisBindSvc"), resource.MysqlClientPool, true),
+		RedisStore: NewRedisStore([]byte("TestSqlRedisBindSvc"), resource.RedisClientPoolList[0]),
 	}
 
 	tableName, entityName := "demo", "demo"
@@ -21,23 +22,23 @@ func TestSqlRedisBindSvc(t *testing.T) {
 
 	resource.TestLogger.Notice([]byte("test Insert"))
 
-	item := &demoEntity{
+	item := &entity.DemoEntity{
 		Name:   "tdj",
 		Status: 1,
 	}
 
-	ids, merr, rerr = srs.Insert(tableName, entityName, redisKeyPrefix, demoColNames, 10, item)
+	ids, merr, rerr = srs.Insert(tableName, entityName, redisKeyPrefix, entity.DemoColNames, 10, item)
 	t.Log(ids, merr, rerr)
 
 	resource.TestLogger.Notice([]byte("test GetById"))
 
-	item = &demoEntity{}
+	item = &entity.DemoEntity{}
 	find, merr, rerr = srs.GetById(tableName, entityName, redisKeyPrefix, ids[0], 10, item)
 	t.Log(find, merr, rerr, item)
 
 	resource.TestLogger.Notice([]byte("test UpdateById"))
 
-	newDemo := &demoEntity{
+	newDemo := &entity.DemoEntity{
 		Name: "new-demo",
 	}
 	updateFields := map[string]bool{"name": true}
@@ -46,7 +47,7 @@ func TestSqlRedisBindSvc(t *testing.T) {
 	for i, item := range setItems {
 		t.Log(i, item)
 	}
-	item = &demoEntity{}
+	item = &entity.DemoEntity{}
 	find, merr, rerr = srs.GetById(tableName, entityName, redisKeyPrefix, ids[0], 10, item)
 	t.Log(find, merr, rerr, item)
 

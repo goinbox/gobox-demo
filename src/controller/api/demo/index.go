@@ -1,12 +1,12 @@
 package demo
 
 import (
-	"gdemo/errno"
-	"gdemo/svc"
-
 	"github.com/goinbox/goerror"
 	"github.com/goinbox/gohttp/query"
 	"github.com/goinbox/mysql"
+
+	"gdemo/define"
+	"gdemo/errno"
 )
 
 type indexActionParams struct {
@@ -27,7 +27,7 @@ func (d *DemoController) IndexAction(context *DemoContext) {
 		return
 	}
 
-	sqp := &svc.SqlQueryParams{
+	sqp := &define.SqlQueryParams{
 		ParamsStructPtr: ap,
 		Exists:          exists,
 		Conditions:      indexQueryConditions,

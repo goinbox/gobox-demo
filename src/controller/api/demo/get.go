@@ -1,10 +1,10 @@
 package demo
 
 import (
-	"gdemo/errno"
-
 	"github.com/goinbox/goerror"
 	"github.com/goinbox/gohttp/query"
+
+	"gdemo/errno"
 )
 
 type getActionParams struct {

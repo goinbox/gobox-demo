@@ -53,7 +53,7 @@ func ApiJsonp(v string, data interface{}, e *goerror.Error, callback string) []b
 		[]byte(" "),
 		[]byte(callback),
 		[]byte("("),
-		[]byte(ApiJson(v, data, e)),
+		ApiJson(v, data, e),
 		[]byte(");"),
 	)
 }

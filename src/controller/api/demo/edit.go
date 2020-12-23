@@ -1,11 +1,11 @@
 package demo
 
 import (
-	"gdemo/errno"
-	demoSvc "gdemo/svc/demo"
-
 	"github.com/goinbox/goerror"
 	"github.com/goinbox/gohttp/query"
+
+	"gdemo/define/entity"
+	"gdemo/errno"
 )
 
 func (d *DemoController) EditAction(context *DemoContext) {
@@ -28,8 +28,8 @@ func (d *DemoController) EditAction(context *DemoContext) {
 	context.ApiData.Data = updated
 }
 
-func (d *DemoController) parseEditActionParams(context *DemoContext) (*demoSvc.DemoEntity, map[string]bool, *goerror.Error) {
-	ap := new(demoSvc.DemoEntity)
+func (d *DemoController) parseEditActionParams(context *DemoContext) (*entity.DemoEntity, map[string]bool, *goerror.Error) {
+	ap := new(entity.DemoEntity)
 
 	qs := query.NewQuerySet()
 	qs.Int64Var(&ap.Id, "id", true, errno.ECommonInvalidArg, "invalid id", query.CheckInt64IsPositive)

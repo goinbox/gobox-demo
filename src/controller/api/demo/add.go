@@ -1,11 +1,11 @@
 package demo
 
 import (
-	"gdemo/errno"
-	demoSvc "gdemo/svc/demo"
-
 	"github.com/goinbox/goerror"
 	"github.com/goinbox/gohttp/query"
+
+	"gdemo/define/entity"
+	"gdemo/errno"
 )
 
 func (d *DemoController) AddAction(context *DemoContext) {
@@ -26,8 +26,8 @@ func (d *DemoController) AddAction(context *DemoContext) {
 	}
 }
 
-func (d *DemoController) parseAddActionParams(context *DemoContext) (*demoSvc.DemoEntity, *goerror.Error) {
-	ap := new(demoSvc.DemoEntity)
+func (d *DemoController) parseAddActionParams(context *DemoContext) (*entity.DemoEntity, *goerror.Error) {
+	ap := new(entity.DemoEntity)
 
 	qs := query.NewQuerySet()
 	qs.StringVar(&ap.Name, "name", true, errno.ECommonInvalidArg, "invalid name", query.CheckStringNotEmpty)
