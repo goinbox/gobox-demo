@@ -1,48 +1,41 @@
 package mongodemo
 
 import (
-	"gdemo/resource"
-	"gdemo/svc"
+	"reflect"
 
 	"github.com/goinbox/mongo"
 
-	"reflect"
+	"gdemo/define"
+	"gdemo/define/entity"
+	"gdemo/resource"
+	"gdemo/store"
+	"gdemo/svc"
 )
-
-var MongoDemoEntityType reflect.Type = reflect.TypeOf(MongoDemoEntity{})
-var demoColNames []string = svc.ReflectMongoColNames(MongoDemoEntityType)
-
-type MongoDemoEntity struct {
-	svc.MongoBaseEntity
-
-	Name   string `bson:"name" json:"name"`
-	Status int    `bson:"status" json:"status"`
-}
 
 type MongoDemoSvc struct {
 	*svc.BaseSvc
-	*svc.MongoSvc
+	*store.MongoStore
 	EntityName string
 }
 
 func NewMongoDemoSvc(traceId []byte) *MongoDemoSvc {
-	ms := svc.NewMongoSvc(traceId, resource.MongoClientPool, true)
+	ms := store.NewMongoStore(traceId, resource.MongoClientPool, true)
 
 	return &MongoDemoSvc{
 		BaseSvc: &svc.BaseSvc{
 			TraceId: traceId,
 		},
-		MongoSvc:   ms,
+		MongoStore: ms,
 		EntityName: "demo",
 	}
 }
 
-func (d *MongoDemoSvc) Insert(entities ...*MongoDemoEntity) ([]interface{}, error) {
+func (d *MongoDemoSvc) Insert(entities ...*entity.MongoDemoEntity) ([]interface{}, error) {
 	is := make([]interface{}, len(entities))
-	for i, entity := range entities {
-		is[i] = entity
+	for i, item := range entities {
+		is[i] = item
 	}
-	ids, err := d.MongoSvc.Insert(d.EntityName, demoColNames, is...)
+	ids, err := d.MongoStore.Insert(d.EntityName, entity.MongoDemoColNames, is...)
 	if err != nil {
 		d.ErrorLog([]byte("MongoDemoSvc.Insert"), []byte(err.Error()))
 	}
@@ -50,24 +43,24 @@ func (d *MongoDemoSvc) Insert(entities ...*MongoDemoEntity) ([]interface{}, erro
 }
 
 func (d *MongoDemoSvc) DeleteById(id interface{}) (bool, error) {
-	find, err := d.MongoSvc.DeleteById(d.EntityName, id)
+	find, err := d.MongoStore.DeleteById(d.EntityName, id)
 	if err != nil {
 		d.ErrorLog([]byte("MongoDemoSvc.DeleteById"), []byte(err.Error()))
 	}
 	return find, err
 }
 
-func (d *MongoDemoSvc) UpdateById(id interface{}, newEntity *MongoDemoEntity, updateFields map[string]bool) (bool, error) {
-	setItems, err := d.MongoSvc.UpdateById(d.EntityName, id, newEntity, updateFields)
+func (d *MongoDemoSvc) UpdateById(id interface{}, newEntity *entity.MongoDemoEntity, updateFields map[string]bool) (bool, error) {
+	setItems, err := d.MongoStore.UpdateById(d.EntityName, id, newEntity, updateFields)
 	if err != nil {
 		d.ErrorLog([]byte("MongoDemoSvc.UpdateById"), []byte(err.Error()))
 	}
 	return (setItems != nil), err
 }
 
-func (d *MongoDemoSvc) GetById(id interface{}) (*MongoDemoEntity, error) {
-	entity := new(MongoDemoEntity)
-	find, err := d.MongoSvc.GetById(entity, d.EntityName, id)
+func (d *MongoDemoSvc) GetById(id interface{}) (*entity.MongoDemoEntity, error) {
+	entity := new(entity.MongoDemoEntity)
+	find, err := d.MongoStore.GetById(entity, d.EntityName, id)
 	if err != nil {
 		d.ErrorLog([]byte("MongoDemoSvc.GetById"), []byte(err.Error()))
 	}
@@ -81,22 +74,22 @@ func (d *MongoDemoSvc) GetById(id interface{}) (*MongoDemoEntity, error) {
 	return entity, nil
 }
 
-func (d *MongoDemoSvc) SelectAll(mqp *svc.MongoQueryParams) (*[]MongoDemoEntity, error) {
-	entities := new([]MongoDemoEntity)
-	err := d.MongoSvc.SelectAll(entities, d.EntityName, mqp, nil)
+func (d *MongoDemoSvc) SelectAll(mqp *define.MongoQueryParams) (*[]entity.MongoDemoEntity, error) {
+	entities := new([]entity.MongoDemoEntity)
+	err := d.MongoStore.SelectAll(entities, d.EntityName, mqp, nil)
 	if err != nil {
 		return nil, err
 	}
 	return entities, nil
 }
 
-func (d *MongoDemoSvc) SelectRegex(mqp *svc.MongoQueryParams) (*[]MongoDemoEntity, error) {
-	entities := new([]MongoDemoEntity)
+func (d *MongoDemoSvc) SelectRegex(mqp *define.MongoQueryParams) (*[]entity.MongoDemoEntity, error) {
+	entities := new([]entity.MongoDemoEntity)
 
-	setItems := d.MongoSvc.ReflectQuerySetItems(reflect.ValueOf(mqp.ParamsStructPtr).Elem(), mqp.Exists, mqp.Conditions)
+	setItems := d.MongoStore.ReflectQuerySetItems(reflect.ValueOf(mqp.ParamsStructPtr).Elem(), mqp.Exists, mqp.Conditions)
 	setItems["name"].(map[string]interface{})[mongo.MONGO_COND_OPTIONS] = "i"
 
-	err := d.MongoSvc.SelectAll(entities, d.EntityName, mqp, setItems)
+	err := d.MongoStore.SelectAll(entities, d.EntityName, mqp, setItems)
 	if err != nil {
 		return nil, err
 	}

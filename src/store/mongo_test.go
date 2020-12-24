@@ -1,19 +1,21 @@
-package svc
+package store
 
 import (
-	"gdemo/resource"
 	"reflect"
+	"testing"
 
 	"github.com/goinbox/mongo"
 
-	"testing"
+	"gdemo/define"
+	"gdemo/define/entity"
+	"gdemo/resource"
 )
 
-var MongoDemoEntityType reflect.Type = reflect.TypeOf(MongoDemoEntity{})
-var MongoDemoColNames []string = ReflectMongoColNames(MongoDemoEntityType)
+var MongoDemoEntityType = reflect.TypeOf(MongoDemoEntity{})
+var MongoDemoColNames = entity.ReflectMongoColNames(MongoDemoEntityType)
 
 type MongoDemoEntity struct {
-	MongoBaseEntity
+	entity.MongoBaseEntity
 
 	Name   string `bson:"name" json:"name"`
 	Status int    `bson:"status" json:"status"`
@@ -21,7 +23,7 @@ type MongoDemoEntity struct {
 
 func TestMongoSvcInsertGetListUpdateDelete(t *testing.T) {
 	resource.InitMongoTest()
-	ms := NewMongoSvc([]byte("TestMongoSvcInsertGetListUpdateDelete"), resource.MongoClientPool, true)
+	ms := NewMongoStore([]byte("TestMongoSvcInsertGetListUpdateDelete"), resource.MongoClientPool, true)
 
 	resource.TestLogger.Notice([]byte("test Insert"))
 
@@ -39,7 +41,7 @@ func TestMongoSvcInsertGetListUpdateDelete(t *testing.T) {
 
 	resource.TestLogger.Notice([]byte("test List"))
 
-	mqp := &MongoQueryParams{
+	mqp := &define.MongoQueryParams{
 		ParamsStructPtr: &MongoDemoEntity{
 			Name:   "ccc",
 			Status: 1,

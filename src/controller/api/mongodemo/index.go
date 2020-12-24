@@ -1,12 +1,12 @@
 package mongodemo
 
 import (
-	"gdemo/errno"
-	"gdemo/svc"
-
 	"github.com/goinbox/goerror"
 	"github.com/goinbox/gohttp/query"
 	"github.com/goinbox/mongo"
+
+	"gdemo/define"
+	"gdemo/errno"
 )
 
 type indexActionParams struct {
@@ -27,7 +27,7 @@ func (d *MongoDemoController) IndexAction(context *MongoDemoContext) {
 		return
 	}
 
-	mqp := &svc.MongoQueryParams{
+	mqp := &define.MongoQueryParams{
 		ParamsStructPtr: ap,
 		Exists:          exists,
 		Conditions:      indexQueryConditions,

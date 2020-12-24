@@ -1,11 +1,11 @@
 package mongodemo
 
 import (
-	"gdemo/errno"
-	demoSvc "gdemo/svc/mongodemo"
-
 	"github.com/goinbox/goerror"
 	"github.com/goinbox/gohttp/query"
+
+	"gdemo/define/entity"
+	"gdemo/errno"
 )
 
 func (d *MongoDemoController) AddAction(context *MongoDemoContext) {
@@ -26,8 +26,8 @@ func (d *MongoDemoController) AddAction(context *MongoDemoContext) {
 	}
 }
 
-func (d *MongoDemoController) parseAddActionParams(context *MongoDemoContext) (*demoSvc.MongoDemoEntity, *goerror.Error) {
-	ap := new(demoSvc.MongoDemoEntity)
+func (d *MongoDemoController) parseAddActionParams(context *MongoDemoContext) (*entity.MongoDemoEntity, *goerror.Error) {
+	ap := new(entity.MongoDemoEntity)
 
 	qs := query.NewQuerySet()
 	qs.StringVar(&ap.Name, "name", true, errno.ECommonInvalidArg, "invalid name", query.CheckStringNotEmpty)

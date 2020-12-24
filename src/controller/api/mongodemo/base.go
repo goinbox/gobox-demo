@@ -1,12 +1,12 @@
 package mongodemo
 
 import (
-	"gdemo/controller/api"
-	demoSvc "gdemo/svc/mongodemo"
+	"net/http"
 
 	gcontroller "github.com/goinbox/gohttp/controller"
 
-	"net/http"
+	"gdemo/controller/api"
+	demoSvc "gdemo/svc/mongodemo"
 )
 
 type MongoDemoContext struct {

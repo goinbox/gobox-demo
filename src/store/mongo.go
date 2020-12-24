@@ -1,28 +1,19 @@
-package svc
+package store
 
 import (
+	"reflect"
+	"time"
+
 	"github.com/globalsign/mgo"
 	"github.com/goinbox/mongo"
 
+	"gdemo/define"
+	"gdemo/define/entity"
 	"gdemo/idgen"
 	"gdemo/resource"
-
-	"reflect"
-	"time"
 )
 
-const (
-	EntityMongoFieldTag = "bson"
-	EntityMongoBase     = "MongoBaseEntity"
-)
-
-type MongoBaseEntity struct {
-	Id       interface{} `bson:"_id" json:"_id"`
-	AddTime  time.Time   `bson:"add_time" json:"add_time"`
-	EditTime time.Time   `bson:"edit_time" json:"edit_time"`
-}
-
-type MongoSvc struct {
+type MongoStore struct {
 	traceId  []byte
 	pool     *mongo.Pool
 	useIdGen bool
@@ -31,43 +22,15 @@ type MongoSvc struct {
 	idGenter *idgen.MongoIdGenter
 }
 
-type MongoQueryParams struct {
-	ParamsStructPtr interface{}
-	Exists          map[string]bool
-	Conditions      map[string]string
-
-	OrderBy []string
-	Offset  int
-	Cnt     int
-}
-
-func ReflectMongoColNames(ret reflect.Type) []string {
-	var cns []string
-
-	for i := 0; i < ret.NumField(); i++ {
-		retf := ret.Field(i)
-		if retf.Type.Kind() == reflect.Struct && retf.Name == EntityMongoBase {
-			cns = ReflectMongoColNames(retf.Type)
-			continue
-		}
-
-		if name, ok := retf.Tag.Lookup(EntityMongoFieldTag); ok {
-			cns = append(cns, name)
-		}
-	}
-
-	return cns
-}
-
-func NewMongoSvc(traceId []byte, pool *mongo.Pool, useIdGen bool) *MongoSvc {
-	return &MongoSvc{
+func NewMongoStore(traceId []byte, pool *mongo.Pool, useIdGen bool) *MongoStore {
+	return &MongoStore{
 		traceId:  traceId,
 		pool:     pool,
 		useIdGen: useIdGen,
 	}
 }
 
-func (s *MongoSvc) Dao() *mongo.MongoDao {
+func (s *MongoStore) Dao() *mongo.MongoDao {
 	if s.dao == nil {
 		s.dao = &mongo.MongoDao{}
 	}
@@ -80,7 +43,7 @@ func (s *MongoSvc) Dao() *mongo.MongoDao {
 	return s.dao
 }
 
-func (s *MongoSvc) IdGenter() *idgen.MongoIdGenter {
+func (s *MongoStore) IdGenter() *idgen.MongoIdGenter {
 	if !s.useIdGen {
 		return nil
 	}
@@ -92,7 +55,7 @@ func (s *MongoSvc) IdGenter() *idgen.MongoIdGenter {
 	return s.idGenter
 }
 
-func (s *MongoSvc) SendBackClient() {
+func (s *MongoStore) SendBackClient() {
 	if !s.dao.Client.Closed() {
 		s.dao.Client.SetLogger(resource.NoopLogger)
 		_ = s.pool.Put(s.dao.Client)
@@ -104,7 +67,7 @@ func (s *MongoSvc) SendBackClient() {
 	}
 }
 
-func (s *MongoSvc) FillBaseEntityForInsert(baseEntity *MongoBaseEntity, rev reflect.Value, tableName string) error {
+func (s *MongoStore) FillBaseEntityForInsert(baseEntity *entity.MongoBaseEntity, rev reflect.Value, tableName string) error {
 	ts := time.Now()
 	entityId := rev.FieldByName("Id").Interface()
 	entityAddTime := rev.FieldByName("AddTime").Interface().(time.Time)
@@ -131,14 +94,14 @@ func (s *MongoSvc) FillBaseEntityForInsert(baseEntity *MongoBaseEntity, rev refl
 	return nil
 }
 
-func (s *MongoSvc) Insert(tableName string, colNames []string, entities ...interface{}) ([]interface{}, error) {
+func (s *MongoStore) Insert(tableName string, colNames []string, entities ...interface{}) ([]interface{}, error) {
 	cnt := len(entities)
 	colsValues := make([][]interface{}, cnt)
 	ids := make([]interface{}, cnt)
-	for i, entity := range entities {
-		rev := reflect.ValueOf(entity).Elem()
-		if rev.FieldByName(EntityMongoBase).IsValid() {
-			baseEntity := rev.FieldByName(EntityMongoBase).Addr().Interface().(*MongoBaseEntity)
+	for i, item := range entities {
+		rev := reflect.ValueOf(item).Elem()
+		if rev.FieldByName(entity.EntityMongoBase).IsValid() {
+			baseEntity := rev.FieldByName(entity.EntityMongoBase).Addr().Interface().(*entity.MongoBaseEntity)
 			err := s.FillBaseEntityForInsert(baseEntity, rev, tableName)
 			if err != nil {
 				return nil, err
@@ -161,18 +124,18 @@ func (s *MongoSvc) Insert(tableName string, colNames []string, entities ...inter
 	return ids, nil
 }
 
-func (s *MongoSvc) reflectInsertColValues(rev reflect.Value) []interface{} {
+func (s *MongoStore) reflectInsertColValues(rev reflect.Value) []interface{} {
 	var colValues []interface{}
 
 	ret := rev.Type()
 	for i := 0; i < rev.NumField(); i++ {
 		revf := rev.Field(i)
-		if revf.Kind() == reflect.Struct && revf.Type().Name() == EntityMongoBase {
+		if revf.Kind() == reflect.Struct && revf.Type().Name() == entity.EntityMongoBase {
 			colValues = s.reflectInsertColValues(revf)
 			continue
 		}
 
-		_, ok := ret.Field(i).Tag.Lookup(EntityMongoFieldTag)
+		_, ok := ret.Field(i).Tag.Lookup(entity.EntityMongoFieldTag)
 		if ok {
 			colValues = append(colValues, revf.Interface())
 		}
@@ -181,7 +144,7 @@ func (s *MongoSvc) reflectInsertColValues(rev reflect.Value) []interface{} {
 	return colValues
 }
 
-func (s *MongoSvc) DeleteById(tableName string, id interface{}) (bool, error) {
+func (s *MongoStore) DeleteById(tableName string, id interface{}) (bool, error) {
 	err := s.Dao().DeleteById(tableName, id)
 	defer s.SendBackClient()
 	if err != nil {
@@ -190,7 +153,7 @@ func (s *MongoSvc) DeleteById(tableName string, id interface{}) (bool, error) {
 	return true, nil
 }
 
-func (s *MongoSvc) UpdateById(tableName string, id interface{}, newEntityPtr interface{}, updateFields map[string]bool) (map[string]interface{}, error) {
+func (s *MongoStore) UpdateById(tableName string, id interface{}, newEntityPtr interface{}, updateFields map[string]bool) (map[string]interface{}, error) {
 	rnewv := reflect.ValueOf(newEntityPtr).Elem()
 	oldEntity := reflect.New(rnewv.Type()).Interface()
 
@@ -218,19 +181,19 @@ func (s *MongoSvc) UpdateById(tableName string, id interface{}, newEntityPtr int
 	return setItems, nil
 }
 
-func (s *MongoSvc) reflectUpdateSetItems(roldv, rnewv reflect.Value, updateFields map[string]bool) map[string]interface{} {
+func (s *MongoStore) reflectUpdateSetItems(roldv, rnewv reflect.Value, updateFields map[string]bool) map[string]interface{} {
 	setItems := make(map[string]interface{})
 
 	rnewt := rnewv.Type()
 	for i := 0; i < rnewv.NumField(); i++ {
 		rnewvf := rnewv.Field(i)
-		if rnewvf.Kind() == reflect.Struct && rnewvf.Type().Name() == EntityMongoBase {
+		if rnewvf.Kind() == reflect.Struct && rnewvf.Type().Name() == entity.EntityMongoBase {
 			setItems = s.reflectUpdateSetItems(roldv.Field(i), rnewvf, updateFields)
 			continue
 		}
 
 		rnewtf := rnewt.Field(i)
-		colName, ok := rnewtf.Tag.Lookup(EntityMongoFieldTag)
+		colName, ok := rnewtf.Tag.Lookup(entity.EntityMongoFieldTag)
 		if !ok {
 			continue
 		}
@@ -245,7 +208,7 @@ func (s *MongoSvc) reflectUpdateSetItems(roldv, rnewv reflect.Value, updateField
 	return setItems
 }
 
-func (s *MongoSvc) GetById(entityPtr interface{}, tableName string, id interface{}) (bool, error) {
+func (s *MongoStore) GetById(entityPtr interface{}, tableName string, id interface{}) (bool, error) {
 	result, err := s.Dao().SelectById(tableName, id)
 	defer s.SendBackClient()
 	if err != nil && err != mgo.ErrNotFound {
@@ -263,7 +226,7 @@ func (s *MongoSvc) GetById(entityPtr interface{}, tableName string, id interface
 	return true, nil
 }
 
-func (s *MongoSvc) SelectAll(entityListPtr interface{}, tableName string, mqp *MongoQueryParams, setItems map[string]interface{}) error {
+func (s *MongoStore) SelectAll(entityListPtr interface{}, tableName string, mqp *define.MongoQueryParams, setItems map[string]interface{}) error {
 	if setItems == nil {
 		setItems = s.ReflectQuerySetItems(reflect.ValueOf(mqp.ParamsStructPtr).Elem(), mqp.Exists, mqp.Conditions)
 	}
@@ -284,19 +247,19 @@ func (s *MongoSvc) SelectAll(entityListPtr interface{}, tableName string, mqp *M
 	return nil
 }
 
-func (s *MongoSvc) ReflectQuerySetItems(rev reflect.Value, exists map[string]bool, conditions map[string]string) map[string]interface{} {
+func (s *MongoStore) ReflectQuerySetItems(rev reflect.Value, exists map[string]bool, conditions map[string]string) map[string]interface{} {
 	setItems := make(map[string]interface{})
 	ret := rev.Type()
 
 	for i := 0; i < rev.NumField(); i++ {
 		revf := rev.Field(i)
-		if revf.Kind() == reflect.Struct && revf.Type().Name() == EntityMongoBase {
+		if revf.Kind() == reflect.Struct && revf.Type().Name() == entity.EntityMongoBase {
 			setItems = s.ReflectQuerySetItems(revf, exists, conditions)
 			continue
 		}
 
 		retf := ret.Field(i)
-		name, ok := retf.Tag.Lookup(EntityMongoFieldTag)
+		name, ok := retf.Tag.Lookup(entity.EntityMongoFieldTag)
 		if !ok {
 			continue
 		}

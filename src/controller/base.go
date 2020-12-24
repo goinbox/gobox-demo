@@ -1,18 +1,18 @@
 package controller
 
 import (
-	"gdemo/idgen"
-	"gdemo/misc"
-	"gdemo/resource"
-
-	gcontroller "github.com/goinbox/gohttp/controller"
-
 	"bytes"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	gcontroller "github.com/goinbox/gohttp/controller"
+
+	"gdemo/idgen"
+	"gdemo/misc"
+	"gdemo/resource"
 )
 
 const (

@@ -1,15 +1,16 @@
 package mongodemo
 
 import (
+	"os"
+	"testing"
+	"time"
+
 	"github.com/goinbox/mongo"
 
 	"gdemo/conf"
+	"gdemo/define"
+	"gdemo/define/entity"
 	"gdemo/resource"
-	"gdemo/svc"
-	"os"
-	"time"
-
-	"testing"
 )
 
 type testQueryParamsStruct struct {
@@ -28,8 +29,8 @@ func TestDemoSvc(t *testing.T) {
 	demoSvc := NewMongoDemoSvc([]byte("traceMongoDemoSvc"))
 
 	ids, err := demoSvc.Insert(
-		&MongoDemoEntity{Name: "a1", Status: 0},
-		&MongoDemoEntity{Name: "a2", Status: 1},
+		&entity.MongoDemoEntity{Name: "a1", Status: 0},
+		&entity.MongoDemoEntity{Name: "a2", Status: 1},
 	)
 	t.Log(ids, err)
 
@@ -41,13 +42,13 @@ func TestDemoSvc(t *testing.T) {
 		t.Log(deleted, err)
 	}
 
-	baseEntity := svc.MongoBaseEntity{AddTime: time.Now()}
-	demoSvc.UpdateById(1, &MongoDemoEntity{MongoBaseEntity: baseEntity, Name: "ccc", Status: 1}, map[string]bool{"name": true, "status": true, "add_time": true})
+	baseEntity := entity.MongoBaseEntity{AddTime: time.Now()}
+	demoSvc.UpdateById(1, &entity.MongoDemoEntity{MongoBaseEntity: baseEntity, Name: "ccc", Status: 1}, map[string]bool{"name": true, "status": true, "add_time": true})
 
 	entity, err := demoSvc.GetById(1)
 	t.Log(entity, err)
 
-	mqp := &svc.MongoQueryParams{
+	mqp := &define.MongoQueryParams{
 		ParamsStructPtr: &testQueryParamsStruct{
 			Name:   "ccc",
 			Status: 1,
@@ -62,7 +63,7 @@ func TestDemoSvc(t *testing.T) {
 	entities, err := demoSvc.SelectAll(mqp)
 	t.Log(entities, err)
 
-	mqp = &svc.MongoQueryParams{
+	mqp = &define.MongoQueryParams{
 		ParamsStructPtr: &testQueryParamsStruct{
 			Name:   "CC.+",
 			Status: 1,

@@ -1,15 +1,15 @@
 package mongodemo
 
 import (
-	"gdemo/errno"
-	demoSvc "gdemo/svc/mongodemo"
-
 	"github.com/goinbox/goerror"
 	"github.com/goinbox/gohttp/query"
+
+	"gdemo/define/entity"
+	"gdemo/errno"
 )
 
 type editActionParams struct {
-	entiry demoSvc.MongoDemoEntity
+	item entity.MongoDemoEntity
 
 	tid int64
 }
@@ -34,25 +34,25 @@ func (d *MongoDemoController) EditAction(context *MongoDemoContext) {
 	context.ApiData.Data = updated
 }
 
-func (d *MongoDemoController) parseEditActionParams(context *MongoDemoContext) (*demoSvc.MongoDemoEntity, map[string]bool, *goerror.Error) {
+func (d *MongoDemoController) parseEditActionParams(context *MongoDemoContext) (*entity.MongoDemoEntity, map[string]bool, *goerror.Error) {
 	ap := new(editActionParams)
 
 	qs := query.NewQuerySet()
 
 	qs.Int64Var(&ap.tid, "id", true, errno.ECommonInvalidArg, "invalid id", query.CheckInt64IsPositive)
-	qs.StringVar(&ap.entiry.Name, "name", false, errno.ECommonInvalidArg, "invalid name", query.CheckStringNotEmpty)
-	qs.IntVar(&ap.entiry.Status, "status", false, errno.ECommonInvalidArg, "invalid status", nil)
+	qs.StringVar(&ap.item.Name, "name", false, errno.ECommonInvalidArg, "invalid name", query.CheckStringNotEmpty)
+	qs.IntVar(&ap.item.Status, "status", false, errno.ECommonInvalidArg, "invalid status", nil)
 	e := qs.Parse(context.QueryValues)
 
 	if e != nil {
-		return &ap.entiry, nil, e
+		return &ap.item, nil, e
 	}
 
-	ap.entiry.Id = ap.tid
+	ap.item.Id = ap.tid
 
-	if ap.entiry.Status < 0 {
-		return &ap.entiry, nil, goerror.New(errno.ECommonInvalidArg, "invalid status")
+	if ap.item.Status < 0 {
+		return &ap.item, nil, goerror.New(errno.ECommonInvalidArg, "invalid status")
 	}
 
-	return &ap.entiry, qs.ExistsInfo(), nil
+	return &ap.item, qs.ExistsInfo(), nil
 }

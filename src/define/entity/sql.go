@@ -12,13 +12,13 @@ type SqlBaseEntity struct {
 	EditTime string `mysql:"edit_time" json:"edit_time" redis:"edit_time"`
 }
 
-func ReflectColNames(ret reflect.Type) []string {
+func ReflectSqlColNames(ret reflect.Type) []string {
 	var cns []string
 
 	for i := 0; i < ret.NumField(); i++ {
 		retf := ret.Field(i)
 		if retf.Type.Kind() == reflect.Struct {
-			cns = ReflectColNames(retf.Type)
+			cns = ReflectSqlColNames(retf.Type)
 			continue
 		}
 
