@@ -1,9 +1,9 @@
 package define
 
+import "github.com/goinbox/mysql"
+
 type SqlQueryParams struct {
-	ParamsStructPtr interface{}
-	Exists          map[string]bool
-	Conditions      map[string]string
+	CondItems []*mysql.SqlColQueryItem
 
 	OrderBy string
 	Offset  int64

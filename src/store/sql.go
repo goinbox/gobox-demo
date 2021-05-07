@@ -111,7 +111,7 @@ func (s *SqlStore) Insert(tableName, entityName string, colNames []string, entit
 			return nil, err
 		}
 
-		colsValues[i] = s.ReflectInsertColValues(rev)
+		colsValues[i] = entity.ReflectSqlInsertColValues(rev)
 		ids[i] = baseEntity.Id
 	}
 
@@ -125,28 +125,8 @@ func (s *SqlStore) Insert(tableName, entityName string, colNames []string, entit
 	return ids, nil
 }
 
-func (s *SqlStore) ReflectInsertColValues(rev reflect.Value) []interface{} {
-	var colValues []interface{}
-
-	ret := rev.Type()
-	for i := 0; i < rev.NumField(); i++ {
-		revf := rev.Field(i)
-		if revf.Kind() == reflect.Struct {
-			colValues = s.ReflectInsertColValues(revf)
-			continue
-		}
-
-		_, ok := ret.Field(i).Tag.Lookup(entity.EntityMysqlFieldTag)
-		if ok {
-			colValues = append(colValues, revf.Interface())
-		}
-	}
-
-	return colValues
-}
-
 func (s *SqlStore) GetById(tableName string, id int64, entityPtr interface{}) (bool, error) {
-	dests := s.ReflectEntityScanDests(reflect.ValueOf(entityPtr).Elem())
+	dests := entity.ReflectSqlEntityScanDests(reflect.ValueOf(entityPtr).Elem())
 
 	err := s.Dao().SelectById(tableName, "*", id).Scan(dests...)
 	defer s.SendBackClient()
@@ -161,87 +141,21 @@ func (s *SqlStore) GetById(tableName string, id int64, entityPtr interface{}) (b
 	return true, nil
 }
 
-func (s *SqlStore) ReflectEntityScanDests(rev reflect.Value) []interface{} {
-	var dests []interface{}
-
-	ret := rev.Type()
-	for i := 0; i < rev.NumField(); i++ {
-		revf := rev.Field(i)
-		if revf.Kind() == reflect.Struct {
-			dests = s.ReflectEntityScanDests(revf)
-			continue
-		}
-
-		_, ok := ret.Field(i).Tag.Lookup(entity.EntityMysqlFieldTag)
-		if ok {
-			dests = append(dests, revf.Addr().Interface())
-		}
-	}
-
-	return dests
-}
-
-func (s *SqlStore) UpdateById(tableName string, id int64, newEntityPtr interface{}, updateFields map[string]bool) ([]*mysql.SqlColQueryItem, error) {
-	rnewv := reflect.ValueOf(newEntityPtr).Elem()
-	oldEntity := reflect.New(rnewv.Type()).Interface()
-
-	find, err := s.GetById(tableName, id, oldEntity)
-	if err != nil {
-		return nil, err
-	}
-	if !find {
-		return nil, nil
-	}
-
-	setItems := s.ReflectUpdateSetItems(reflect.ValueOf(oldEntity).Elem(), rnewv, updateFields)
-	if len(setItems) == 0 {
-		return nil, nil
-	}
-
-	setItems = append(setItems, mysql.NewSqlColQueryItem("edit_time", "", time.Now().Format(gomisc.TimeGeneralLayout())))
-	result := s.Dao().UpdateById(tableName, id, setItems...)
+func (s *SqlStore) UpdateById(tableName string, id int64, updateFields map[string]interface{}) (bool, error) {
+	result := s.Dao().UpdateById(tableName, id, updateFields)
 	defer s.SendBackClient()
 
 	if result.Err != nil {
-		return nil, result.Err
+		return false, result.Err
 	}
 	if result.RowsAffected == 0 {
-		return nil, nil
+		return false, nil
 	}
 
-	return setItems, nil
+	return true, nil
 }
 
-func (s *SqlStore) ReflectUpdateSetItems(roldv, rnewv reflect.Value, updateFields map[string]bool) []*mysql.SqlColQueryItem {
-	var setItems []*mysql.SqlColQueryItem
-
-	rnewt := rnewv.Type()
-	for i := 0; i < rnewv.NumField(); i++ {
-		rnewvf := rnewv.Field(i)
-		if rnewvf.Kind() == reflect.Struct {
-			setItems = s.ReflectUpdateSetItems(roldv.Field(i), rnewvf, updateFields)
-			continue
-		}
-
-		rnewtf := rnewt.Field(i)
-		colName, ok := rnewtf.Tag.Lookup(entity.EntityMysqlFieldTag)
-		if !ok {
-			continue
-		}
-		if v, ok := updateFields[colName]; !ok || !v {
-			continue
-		}
-
-		nv := rnewvf.Interface()
-		if nv != roldv.Field(i).Interface() {
-			setItems = append(setItems, mysql.NewSqlColQueryItem(colName, "", nv))
-		}
-	}
-
-	return setItems
-}
-
-func (s *SqlStore) ListByIds(tableName string, ids []int64, orderBy string, entityType reflect.Type, listPtr interface{}) error {
+func (s *SqlStore) ListByIds(tableName string, ids []int64, orderBy string, entityType reflect.Type, entityList interface{}) error {
 	rows, err := s.Dao().SelectByIds(tableName, "*", orderBy, ids...)
 	defer s.SendBackClient()
 
@@ -249,98 +163,39 @@ func (s *SqlStore) ListByIds(tableName string, ids []int64, orderBy string, enti
 		return err
 	}
 
-	return s.ReflectQueryRowsToEntityList(rows, entityType, listPtr)
+	return entity.ReflectSqlQueryRowsToEntityList(rows, entityType, entityList)
 }
 
-func (s *SqlStore) ReflectQueryRowsToEntityList(rows *sql.Rows, ret reflect.Type, listPtr interface{}) error {
-	if rows.Next() == false {
-		return nil
-	}
-
-	rlistv := reflect.ValueOf(listPtr).Elem()
-	rev := reflect.New(ret)
-	dests := s.ReflectEntityScanDests(rev.Elem())
-	err := rows.Scan(dests...)
-	if err != nil {
-		return err
-	}
-	rlistv.Set(reflect.Append(rlistv, rev))
-
-	for rows.Next() {
-		rev = reflect.New(ret)
-		dests = s.ReflectEntityScanDests(rev.Elem())
-		err = rows.Scan(dests...)
-		if err != nil {
-			return err
-		}
-		rlistv.Set(reflect.Append(rlistv, rev))
-	}
-
-	return nil
-}
-
-func (s *SqlStore) SimpleQueryAnd(tableName string, sqp *define.SqlQueryParams, entityType reflect.Type, listPtr interface{}) error {
+func (s *SqlStore) SimpleQueryAnd(tableName string, sqp *define.SqlQueryParams, entityType reflect.Type, entityList interface{}) error {
 	var orderBy string
 	var offset, cnt int64
-	var setItems []*mysql.SqlColQueryItem
+	var condItems []*mysql.SqlColQueryItem
 
 	if sqp != nil {
 		orderBy = sqp.OrderBy
 		offset = sqp.Offset
 		cnt = sqp.Cnt
-		if sqp.ParamsStructPtr != nil {
-			setItems = s.ReflectQuerySetItems(reflect.ValueOf(sqp.ParamsStructPtr).Elem(), sqp.Exists, sqp.Conditions)
-		}
+		condItems = sqp.CondItems
 	}
 
-	rows, err := s.Dao().SimpleQueryAnd(tableName, "*", orderBy, offset, cnt, setItems...)
+	rows, err := s.Dao().SimpleQueryAnd(tableName, "*", orderBy, offset, cnt, condItems...)
 	defer s.SendBackClient()
 
 	if err != nil {
 		return err
 	}
 
-	return s.ReflectQueryRowsToEntityList(rows, entityType, listPtr)
+	return entity.ReflectSqlQueryRowsToEntityList(rows, entityType, entityList)
 }
 
 func (s *SqlStore) SimpleTotalAnd(tableName string, sqp *define.SqlQueryParams) (int64, error) {
-	var setItems []*mysql.SqlColQueryItem
-	if sqp != nil && sqp.ParamsStructPtr != nil {
-		setItems = s.ReflectQuerySetItems(reflect.ValueOf(sqp.ParamsStructPtr).Elem(), sqp.Exists, sqp.Conditions)
+	var condItems []*mysql.SqlColQueryItem
+	if sqp != nil {
+		condItems = sqp.CondItems
 	}
 
-	total, err := s.Dao().SimpleTotalAnd(tableName, setItems...)
+	total, err := s.Dao().SimpleTotalAnd(tableName, condItems...)
 	defer s.SendBackClient()
 
 	return total, err
-}
-
-func (s *SqlStore) ReflectQuerySetItems(rev reflect.Value, exists map[string]bool, conditions map[string]string) []*mysql.SqlColQueryItem {
-	var setItems []*mysql.SqlColQueryItem
-	ret := rev.Type()
-
-	for i := 0; i < rev.NumField(); i++ {
-		revf := rev.Field(i)
-		if revf.Kind() == reflect.Struct {
-			setItems = s.ReflectQuerySetItems(revf, exists, conditions)
-			continue
-		}
-
-		retf := ret.Field(i)
-		name, ok := retf.Tag.Lookup(entity.EntityMysqlFieldTag)
-		if !ok {
-			continue
-		}
-		if v, ok := exists[name]; !ok || !v {
-			continue
-		}
-		cond, ok := conditions[name]
-		if !ok {
-			continue
-		}
-
-		setItems = append(setItems, mysql.NewSqlColQueryItem(name, cond, revf.Interface()))
-	}
-
-	return setItems
 }

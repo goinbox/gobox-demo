@@ -39,12 +39,13 @@ func TestSqlStoreInsertGetListUpdateDelete(t *testing.T) {
 	}
 
 	sqp := &define.SqlQueryParams{
-		ParamsStructPtr: &entity.DemoEntity{
-			Status: 1,
+		CondItems: []*mysql.SqlColQueryItem{
+			{
+				Name:      "status",
+				Condition: mysql.SqlCondEqual,
+				Value:     1,
+			},
 		},
-		Exists:     map[string]bool{"status": true},
-		Conditions: map[string]string{"status": mysql.SqlCondEqual},
-
 		OrderBy: "add_time desc",
 		Offset:  0,
 		Cnt:     10,
@@ -64,17 +65,12 @@ func TestSqlStoreInsertGetListUpdateDelete(t *testing.T) {
 		t.Log(i, item)
 	}
 
-	newDemo := &entity.DemoEntity{
-		Name: "new-demo",
-	}
-	updateFields := map[string]bool{"name": true}
-	setItems, err := ss.UpdateById(tableName, ids[0], newDemo, updateFields)
+	updateFields := map[string]interface{}{"name": "new-demo"}
+	updated, err := ss.UpdateById(tableName, ids[0], updateFields)
 	if err != nil {
 		t.Fatal(err)
 	}
-	for i, item := range setItems {
-		t.Log(i, item)
-	}
+	t.Log(updated)
 
 	resource.TestLogger.Notice([]byte("test Get"))
 

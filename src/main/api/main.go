@@ -29,7 +29,7 @@ func main() {
 
 	prjHome = strings.TrimRight(prjHome, "/")
 	if prjHome == "" {
-		fmt.Println("missing flag prjHome: ")
+		fmt.Println("missing flag prj-home: ")
 		flag.PrintDefaults()
 		os.Exit(errno.ESysInvalidPrjHome)
 	}

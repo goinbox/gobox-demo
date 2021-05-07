@@ -78,13 +78,13 @@ func (d *DemoSvc) DeleteById(id int64) (bool, error) {
 	return find, merr
 }
 
-func (d *DemoSvc) UpdateById(id int64, newEntity *entity.DemoEntity, updateFields map[string]bool) (bool, error) {
-	setItems, merr, rerr := d.SqlRedisBindStore.UpdateById(d.EntityName, d.EntityName, d.RedisKeyPrefix, id, newEntity, updateFields, DefDemoEntityCacheExpireSeconds)
+func (d *DemoSvc) UpdateById(id int64, updateFields map[string]interface{}) (bool, error) {
+	updated, merr, rerr := d.SqlRedisBindStore.UpdateById(d.EntityName, d.EntityName, d.RedisKeyPrefix, id, updateFields)
 	if rerr != nil {
 		d.ErrorLog([]byte("DemoSvc.UpdateById"), []byte(rerr.Error()))
 	}
 
-	return setItems != nil, merr
+	return updated, merr
 }
 
 func (d *DemoSvc) ListByIds(ids ...int64) ([]*entity.DemoEntity, error) {

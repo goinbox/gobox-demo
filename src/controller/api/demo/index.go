@@ -21,16 +21,20 @@ var indexQueryConditions map[string]string = map[string]string{
 }
 
 func (d *DemoController) IndexAction(context *DemoContext) {
-	ap, exists, e := d.parseIndexActionParams(context)
+	ap, _, e := d.parseIndexActionParams(context)
 	if e != nil {
 		context.ApiData.Err = e
 		return
 	}
 
 	sqp := &define.SqlQueryParams{
-		ParamsStructPtr: ap,
-		Exists:          exists,
-		Conditions:      indexQueryConditions,
+		CondItems: []*mysql.SqlColQueryItem{
+			{
+				Name:      "status",
+				Condition: mysql.SqlCondEqual,
+				Value:     ap.Status,
+			},
+		},
 
 		OrderBy: "id desc",
 		Offset:  ap.offset,

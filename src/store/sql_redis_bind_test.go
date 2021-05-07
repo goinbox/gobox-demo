@@ -38,15 +38,9 @@ func TestSqlRedisBindStore(t *testing.T) {
 
 	resource.TestLogger.Notice([]byte("test UpdateById"))
 
-	newDemo := &entity.DemoEntity{
-		Name: "new-demo",
-	}
-	updateFields := map[string]bool{"name": true}
-	setItems, merr, rerr := srs.UpdateById(tableName, entityName, redisKeyPrefix, ids[0], newDemo, updateFields, 10)
-	t.Log(merr, rerr)
-	for i, item := range setItems {
-		t.Log(i, item)
-	}
+	updateFields := map[string]interface{}{"name": "new-demo"}
+	updated, merr, rerr := srs.UpdateById(tableName, entityName, redisKeyPrefix, ids[0], updateFields)
+	t.Log(updated, merr, rerr)
 	item = &entity.DemoEntity{}
 	find, merr, rerr = srs.GetById(tableName, entityName, redisKeyPrefix, ids[0], 10, item)
 	t.Log(find, merr, rerr, item)

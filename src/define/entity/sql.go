@@ -1,6 +1,9 @@
 package entity
 
-import "reflect"
+import (
+	"database/sql"
+	"reflect"
+)
 
 const (
 	EntityMysqlFieldTag = "mysql"
@@ -28,4 +31,60 @@ func ReflectSqlColNames(ret reflect.Type) []string {
 	}
 
 	return cns
+}
+
+func ReflectSqlInsertColValues(rev reflect.Value) []interface{} {
+	var colValues []interface{}
+
+	ret := rev.Type()
+	for i := 0; i < rev.NumField(); i++ {
+		revf := rev.Field(i)
+		if revf.Kind() == reflect.Struct {
+			colValues = ReflectSqlInsertColValues(revf)
+			continue
+		}
+
+		_, ok := ret.Field(i).Tag.Lookup(EntityMysqlFieldTag)
+		if ok {
+			colValues = append(colValues, revf.Interface())
+		}
+	}
+
+	return colValues
+}
+
+func ReflectSqlEntityScanDests(rev reflect.Value) []interface{} {
+	var dests []interface{}
+
+	ret := rev.Type()
+	for i := 0; i < rev.NumField(); i++ {
+		revf := rev.Field(i)
+		if revf.Kind() == reflect.Struct {
+			dests = ReflectSqlEntityScanDests(revf)
+			continue
+		}
+
+		_, ok := ret.Field(i).Tag.Lookup(EntityMysqlFieldTag)
+		if ok {
+			dests = append(dests, revf.Addr().Interface())
+		}
+	}
+
+	return dests
+}
+
+func ReflectSqlQueryRowsToEntityList(rows *sql.Rows, ret reflect.Type, entityList interface{}) error {
+	rlistv := reflect.ValueOf(entityList).Elem()
+
+	for rows.Next() {
+		rev := reflect.New(ret)
+		dests := ReflectSqlEntityScanDests(rev.Elem())
+		err := rows.Scan(dests...)
+		if err != nil {
+			return err
+		}
+		rlistv.Set(reflect.Append(rlistv, rev))
+	}
+
+	return nil
 }

@@ -81,19 +81,19 @@ func (s *SqlRedisBindStore) DeleteById(tableName, entityName, redisKeyPrefix str
 	return true, nil, err
 }
 
-func (s *SqlRedisBindStore) UpdateById(tableName, entityName, redisKeyPrefix string, id int64, newEntityPtr interface{}, updateFields map[string]bool, expireSeconds int64) ([]*mysql.SqlColQueryItem, error, error) {
-	setItems, err := s.SqlStore.UpdateById(tableName, id, newEntityPtr, updateFields)
+func (s *SqlRedisBindStore) UpdateById(tableName, entityName, redisKeyPrefix string, id int64, updateFields map[string]interface{}) (bool, error, error) {
+	updated, err := s.SqlStore.UpdateById(tableName, id, updateFields)
 
 	if err != nil {
-		return nil, err, nil
+		return false, err, nil
 	}
-	if setItems == nil {
-		return nil, nil, nil
+	if !updated {
+		return false, nil, nil
 	}
 
 	err = s.RedisStore.Del(s.RedisKeyForEntity(id, redisKeyPrefix, entityName))
 
-	return setItems, nil, err
+	return true, nil, err
 }
 
 func (s *SqlRedisBindStore) TotalRows(tableName, redisKeyPrefix string, expireSeconds int64) (int64, error, error) {

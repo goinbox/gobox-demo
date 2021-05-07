@@ -53,8 +53,12 @@ func TestDemoSvc(t *testing.T) {
 		t.Log(deleted, err)
 	}
 
-	baseEntity := entity.SqlBaseEntity{AddTime: time.Now().Format(gomisc.TimeGeneralLayout())}
-	_, _ = demoSvc.UpdateById(1, &entity.DemoEntity{SqlBaseEntity: baseEntity, Name: "aa", Status: 1}, map[string]bool{"add_time": true, "name": true})
+	updateFields := map[string]interface{}{
+		"name":      "aa",
+		"status":    1,
+		"edit_time": time.Now().Format(gomisc.TimeGeneralLayout()),
+	}
+	_, _ = demoSvc.UpdateById(1, updateFields)
 
 	entities, err := demoSvc.ListByIds(1, 10, 11)
 	for _, item := range entities {
@@ -62,16 +66,22 @@ func TestDemoSvc(t *testing.T) {
 	}
 
 	sqp := &define.SqlQueryParams{
-		ParamsStructPtr: &testQueryParamsStruct{
-			Addtime: []string{"2017-10-01 17:06:30", "2017-10-30 17:06:30"},
-			Name:    "%a%",
-			Status:  1,
-		},
-		Exists: map[string]bool{"add_time": true, "name": true, "status": false},
-		Conditions: map[string]string{
-			"add_time": mysql.SqlCondBetween,
-			"name":     mysql.SqlCondLike,
-			"status":   mysql.SqlCondEqual,
+		CondItems: []*mysql.SqlColQueryItem{
+			{
+				Name:      "add_time",
+				Condition: mysql.SqlCondBetween,
+				Value:     []string{"2017-10-01 17:06:30", "2017-10-30 17:06:30"},
+			},
+			{
+				Name:      "name",
+				Condition: mysql.SqlCondLike,
+				Value:     "%a%",
+			},
+			{
+				Name:      "status",
+				Condition: mysql.SqlCondEqual,
+				Value:     1,
+			},
 		},
 		OrderBy: "id desc", Offset: 0, Cnt: 10,
 	}

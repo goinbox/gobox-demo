@@ -19,7 +19,17 @@ func (d *DemoController) EditAction(context *DemoContext) {
 		return
 	}
 
-	updated, err := context.demoSvc.UpdateById(ap.Id, ap, exists)
+	updateFields := make(map[string]interface{})
+	_, ok := exists["name"]
+	if ok {
+		updateFields["name"] = ap.Name
+	}
+	_, ok = exists["status"]
+	if ok {
+		updateFields["status"] = ap.Status
+	}
+
+	updated, err := context.demoSvc.UpdateById(ap.Id, updateFields)
 	if err != nil {
 		context.ApiData.Err = goerror.New(errno.ECommonUpdateEntityFailed, err.Error())
 		return
