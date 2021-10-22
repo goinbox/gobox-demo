@@ -3,16 +3,16 @@
     "PRJ_HOME": "__ARG__(prjHome)",
     "RIGGER_TPL_ROOT": "${PRJ_HOME}/conf/rigger/tpl",
 
-    "SERVER_CONF_TPL": "${RIGGER_TPL_ROOT}/tpl_server_conf_rewrite.json",
-    "SERVER_CONF_DST": "${PRJ_HOME}/conf/server/${USER}_server_conf_rewrite.json",
-    "SERVER_CONF_LN": "${PRJ_HOME}/conf/server_conf_rewrite.json",
+    "SERVER_CONF_TPL": "${RIGGER_TPL_ROOT}/tpl_server_conf_rewrite.toml",
+    "SERVER_CONF_DST": "${PRJ_HOME}/conf/server/${USER}_server_conf_rewrite.toml",
+    "SERVER_CONF_LN": "${PRJ_HOME}/conf/server/server_conf_rewrite.toml",
 
     "NGX_HTTP_PORT": "80",
     "NGX_HTTPS_PORT": "443",
     "NGX_ACCESS_LOG_BUFFER": "1",
 
     "NGX_DATA_ROOT": {
-        "ligang": "/data/nginx",
+        "ligang": "${HOME}/data/nginx",
         "gibsonli": "${HOME}/data/nginx",
         "default": "/usr/local/nginx"
     },
@@ -26,8 +26,8 @@
     "API_HTTP_DOMAIN": "${USER}.gdemo.com",
     "API_UPSTREAM": "gdemo_golang_${USER}",
     "API_GOHTTP_HOST": {
-        "ligang": "docker.for.mac.host.internal",
-        "gibsonli": "docker.for.mac.host.internal",
+        "ligang": "host.docker.internal",
+        "gibsonli": "host.docker.internal",
         "default": "127.0.0.1"
     },
     "API_GOHTTP_PORT": "__MATH__(6001+${UID})",
@@ -35,7 +35,7 @@
 
     "API_HTTP_ACCESS_LOG": "${USER}.gdemo.log",
     "API_HTTP_ERROR_LOG": "${USER}.gdemo.error.log",
-    "API_HTTP_CONF_TPL": "${RIGGER_TPL_ROOT}/tpl_api_http.conf.ngx",
-    "API_HTTP_CONF_DST": "${PRJ_HOME}/conf/http/${USER}_api_http.conf.ngx",
+    "API_HTTP_CONF_TPL": "${RIGGER_TPL_ROOT}/tpl_api_http_ngx.conf",
+    "API_HTTP_CONF_DST": "${PRJ_HOME}/conf/http/${USER}_api_http_ngx.conf",
     "API_HTTP_CONF_LN": "${NGX_DATA_ROOT}/conf/include/${API_HTTP_DOMAIN}.conf"
 }

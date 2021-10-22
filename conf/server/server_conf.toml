@@ -8,6 +8,7 @@ async_queue_size = 1000000
 bufsize = 4096
 
 [pprof]
+enable = false
 port = 6060
 
 [api]

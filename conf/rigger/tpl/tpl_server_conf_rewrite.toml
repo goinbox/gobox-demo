@@ -1,0 +1,24 @@
+is_dev = true
+idc = "dev"
+
+[log]
+level = 7
+
+[pprof]
+enable = true
+port = ${PPROF_PORT}
+
+[api]
+port = ${API_GOHTTP_PORT}
+
+[redis]
+host = "127.0.0.1"
+pass = "123"
+port = 6379
+
+
+[mysql]
+host = "127.0.0.1"
+user = "root"
+pass = "123"
+port = 3306
