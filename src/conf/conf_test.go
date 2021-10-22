@@ -2,6 +2,7 @@ package conf
 
 import (
 	"github.com/goinbox/color"
+	"path/filepath"
 
 	"fmt"
 	"os"
@@ -10,7 +11,8 @@ import (
 )
 
 func init() {
-	prjHome := os.Getenv("GOPATH")
+	wd, _ := os.Getwd()
+	prjHome := filepath.Dir(filepath.Dir(wd))
 
 	e := Init(prjHome)
 	if e != nil {

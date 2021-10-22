@@ -6,18 +6,12 @@ import (
 	"github.com/goinbox/mysql"
 )
 
-var MysqlClientPool *mysql.Pool
+var mysqlClient *mysql.Client
 
-func InitMysql() {
-	config := &mysql.PConfig{NewClientFunc: NewMysqlClient}
-	config.Size = conf.MysqlConf.PoolSize
-	config.MaxIdleTime = conf.MysqlConf.PoolClientMaxIdleTime
+func MysqlClient() (*mysql.Client, error) {
 
-	MysqlClientPool = mysql.NewPool(config)
-}
 
-func NewMysqlClient() (*mysql.Client, error) {
-	config := mysql.NewConfig(conf.MysqlConf.User, conf.MysqlConf.Pass, conf.MysqlConf.Host, conf.MysqlConf.Port, conf.MysqlConf.Name)
+	config := mysql.NewDefaultConfig(conf.MysqlConf.User, conf.MysqlConf.Pass, conf.MysqlConf.Host, conf.MysqlConf.Port, conf.MysqlConf.Name)
 	config.LogLevel = conf.MysqlConf.LogLevel
 	config.ReadTimeout = conf.MysqlConf.RWTimeout
 	config.WriteTimeout = conf.MysqlConf.RWTimeout

@@ -40,9 +40,7 @@
         "port": "",
         "name": "gobox-demo",
         "log_level": 7,
-        "rw_timeout_seconds": 3,
-        "pool_size": 256,
-        "pool_client_max_idle_seconds": 10
+        "rw_timeout_seconds": 3
     },
 
     "mongo": {
