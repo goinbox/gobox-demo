@@ -3,6 +3,8 @@ is_dev = false
 idc = ""
 
 [log]
+[log.api]
+dir = ""
 level = 6
 async_queue_size = 1000000
 bufsize = 4096
@@ -14,6 +16,7 @@ port = 6060
 [api]
 host = "127.0.0.1"
 port = 9001
+pid_file = ""
 
 [redis]
 host = ""
@@ -31,3 +34,4 @@ user = ""
 pass = ""
 port = 0
 name = "gobox-demo"
+rw_timeout_seconds = 3

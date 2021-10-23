@@ -1,38 +1,36 @@
 package conf
 
 import (
-	"github.com/goinbox/color"
-	"path/filepath"
-
 	"fmt"
 	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
+
+	"github.com/goinbox/color"
 )
 
 func init() {
 	wd, _ := os.Getwd()
 	prjHome := filepath.Dir(filepath.Dir(wd))
 
-	e := Init(prjHome)
+	e := Init(prjHome + "/conf/server")
 	if e != nil {
 		fmt.Println("Init error: ", e.Error())
 	}
 }
 
 func TestConf(t *testing.T) {
-	t.Log("PrjHome", PrjHome)
-	printComplexObjectForTest(&BaseConf)
-	printComplexObjectForTest(&LogConf)
-	printComplexObjectForTest(&PprofConf)
-	printComplexObjectForTest(&ApiHttpConf)
+	printComplexObjectForTest(&ServerConf)
 
-	for _, item := range RedisConfList {
-		printComplexObjectForTest(item)
+	for k, item := range ServerConf.Log {
+		t.Log(k, item)
 	}
 
-	printComplexObjectForTest(&MysqlConf)
-	printComplexObjectForTest(&MongoConf)
+	printComplexObjectForTest(&ServerConf.Pprof)
+	printComplexObjectForTest(&ServerConf.Api)
+	printComplexObjectForTest(ServerConf.Redis)
+	printComplexObjectForTest(ServerConf.Mysql)
 }
 
 func printComplexObjectForTest(v interface{}) {

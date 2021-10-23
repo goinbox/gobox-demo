@@ -2,6 +2,8 @@ is_dev = true
 idc = "dev"
 
 [log]
+[log.api]
+dir = "${PRJ_HOME}/logs"
 level = 7
 
 [pprof]
@@ -10,6 +12,7 @@ port = ${PPROF_PORT}
 
 [api]
 port = ${API_GOHTTP_PORT}
+pid_file = "${PRJ_HOME}/tmp/api.pid"
 
 [redis]
 host = "127.0.0.1"

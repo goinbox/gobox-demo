@@ -3,13 +3,13 @@ package errno
 const (
 	Success = 0
 
-	ESysInvalidPrjHome     = 11
-	ESysInitServerConfFail = 12
-	ESysInitLogFail        = 13
-	ESysSavePidFileFail    = 14
-	ESysMysqlError         = 15
-	ESysRedisError         = 16
-	ESysMongoError         = 17
+	ESysInvalidPrjHome      = 11
+	ESysParseServerConfFail = 12
+	ESysInitLogFail         = 13
+	ESysSavePidFileFail     = 14
+	ESysMysqlError          = 15
+	ESysRedisError          = 16
+	ESysMongoError          = 17
 
 	ECommonFileNotExist            = 101
 	ECommonReadFileError           = 102
