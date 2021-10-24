@@ -5,7 +5,7 @@ import (
 	"github.com/goinbox/gohttp/query"
 
 	"gdemo/define/entity"
-	"gdemo/errno"
+	"gdemo/perror"
 )
 
 func (d *DemoController) AddAction(context *DemoContext) {
@@ -17,7 +17,7 @@ func (d *DemoController) AddAction(context *DemoContext) {
 
 	ids, err := context.demoSvc.Insert(ap)
 	if err != nil {
-		context.ApiData.Err = goerror.New(errno.ECommonInsertEntityFailed, err.Error())
+		context.ApiData.Err = goerror.New(perror.ECommonInsertEntityFailed, err.Error())
 		return
 	}
 
@@ -30,15 +30,15 @@ func (d *DemoController) parseAddActionParams(context *DemoContext) (*entity.Dem
 	ap := new(entity.DemoEntity)
 
 	qs := query.NewQuerySet()
-	qs.StringVar(&ap.Name, "name", true, errno.ECommonInvalidArg, "invalid name", query.CheckStringNotEmpty)
-	qs.IntVar(&ap.Status, "status", true, errno.ECommonInvalidArg, "invalid status", nil)
+	qs.StringVar(&ap.Name, "name", true, perror.ECommonInvalidArg, "invalid name", query.CheckStringNotEmpty)
+	qs.IntVar(&ap.Status, "status", true, perror.ECommonInvalidArg, "invalid status", nil)
 	e := qs.Parse(context.QueryValues)
 	if e != nil {
 		return ap, e
 	}
 
 	if ap.Status < 0 {
-		return ap, goerror.New(errno.ECommonInvalidArg, "invalid status")
+		return ap, goerror.New(perror.ECommonInvalidArg, "invalid status")
 	}
 
 	return ap, nil

@@ -10,7 +10,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/goinbox/goerror"
 
-	"gdemo/errno"
+	"gdemo/perror"
 )
 
 func Init(confDir string) *goerror.Error {
@@ -36,13 +36,13 @@ func Init(confDir string) *goerror.Error {
 func parseServerConf(confDir string) *goerror.Error {
 	err := parseConfFile(confDir + "/server_conf.toml")
 	if err != nil {
-		return goerror.New(errno.ESysParseServerConfFail,
+		return goerror.New(perror.ESysParseServerConfFail,
 			fmt.Sprintf("parse server_conf.toml error: %v", err))
 	}
 
 	err = parseConfFile(confDir + "/server_conf_rewrite.toml")
 	if err != nil {
-		return goerror.New(errno.ESysParseServerConfFail,
+		return goerror.New(perror.ESysParseServerConfFail,
 			fmt.Sprintf("parse server_conf_rewrite.toml error: %v", err))
 	}
 

@@ -5,7 +5,7 @@ import (
 	"github.com/goinbox/gohttp/query"
 
 	"gdemo/define/entity"
-	"gdemo/errno"
+	"gdemo/perror"
 )
 
 func (d *DemoController) EditAction(context *DemoContext) {
@@ -31,7 +31,7 @@ func (d *DemoController) EditAction(context *DemoContext) {
 
 	updated, err := context.demoSvc.UpdateById(ap.Id, updateFields)
 	if err != nil {
-		context.ApiData.Err = goerror.New(errno.ECommonUpdateEntityFailed, err.Error())
+		context.ApiData.Err = goerror.New(perror.ECommonUpdateEntityFailed, err.Error())
 		return
 	}
 
@@ -42,16 +42,16 @@ func (d *DemoController) parseEditActionParams(context *DemoContext) (*entity.De
 	ap := new(entity.DemoEntity)
 
 	qs := query.NewQuerySet()
-	qs.Int64Var(&ap.Id, "id", true, errno.ECommonInvalidArg, "invalid id", query.CheckInt64IsPositive)
-	qs.StringVar(&ap.Name, "name", false, errno.ECommonInvalidArg, "invalid name", query.CheckStringNotEmpty)
-	qs.IntVar(&ap.Status, "status", false, errno.ECommonInvalidArg, "invalid status", nil)
+	qs.Int64Var(&ap.Id, "id", true, perror.ECommonInvalidArg, "invalid id", query.CheckInt64IsPositive)
+	qs.StringVar(&ap.Name, "name", false, perror.ECommonInvalidArg, "invalid name", query.CheckStringNotEmpty)
+	qs.IntVar(&ap.Status, "status", false, perror.ECommonInvalidArg, "invalid status", nil)
 	e := qs.Parse(context.QueryValues)
 	if e != nil {
 		return ap, nil, e
 	}
 
 	if ap.Status < 0 {
-		return ap, nil, goerror.New(errno.ECommonInvalidArg, "invalid status")
+		return ap, nil, goerror.New(perror.ECommonInvalidArg, "invalid status")
 	}
 
 	return ap, qs.ExistsInfo(), nil

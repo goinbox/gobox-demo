@@ -1,7 +1,7 @@
 package misc
 
 import (
-	"gdemo/errno"
+	"gdemo/perror"
 
 	"github.com/goinbox/crypto"
 	"github.com/goinbox/goerror"
@@ -25,7 +25,7 @@ type ApiData struct {
 
 func ApiJson(v string, data interface{}, e *goerror.Error) []byte {
 	result := &ApiData{
-		Errno: errno.Success,
+		Errno: perror.Success,
 		Msg:   "",
 		V:     v,
 
@@ -38,7 +38,7 @@ func ApiJson(v string, data interface{}, e *goerror.Error) []byte {
 
 	aj, err := json.Marshal(result)
 	if err != nil {
-		result.Errno = errno.ECommonJsonEncodeError
+		result.Errno = perror.ECommonJsonEncodeError
 		result.Msg = err.Error()
 		result.Data = nil
 
@@ -68,20 +68,20 @@ type ApiSignParams struct {
 var ApiSignQueryNames = []string{"t", "nonce"}
 
 func SetApiSignParams(qs *query.QuerySet, asp *ApiSignParams) {
-	qs.Int64Var(&asp.T, "t", true, errno.ECommonInvalidArg, "invalid sign t", query.CheckInt64IsPositive)
-	qs.StringVar(&asp.Nonce, "nonce", true, errno.ECommonInvalidArg, "invalid sign nonce", query.CheckStringNotEmpty)
-	qs.StringVar(&asp.Sign, "sign", true, errno.ECommonInvalidArg, "invalid sign sign", query.CheckStringNotEmpty)
-	qs.IntVar(&asp.Debug, "debug", false, errno.ECommonInvalidArg, "invalid sign debug", nil)
+	qs.Int64Var(&asp.T, "t", true, perror.ECommonInvalidArg, "invalid sign t", query.CheckInt64IsPositive)
+	qs.StringVar(&asp.Nonce, "nonce", true, perror.ECommonInvalidArg, "invalid sign nonce", query.CheckStringNotEmpty)
+	qs.StringVar(&asp.Sign, "sign", true, perror.ECommonInvalidArg, "invalid sign sign", query.CheckStringNotEmpty)
+	qs.IntVar(&asp.Debug, "debug", false, perror.ECommonInvalidArg, "invalid sign debug", nil)
 }
 
 func VerifyApiSign(asp *ApiSignParams, queryValues url.Values, signQueryNames []string, token string) *goerror.Error {
 	if time.Now().Unix()-asp.T > 600 {
-		return goerror.New(errno.ECommonInvalidArg, "verify sign failed, invalid sign t")
+		return goerror.New(perror.ECommonInvalidArg, "verify sign failed, invalid sign t")
 	}
 
 	sign := CalApiSign(queryValues, signQueryNames, token)
 	if sign != asp.Sign {
-		return goerror.New(errno.ECommonInvalidArg, "verify sign failed, invalid sign sign")
+		return goerror.New(perror.ECommonInvalidArg, "verify sign failed, invalid sign sign")
 	}
 
 	return nil

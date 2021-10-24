@@ -6,7 +6,7 @@ import (
 	"github.com/goinbox/mysql"
 
 	"gdemo/define"
-	"gdemo/errno"
+	"gdemo/perror"
 )
 
 type indexActionParams struct {
@@ -43,7 +43,7 @@ func (d *DemoController) IndexAction(context *DemoContext) {
 
 	entities, err := context.demoSvc.SimpleQueryAnd(sqp)
 	if err != nil {
-		context.ApiData.Err = goerror.New(errno.ESysMysqlError, err.Error())
+		context.ApiData.Err = goerror.New(perror.ESysMysqlError, err.Error())
 		return
 	}
 
@@ -54,22 +54,22 @@ func (d *DemoController) parseIndexActionParams(context *DemoContext) (*indexAct
 	ap := new(indexActionParams)
 
 	qs := query.NewQuerySet()
-	qs.IntVar(&ap.Status, "status", false, errno.ECommonInvalidArg, "invalid status", nil)
-	qs.Int64Var(&ap.offset, "offset", false, errno.ECommonInvalidArg, "invalid offset", nil)
-	qs.Int64Var(&ap.cnt, "cnt", false, errno.ECommonInvalidArg, "invalid cnt", nil)
+	qs.IntVar(&ap.Status, "status", false, perror.ECommonInvalidArg, "invalid status", nil)
+	qs.Int64Var(&ap.offset, "offset", false, perror.ECommonInvalidArg, "invalid offset", nil)
+	qs.Int64Var(&ap.cnt, "cnt", false, perror.ECommonInvalidArg, "invalid cnt", nil)
 	e := qs.Parse(context.QueryValues)
 	if e != nil {
 		return ap, nil, e
 	}
 
 	if ap.Status < 0 {
-		return ap, nil, goerror.New(errno.ECommonInvalidArg, "invalid status")
+		return ap, nil, goerror.New(perror.ECommonInvalidArg, "invalid status")
 	}
 	if ap.offset < 0 {
-		return ap, nil, goerror.New(errno.ECommonInvalidArg, "invalid offset")
+		return ap, nil, goerror.New(perror.ECommonInvalidArg, "invalid offset")
 	}
 	if ap.cnt < 0 {
-		return ap, nil, goerror.New(errno.ECommonInvalidArg, "invalid cnt")
+		return ap, nil, goerror.New(perror.ECommonInvalidArg, "invalid cnt")
 	}
 
 	return ap, qs.ExistsInfo(), nil

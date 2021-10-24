@@ -17,7 +17,7 @@ import (
 	"gdemo/conf"
 	"gdemo/controller/api/demo"
 	"gdemo/controller/api/mongodemo"
-	"gdemo/errno"
+	"gdemo/perror"
 	"gdemo/resource"
 )
 
@@ -31,7 +31,7 @@ func main() {
 	if prjHome == "" {
 		fmt.Println("missing flag prj-home: ")
 		flag.PrintDefaults()
-		os.Exit(errno.ESysInvalidPrjHome)
+		os.Exit(perror.ESysInvalidPrjHome)
 	}
 
 	e := conf.Init(prjHome)
@@ -62,7 +62,7 @@ func main() {
 	pf, err := pidfile.CreatePidFile(conf.BaseConf.ApiPidFile)
 	if err != nil {
 		fmt.Printf("create pid file %s failed, error: %s\n", conf.BaseConf.ApiPidFile, err.Error())
-		os.Exit(errno.ESysSavePidFileFail)
+		os.Exit(perror.ESysSavePidFileFail)
 	}
 
 	r := router.NewSimpleRouter()

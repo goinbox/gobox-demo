@@ -4,7 +4,7 @@ import (
 	"github.com/goinbox/goerror"
 	"github.com/goinbox/gohttp/query"
 
-	"gdemo/errno"
+	"gdemo/perror"
 )
 
 type getActionParams struct {
@@ -20,7 +20,7 @@ func (d *DemoController) GetAction(context *DemoContext) {
 
 	entity, err := context.demoSvc.GetById(ap.id)
 	if err != nil {
-		context.ApiData.Err = goerror.New(errno.ESysMysqlError, err.Error())
+		context.ApiData.Err = goerror.New(perror.ESysMysqlError, err.Error())
 		return
 	}
 
@@ -31,7 +31,7 @@ func (d *DemoController) parseGetActionParams(context *DemoContext) (*getActionP
 	ap := new(getActionParams)
 
 	qs := query.NewQuerySet()
-	qs.Int64Var(&ap.id, "id", true, errno.ECommonInvalidArg, "invalid id", query.CheckInt64IsPositive)
+	qs.Int64Var(&ap.id, "id", true, perror.ECommonInvalidArg, "invalid id", query.CheckInt64IsPositive)
 	e := qs.Parse(context.QueryValues)
 
 	return ap, e

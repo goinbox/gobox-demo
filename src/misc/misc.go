@@ -15,7 +15,7 @@ func SendMail(subject, body, from string, to []string) error {
 	return err
 }
 
-var StructSimpleFields map[reflect.Kind]bool = map[reflect.Kind]bool{
+var structSimpleFields = map[reflect.Kind]bool{
 	reflect.Bool:    true,
 	reflect.Int:     true,
 	reflect.Int8:    true,
@@ -45,7 +45,7 @@ func StructSimpleFieldAssign(sou, dst interface{}) {
 
 		rsouv := rsoue.Field(i)
 		rsouk := rsouv.Kind()
-		if _, ok := StructSimpleFields[rsouk]; ok && rsouv.Type().Name() == rdstv.Type().Name() {
+		if _, ok := structSimpleFields[rsouk]; ok && rsouv.Type().Name() == rdstv.Type().Name() {
 			rdstv.Set(rsouv)
 		}
 	}
