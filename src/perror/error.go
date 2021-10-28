@@ -16,6 +16,13 @@ func New(errno int, msg string) *Error {
 	}
 }
 
+func NewFromError(errno int, err error) *Error {
+	return &Error{
+		errno: errno,
+		msg:   err.Error(),
+	}
+}
+
 func (e *Error) Error() string {
 	return fmt.Sprintf("errno: %d, msg: %s", e.errno, e.msg)
 }

@@ -1,14 +1,14 @@
 package validate
 
 import (
-	"github.com/goinbox/goerror"
+	"gdemo/perror"
 )
 
 type Value interface {
 	Required() bool
 	Set(str string) error
 	Check() bool
-	Error() *goerror.Error
+	Error() *perror.Error
 }
 
 type baseValue struct {
@@ -29,6 +29,6 @@ func (b *baseValue) Required() bool {
 	return b.required
 }
 
-func (b *baseValue) Error() *goerror.Error {
-	return goerror.New(b.errno, b.msg)
+func (b *baseValue) Error() *perror.Error {
+	return perror.New(b.errno, b.msg)
 }

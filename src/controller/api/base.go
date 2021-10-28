@@ -4,7 +4,7 @@ import (
 	"html"
 	"net/http"
 
-	"github.com/goinbox/goerror"
+	"gdemo/perror"
 	gcontroller "github.com/goinbox/gohttp/controller"
 
 	"gdemo/controller"
@@ -16,7 +16,7 @@ type IApiDataContext interface {
 
 	Version() string
 	Data() interface{}
-	Err() *goerror.Error
+	Err() *perror.Error
 }
 
 type ApiContext struct {
@@ -25,7 +25,7 @@ type ApiContext struct {
 	ApiData struct {
 		V    string
 		Data interface{}
-		Err  *goerror.Error
+		Err  *perror.Error
 	}
 }
 
@@ -37,7 +37,7 @@ func (a *ApiContext) Data() interface{} {
 	return a.ApiData.Data
 }
 
-func (a *ApiContext) Err() *goerror.Error {
+func (a *ApiContext) Err() *perror.Error {
 	return a.ApiData.Err
 }
 

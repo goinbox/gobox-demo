@@ -1,7 +1,7 @@
 package validate
 
 import (
-	"github.com/goinbox/goerror"
+	"gdemo/perror"
 
 	"net/url"
 	"strings"
@@ -57,7 +57,7 @@ func (q *QuerySet) Int64Var(p *int64, name string, required bool, errno int, msg
 	return q
 }
 
-func (q *QuerySet) Parse(actual url.Values) *goerror.Error {
+func (q *QuerySet) Parse(actual url.Values) *perror.Error {
 	for name, v := range q.formal {
 		if len(actual[name]) == 0 {
 			if v.Required() {

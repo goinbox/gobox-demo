@@ -1,7 +1,7 @@
 package demo
 
 import (
-	"github.com/goinbox/goerror"
+	"gdemo/perror"
 	"github.com/goinbox/gohttp/query"
 
 	"gdemo/perror"
@@ -20,14 +20,14 @@ func (d *DemoController) GetAction(context *DemoContext) {
 
 	entity, err := context.demoSvc.GetById(ap.id)
 	if err != nil {
-		context.ApiData.Err = goerror.New(perror.ESysMysqlError, err.Error())
+		context.ApiData.Err = perror.Error(perror.ESysMysqlError, err.Error())
 		return
 	}
 
 	context.ApiData.Data = entity
 }
 
-func (d *DemoController) parseGetActionParams(context *DemoContext) (*getActionParams, *goerror.Error) {
+func (d *DemoController) parseGetActionParams(context *DemoContext) (*getActionParams, *perror.Error) {
 	ap := new(getActionParams)
 
 	qs := query.NewQuerySet()

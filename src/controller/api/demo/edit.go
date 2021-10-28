@@ -1,7 +1,7 @@
 package demo
 
 import (
-	"github.com/goinbox/goerror"
+	"gdemo/perror"
 	"github.com/goinbox/gohttp/query"
 
 	"gdemo/define/entity"
@@ -31,14 +31,14 @@ func (d *DemoController) EditAction(context *DemoContext) {
 
 	updated, err := context.demoSvc.UpdateById(ap.Id, updateFields)
 	if err != nil {
-		context.ApiData.Err = goerror.New(perror.ECommonUpdateEntityFailed, err.Error())
+		context.ApiData.Err = perror.Error(perror.ECommonUpdateEntityFailed, err.Error())
 		return
 	}
 
 	context.ApiData.Data = updated
 }
 
-func (d *DemoController) parseEditActionParams(context *DemoContext) (*entity.DemoEntity, map[string]bool, *goerror.Error) {
+func (d *DemoController) parseEditActionParams(context *DemoContext) (*entity.DemoEntity, map[string]bool, *perror.Error) {
 	ap := new(entity.DemoEntity)
 
 	qs := query.NewQuerySet()
@@ -51,7 +51,7 @@ func (d *DemoController) parseEditActionParams(context *DemoContext) (*entity.De
 	}
 
 	if ap.Status < 0 {
-		return ap, nil, goerror.New(perror.ECommonInvalidArg, "invalid status")
+		return ap, nil, perror.Error(perror.ECommonInvalidArg, "invalid status")
 	}
 
 	return ap, qs.ExistsInfo(), nil

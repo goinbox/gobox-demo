@@ -4,7 +4,7 @@ import (
 	"gdemo/perror"
 
 	"github.com/goinbox/crypto"
-	"github.com/goinbox/goerror"
+	"gdemo/perror"
 	"github.com/goinbox/gohttp/query"
 	"github.com/goinbox/gomisc"
 
@@ -23,7 +23,7 @@ type ApiData struct {
 	Data interface{} `json:"data"`
 }
 
-func ApiJson(v string, data interface{}, e *goerror.Error) []byte {
+func ApiJson(v string, data interface{}, e *perror.Error) []byte {
 	result := &ApiData{
 		Errno: perror.Success,
 		Msg:   "",
@@ -48,7 +48,7 @@ func ApiJson(v string, data interface{}, e *goerror.Error) []byte {
 	return aj
 }
 
-func ApiJsonp(v string, data interface{}, e *goerror.Error, callback string) []byte {
+func ApiJsonp(v string, data interface{}, e *perror.Error, callback string) []byte {
 	return gomisc.AppendBytes(
 		[]byte(" "),
 		[]byte(callback),
@@ -74,14 +74,14 @@ func SetApiSignParams(qs *query.QuerySet, asp *ApiSignParams) {
 	qs.IntVar(&asp.Debug, "debug", false, perror.ECommonInvalidArg, "invalid sign debug", nil)
 }
 
-func VerifyApiSign(asp *ApiSignParams, queryValues url.Values, signQueryNames []string, token string) *goerror.Error {
+func VerifyApiSign(asp *ApiSignParams, queryValues url.Values, signQueryNames []string, token string) *perror.Error {
 	if time.Now().Unix()-asp.T > 600 {
-		return goerror.New(perror.ECommonInvalidArg, "verify sign failed, invalid sign t")
+		return perror.Error(perror.ECommonInvalidArg, "verify sign failed, invalid sign t")
 	}
 
 	sign := CalApiSign(queryValues, signQueryNames, token)
 	if sign != asp.Sign {
-		return goerror.New(perror.ECommonInvalidArg, "verify sign failed, invalid sign sign")
+		return perror.Error(perror.ECommonInvalidArg, "verify sign failed, invalid sign sign")
 	}
 
 	return nil
