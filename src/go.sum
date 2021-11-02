@@ -1,0 +1,10 @@
+github.com/go-sql-driver/mysql v1.6.0 h1:BCTh4TKNUYmOmMUcQ3IipzF5prigylS7XXjEkfCHuOE=
+github.com/go-sql-driver/mysql v1.6.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LBy8hT2VhHyBg=
+github.com/goinbox/color v1.0.0 h1:w+HhREKjA3rnGdIxcVbp+ssFvPfMocIHjBbXNMH9gGU=
+github.com/goinbox/color v1.0.0/go.mod h1:LKewYUaZLTr4h7G8CUv4Lt6JmOAD0wQePGEIF8faaqk=
+github.com/goinbox/golog v4.2.0+incompatible h1:r4G4nKGVGNk1LByW6N5jjEMRY2kP1lMlwIz+WvUou9Q=
+github.com/goinbox/golog v4.2.0+incompatible/go.mod h1:LpDh2j8NT1DzCFjkpE3joekJWaVxUt+BolHh52GJqtA=
+github.com/goinbox/gomisc v1.2.0 h1:T1CHnG8yxUzQIzTJWReqEKfTlZ5krj1UULXO+yi3WiE=
+github.com/goinbox/gomisc v1.2.0/go.mod h1:SPnA6bKoY+HIxNBbO2zRX0jBHu0lmi3nCLbZR40aiSs=
+github.com/goinbox/mysql v2.4.3+incompatible h1:PZOlDfrytog6m1wkymIZeo8UEHilVaRC//AF+6FPxuc=
+github.com/goinbox/mysql v2.4.3+incompatible/go.mod h1:dZ8/2cy1ieZoGNtHesR4sZOc6MWQQGpHXUHKEm8hd+A=
