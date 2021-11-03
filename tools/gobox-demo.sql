@@ -14,8 +14,8 @@ USE `gobox-demo`;
 DROP TABLE IF EXISTS `demo`;
 CREATE TABLE `demo` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `add_time` timestamp NOT NULL DEFAULT current_timestamp(),
-  `edit_time` timestamp NOT NULL DEFAULT current_timestamp(),
+  `add_time` datetime NOT NULL DEFAULT current_timestamp(),
+  `edit_time` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `name` varchar(20) COLLATE utf8mb4_bin NOT NULL DEFAULT '',
   `status` tinyint(4) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
@@ -25,20 +25,15 @@ CREATE TABLE `demo` (
   KEY `edit_time` (`edit_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
-INSERT INTO `demo` (`id`, `add_time`, `edit_time`, `name`, `status`) VALUES
-(63,	'2019-12-09 07:28:34',	'2019-12-09 07:32:52',	'bbb',	1),
-(65,	'2019-12-09 07:32:52',	'2019-12-09 07:32:52',	'aaa',	1);
 
 DROP TABLE IF EXISTS `id_gen`;
 CREATE TABLE `id_gen` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(20) COLLATE utf8mb4_bin NOT NULL DEFAULT '',
-  `max_id` bigint(20) unsigned NOT NULL DEFAULT '0',
+  `max_id` bigint(20) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
-INSERT INTO `id_gen` (`id`, `name`, `max_id`) VALUES
-(1,	'demo',	65);
 
--- 2020-01-21 02:48:41
+-- 2021-11-03 06:17:04
