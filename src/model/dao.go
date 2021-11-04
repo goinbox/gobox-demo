@@ -2,16 +2,12 @@ package model
 
 import "github.com/goinbox/mysql"
 
-const (
-	ColumnNameID = "id"
-)
-
 type Dao interface {
-	Insert(entities ...interface{}) error
+	Insert(entities ...interface{}) *mysql.SqlExecResult
 
-	DeleteByIDs(ids ...int64) error
-	UpdateByIDs(fields map[string]interface{}, ids ...int64) error
-	SelectByIDs(dest interface{}, ids ...int64) error
+	DeleteByIDs(ids ...int64) *mysql.SqlExecResult
+	UpdateByIDs(fields map[string]interface{}, ids ...int64) *mysql.SqlExecResult
+	SelectByID(id int64, dest interface{}) error
 
 	SimpleQueryAnd(params *mysql.SqlQueryParams, dest interface{}) error
 	SimpleTotalAnd(items ...*mysql.SqlColQueryItem) (int64, error)
@@ -22,14 +18,14 @@ type Dao interface {
 }
 
 type BaseDao struct {
-	tableName string
-	dao       *mysql.EntityDao
+	TableName string
+	Dao       *mysql.EntityDao
 }
 
-func NewBaseDao(tableName string, client *mysql.Client) *BaseDao {
+func NewBaseDao(TableName string, client *mysql.Client) *BaseDao {
 	return &BaseDao{
-		tableName: tableName,
-		dao: &mysql.EntityDao{
+		TableName: TableName,
+		Dao: &mysql.EntityDao{
 			Dao: mysql.Dao{
 				Client: client,
 			},
@@ -37,76 +33,38 @@ func NewBaseDao(tableName string, client *mysql.Client) *BaseDao {
 	}
 }
 
-func (d *BaseDao) Insert(entities ...interface{}) error {
-	return d.dao.InsertEntities(d.tableName, entities...)
+func (d *BaseDao) Insert(entities ...interface{}) *mysql.SqlExecResult {
+	return d.Dao.InsertEntities(d.TableName, entities...)
 }
 
-func (d *BaseDao) DeleteByIDs(ids ...int64) error {
-	if len(ids) == 1 {
-		return d.dao.DeleteById(d.tableName, ids[0]).Err
-	}
-
-	sqb := new(mysql.SqlQueryBuilder)
-	sqb.Delete(d.tableName).
-		WhereConditionAnd(&mysql.SqlColQueryItem{
-			Name:      ColumnNameID,
-			Condition: mysql.SqlCondIn,
-			Value:     ids,
-		})
-
-	_, err := d.dao.Exec(sqb.Query(), sqb.Args()...)
-	return err
+func (d *BaseDao) DeleteByIDs(ids ...int64) *mysql.SqlExecResult {
+	return d.Dao.DeleteByIDs(d.TableName, ids...)
 }
 
-func (d *BaseDao) UpdateByIDs(fields map[string]interface{}, ids ...int64) error {
-	if len(ids) == 1 {
-		return d.dao.UpdateById(d.tableName, ids[0], fields).Err
-	}
-
-	sqb := new(mysql.SqlQueryBuilder)
-	sqb.Update(d.tableName).
-		WhereConditionAnd(&mysql.SqlColQueryItem{
-			Name:      ColumnNameID,
-			Condition: mysql.SqlCondIn,
-			Value:     ids,
-		})
-
-	_, err := d.dao.Exec(sqb.Query(), sqb.Args()...)
-	return err
+func (d *BaseDao) UpdateByIDs(fields map[string]interface{}, ids ...int64) *mysql.SqlExecResult {
+	return d.Dao.UpdateByIDs(d.TableName, fields, ids...)
 }
 
-func (d *BaseDao) SelectByIDs(dest interface{}, ids ...int64) error {
-	if len(ids) == 1 {
-		return d.dao.SelectEntityById(d.tableName, ids[0], dest)
-	}
-
-	return d.SimpleQueryAnd(&mysql.SqlQueryParams{
-		CondItems: []*mysql.SqlColQueryItem{
-			{
-				Name:      ColumnNameID,
-				Condition: mysql.SqlCondIn,
-				Value:     ids,
-			},
-		},
-	}, dest)
+func (d *BaseDao) SelectByID(id int64, dest interface{}) error {
+	return d.Dao.SelectEntityByID(d.TableName, id, dest)
 }
 
 func (d *BaseDao) SimpleQueryAnd(params *mysql.SqlQueryParams, dest interface{}) error {
-	return d.dao.SimpleQueryEntitiesAnd(d.tableName, params, dest)
+	return d.Dao.SimpleQueryEntitiesAnd(d.TableName, params, dest)
 }
 
 func (d *BaseDao) SimpleTotalAnd(items ...*mysql.SqlColQueryItem) (int64, error) {
-	return d.dao.SimpleTotalAnd(d.tableName, items...)
+	return d.Dao.SimpleTotalAnd(d.TableName, items...)
 }
 
 func (d *BaseDao) Begin() error {
-	return d.dao.Begin()
+	return d.Dao.Begin()
 }
 
 func (d *BaseDao) Commit() error {
-	return d.dao.Commit()
+	return d.Dao.Commit()
 }
 
 func (d *BaseDao) Rollback() error {
-	return d.dao.Rollback()
+	return d.Dao.Rollback()
 }
