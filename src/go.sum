@@ -14,3 +14,7 @@ github.com/goinbox/mysql v2.5.0+incompatible h1:jGsy6gGxCOVAAvcDZ3SziEOIz4/vlP6w
 github.com/goinbox/mysql v2.5.0+incompatible/go.mod h1:dZ8/2cy1ieZoGNtHesR4sZOc6MWQQGpHXUHKEm8hd+A=
 github.com/goinbox/mysql v2.5.1+incompatible h1:g6+veeosPQ9w36M33bs802fJqjJcgVt4C69cM4DUN8o=
 github.com/goinbox/mysql v2.5.1+incompatible/go.mod h1:dZ8/2cy1ieZoGNtHesR4sZOc6MWQQGpHXUHKEm8hd+A=
+github.com/goinbox/mysql v2.6.0+incompatible h1:fc+A79jyFIXuKPHdbeVp/eSUqMc6d1dMIvAeGcgUDss=
+github.com/goinbox/mysql v2.6.0+incompatible/go.mod h1:dZ8/2cy1ieZoGNtHesR4sZOc6MWQQGpHXUHKEm8hd+A=
+github.com/goinbox/mysql v2.6.1+incompatible h1:Uam+J0oS+Pcb6Wv0e6pVmeRFwFWjMW2DCbmtxnsfdUQ=
+github.com/goinbox/mysql v2.6.1+incompatible/go.mod h1:dZ8/2cy1ieZoGNtHesR4sZOc6MWQQGpHXUHKEm8hd+A=
