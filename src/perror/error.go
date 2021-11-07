@@ -9,10 +9,10 @@ type Error struct {
 	msg   string
 }
 
-func New(errno int, msg string) *Error {
+func New(errno int, format string, args ...interface{}) *Error {
 	return &Error{
 		errno: errno,
-		msg:   msg,
+		msg:   fmt.Sprintf(format, args...),
 	}
 }
 

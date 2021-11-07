@@ -10,7 +10,6 @@ import (
 
 	gcontroller "github.com/goinbox/gohttp/controller"
 
-	"gdemo/idgen"
 	"gdemo/misc"
 	"gdemo/resource"
 )
@@ -142,6 +141,6 @@ func (b *BaseController) parseTraceId(context *BaseContext) []byte {
 		return []byte(traceId)
 	}
 
-	traceIdBytes, _ := idgen.DefaultTraceIdGenter.GenId(context.RemoteRealAddr.Ip, context.RemoteRealAddr.Port)
+	traceIdBytes, _ := misc.DefaultTraceIDGenter.GenID(context.RemoteRealAddr.Ip, context.RemoteRealAddr.Port)
 	return traceIdBytes
 }

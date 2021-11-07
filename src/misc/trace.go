@@ -1,4 +1,4 @@
-package idgen
+package misc
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-type TraceIdGenter struct {
+type TraceIDGenter struct {
 	lock      sync.Mutex
 	increment int64
 
@@ -18,13 +18,13 @@ type TraceIdGenter struct {
 	incrementFormat string
 }
 
-func NewTraceIdGenter(incrementLen int) *TraceIdGenter {
-	return new(TraceIdGenter).SetIncrementLen(incrementLen)
+func NewTraceIDGenter(incrementLen int) *TraceIDGenter {
+	return new(TraceIDGenter).SetIncrementLen(incrementLen)
 }
 
-var DefaultTraceIdGenter = NewTraceIdGenter(4)
+var DefaultTraceIDGenter = NewTraceIDGenter(4)
 
-func (t *TraceIdGenter) SetIncrementLen(incrementLen int) *TraceIdGenter {
+func (t *TraceIDGenter) SetIncrementLen(incrementLen int) *TraceIDGenter {
 	t.incrementLen = incrementLen
 	t.maxIncrement = int64(math.Pow10(incrementLen))
 	t.incrementFormat = "%0" + strconv.Itoa(incrementLen) + "d"
@@ -32,7 +32,7 @@ func (t *TraceIdGenter) SetIncrementLen(incrementLen int) *TraceIdGenter {
 	return t
 }
 
-func (t *TraceIdGenter) GenId(ip, port string) ([]byte, error) {
+func (t *TraceIDGenter) GenID(ip string, port int) ([]byte, error) {
 	var id string
 
 	for _, item := range strings.Split(ip, ".") {
@@ -43,7 +43,7 @@ func (t *TraceIdGenter) GenId(ip, port string) ([]byte, error) {
 		id += fmt.Sprintf("%02x", v)
 	}
 
-	id += fmt.Sprintf("%05s", port)
+	id += fmt.Sprintf("%05d", port)
 	id += strconv.FormatInt(time.Now().UnixNano()/1000000, 10)
 
 	t.lock.Lock()
