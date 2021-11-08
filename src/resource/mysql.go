@@ -10,12 +10,15 @@ import (
 )
 
 const (
-	DBKey = "main"
+	dbKey = "main"
 )
 
 func InitMySQL(config *conf.MySQLConf) error {
-	err := mysql.RegisterDB(DBKey,
-		mysql.NewDefaultConfig(config.User, config.Pass, config.Host, config.Name, config.Port))
+	mconfig := mysql.NewDefaultConfig(config.User, config.Pass, config.Host, config.Name, config.Port)
+	mconfig.ReadTimeout = config.RWTimeout
+	mconfig.WriteTimeout = config.RWTimeout
+
+	err := mysql.RegisterDB(dbKey, mconfig)
 	if err != nil {
 		return fmt.Errorf("mysql.RegisterDB error: %w", err)
 	}
@@ -24,7 +27,7 @@ func InitMySQL(config *conf.MySQLConf) error {
 }
 
 func MySQLClient(logger golog.Logger) *mysql.Client {
-	client, _ := mysql.NewClientFromPool(DBKey, logger)
+	client, _ := mysql.NewClientFromPool(dbKey, logger)
 
 	return client
 }

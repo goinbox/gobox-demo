@@ -1,5 +1,7 @@
 github.com/BurntSushi/toml v0.4.1 h1:GaI7EiDXDRfa8VshkTj7Fym7ha+y8/XxIgD2okUIjLw=
 github.com/BurntSushi/toml v0.4.1/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbicEuybxQ=
+github.com/garyburd/redigo v1.6.3 h1:HCeeRluvAgMusMomi1+6Y5dmFOdYV/JzoRrrbFlkGIc=
+github.com/garyburd/redigo v1.6.3/go.mod h1:rTb6epsqigu3kYKBnaF028A7Tf/Aw5s0cqA47doKKqw=
 github.com/go-sql-driver/mysql v1.6.0 h1:BCTh4TKNUYmOmMUcQ3IipzF5prigylS7XXjEkfCHuOE=
 github.com/go-sql-driver/mysql v1.6.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LBy8hT2VhHyBg=
 github.com/goinbox/color v1.0.0 h1:w+HhREKjA3rnGdIxcVbp+ssFvPfMocIHjBbXNMH9gGU=
@@ -20,3 +22,13 @@ github.com/goinbox/mysql v2.6.0+incompatible h1:fc+A79jyFIXuKPHdbeVp/eSUqMc6d1dM
 github.com/goinbox/mysql v2.6.0+incompatible/go.mod h1:dZ8/2cy1ieZoGNtHesR4sZOc6MWQQGpHXUHKEm8hd+A=
 github.com/goinbox/mysql v2.6.1+incompatible h1:Uam+J0oS+Pcb6Wv0e6pVmeRFwFWjMW2DCbmtxnsfdUQ=
 github.com/goinbox/mysql v2.6.1+incompatible/go.mod h1:dZ8/2cy1ieZoGNtHesR4sZOc6MWQQGpHXUHKEm8hd+A=
+github.com/goinbox/mysql v2.6.2+incompatible h1:cfgj4mzqz7vvLFrE3Q4x+W5xJUH4czvcOhqsuISMNxI=
+github.com/goinbox/mysql v2.6.2+incompatible/go.mod h1:dZ8/2cy1ieZoGNtHesR4sZOc6MWQQGpHXUHKEm8hd+A=
+github.com/goinbox/pool v1.0.1 h1:aPHPQpv5ax21+L2VQ6cVBVu9nVAfWYR+MmmIgm6UiJ0=
+github.com/goinbox/pool v1.0.1/go.mod h1:2F09/yX9GI20pjM0jicH/BGpIPkytKw2NmpCWV3TU4M=
+github.com/goinbox/redis v1.3.0 h1:XsK3SuzJEDUBDepN/AW2RoVIk7IY8rWOIFrfYx22hM4=
+github.com/goinbox/redis v1.3.0/go.mod h1:/1wqRYeOAQYNdnX5y2F2W6dMx10+4v5qQgOXI3Djrwo=
+github.com/goinbox/redis v1.3.1 h1:q1PGliljEJS1YDs/o8ks5lb7nhmIenGJ7R4mxZ9DKgU=
+github.com/goinbox/redis v1.3.1/go.mod h1:/1wqRYeOAQYNdnX5y2F2W6dMx10+4v5qQgOXI3Djrwo=
+github.com/goinbox/redis v1.3.2 h1:sGBZtUhel8gSPVaI6u7wsvIUMj94moMbwwJRLahxQ6c=
+github.com/goinbox/redis v1.3.2/go.mod h1:/1wqRYeOAQYNdnX5y2F2W6dMx10+4v5qQgOXI3Djrwo=

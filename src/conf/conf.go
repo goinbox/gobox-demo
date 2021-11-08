@@ -8,11 +8,9 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
-
-	"gdemo/perror"
 )
 
-func Init(confDir string) *perror.Error {
+func Init(confDir string) error {
 	err := parseServerConf(confDir)
 	if err != nil {
 		return err
@@ -32,17 +30,15 @@ func Init(confDir string) *perror.Error {
 	return nil
 }
 
-func parseServerConf(confDir string) *perror.Error {
+func parseServerConf(confDir string) error {
 	err := parseConfFile(confDir + "/server_conf.toml")
 	if err != nil {
-		return perror.New(perror.ESysParseServerConfFail,
-			fmt.Sprintf("parse server_conf.toml error: %v", err))
+		return fmt.Errorf("parse server_conf.toml error: %w", err)
 	}
 
 	err = parseConfFile(confDir + "/server_conf_rewrite.toml")
 	if err != nil {
-		return perror.New(perror.ESysParseServerConfFail,
-			fmt.Sprintf("parse server_conf_rewrite.toml error: %v", err))
+		return fmt.Errorf("parse server_conf_rewrite.toml error: %w", err)
 	}
 
 	return nil

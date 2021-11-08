@@ -39,7 +39,7 @@ func FreeLog() {
 
 func formater(config *conf.LogConf) golog.Formater {
 	switch config.Formater {
-	case "json":
+	case "simple":
 		return golog.NewSimpleFormater()
 	}
 
