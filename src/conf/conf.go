@@ -27,7 +27,7 @@ func Init(confDir string) *perror.Error {
 	ServerConf.Redis.PoolKeepAliveInterval = time.Duration(ServerConf.Redis.PoolKeepAliveIntervalSeconds) * time.Second
 	ServerConf.Redis.PoolClientMaxIdleTime = time.Duration(ServerConf.Redis.PoolClientMaxIdleSeconds) * time.Second
 
-	ServerConf.Mysql.RWTimeout = time.Duration(ServerConf.Mysql.RWTimeoutSeconds) * time.Second
+	ServerConf.MySQL.RWTimeout = time.Duration(ServerConf.MySQL.RWTimeoutSeconds) * time.Second
 
 	return nil
 }

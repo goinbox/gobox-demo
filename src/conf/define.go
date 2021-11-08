@@ -4,14 +4,16 @@ import (
 	"time"
 )
 
-type logConf struct {
-	Dir            string
+type LogConf struct {
+	Path           string
 	Level          int
-	AsyncQueueSize int `json:"async_queue_size"`
+	AsyncQueueSize int `toml:"async_queue_size"`
 	Bufsize        int
+	Formater       string
+	EnableColor    bool `toml:"enable_color"`
 }
 
-type redisConf struct {
+type RedisConf struct {
 	Host                         string
 	Pass                         string
 	Port                         int
@@ -27,7 +29,7 @@ type redisConf struct {
 	PoolClientMaxIdleTime time.Duration
 }
 
-type mysqlConf struct {
+type MySQLConf struct {
 	Host             string
 	User             string
 	Pass             string
@@ -46,7 +48,7 @@ var ServerConf struct {
 	IsDev   bool   `toml:"is_dev"`
 	Idc     string
 
-	Log   map[string]*logConf
+	Log   map[string]*LogConf
 	Pprof struct {
 		Enable bool
 		Port   int
@@ -57,6 +59,6 @@ var ServerConf struct {
 		PidFile string `toml:"pid_file"`
 	}
 
-	Redis *redisConf
-	Mysql *mysqlConf
+	Redis *RedisConf
+	MySQL *MySQLConf
 }

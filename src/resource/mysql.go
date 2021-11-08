@@ -1,20 +1,30 @@
 package resource
 
 import (
-	"gdemo/conf"
+	"fmt"
 
+	"github.com/goinbox/golog"
 	"github.com/goinbox/mysql"
+
+	"gdemo/conf"
 )
 
-var mysqlClient *mysql.Client
+const (
+	DBKey = "main"
+)
 
-func MysqlClient() (*mysql.Client, error) {
+func InitMySQL(config *conf.MySQLConf) error {
+	err := mysql.RegisterDB(DBKey,
+		mysql.NewDefaultConfig(config.User, config.Pass, config.Host, config.Name, config.Port))
+	if err != nil {
+		return fmt.Errorf("mysql.RegisterDB error: %w", err)
+	}
 
+	return nil
+}
 
-	config := mysql.NewDefaultConfig(conf.MysqlConf.User, conf.MysqlConf.Pass, conf.MysqlConf.Host, conf.MysqlConf.Port, conf.MysqlConf.Name)
-	config.LogLevel = conf.MysqlConf.LogLevel
-	config.ReadTimeout = conf.MysqlConf.RWTimeout
-	config.WriteTimeout = conf.MysqlConf.RWTimeout
+func MySQLClient(logger golog.Logger) *mysql.Client {
+	client, _ := mysql.NewClientFromPool(DBKey, logger)
 
-	return mysql.NewClient(config, nil)
+	return client
 }

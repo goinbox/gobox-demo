@@ -3,8 +3,13 @@ idc = "dev"
 
 [log]
 [log.api]
-dir = "${PRJ_HOME}/logs"
+path = "/dev/stdout"
 level = 7
+async_queue_size = 0
+bufsize = 0
+formater = "simple"
+enable_color = true
+
 
 [pprof]
 enable = true

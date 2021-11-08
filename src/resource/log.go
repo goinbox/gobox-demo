@@ -1,53 +1,47 @@
 package resource
 
 import (
-	"gdemo/conf"
-	"gdemo/perror"
+	"fmt"
 
-	"gdemo/perror"
 	"github.com/goinbox/golog"
+
+	"gdemo/conf"
 )
 
-var accessLogWriter golog.IWriter
-var AccessLogger golog.ILogger
+var accessLogWriter golog.Writer
+var AccessLogger golog.Logger
 
-var traceLogWriter golog.IWriter
-var TraceLogger golog.ILogger
+func InitLog(config *conf.LogConf) error {
+	var err error
 
-var NoopLogger golog.ILogger = new(golog.NoopLogger)
-
-var TestLogger golog.ILogger = golog.NewSimpleLogger(
-	golog.NewConsoleWriter(),
-	golog.NewConsoleFormater(golog.NewSimpleFormater())).
-	SetLogLevel(golog.LevelDebug)
-
-func InitLog(systemName string) *perror.Error {
-	if conf.BaseConf.IsDev {
-		accessLogWriter = golog.NewConsoleWriter()
-	} else {
-		fw, err := golog.NewFileWriter(conf.LogConf.RootPath+"/"+systemName+"_access.log", conf.LogConf.Bufsize)
-		if err != nil {
-			return perror.Error(perror.ESysInitLogFail, err.Error())
-		}
-		accessLogWriter = golog.NewAsyncWriter(fw, conf.LogConf.AsyncQueueSize)
-	}
-	AccessLogger = NewLogger(accessLogWriter)
-
-	fw, err := golog.NewFileWriter(conf.LogConf.RootPath+"/"+systemName+"_trace.log", conf.LogConf.Bufsize)
+	accessLogWriter, err = golog.NewFileWriter(config.Path, config.Bufsize)
 	if err != nil {
-		return perror.Error(perror.ESysInitLogFail, err.Error())
+		return fmt.Errorf("golog.NewFileWriter error: %w", err)
 	}
-	traceLogWriter = golog.NewAsyncWriter(fw, conf.LogConf.AsyncQueueSize)
-	TraceLogger = NewLogger(traceLogWriter)
+
+	if config.AsyncQueueSize > 0 {
+		accessLogWriter = golog.NewAsyncWriter(accessLogWriter, config.AsyncQueueSize)
+	}
+
+	logger := golog.NewSimpleLogger(accessLogWriter, formater(config)).SetLogLevel(config.Level)
+	if config.EnableColor {
+		logger.EnableColor()
+	}
+
+	AccessLogger = logger
 
 	return nil
 }
 
-func NewLogger(writer golog.IWriter) golog.ILogger {
-	return golog.NewSimpleLogger(writer, golog.NewSimpleFormater()).SetLogLevel(conf.LogConf.Level)
-}
-
 func FreeLog() {
 	accessLogWriter.Free()
-	traceLogWriter.Free()
+}
+
+func formater(config *conf.LogConf) golog.Formater {
+	switch config.Formater {
+	case "json":
+		return golog.NewSimpleFormater()
+	}
+
+	return golog.NewJsonFormater()
 }

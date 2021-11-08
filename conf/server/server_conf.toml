@@ -4,10 +4,12 @@ idc = ""
 
 [log]
 [log.api]
-dir = ""
+path = ""
 level = 6
 async_queue_size = 1000000
 bufsize = 4096
+formater = "json"
+enable_color = false
 
 [pprof]
 enable = false
