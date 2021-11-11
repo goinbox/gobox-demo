@@ -2,39 +2,26 @@ package resource
 
 import (
 	"github.com/goinbox/golog"
-	"github.com/goinbox/pool"
+	"github.com/goinbox/redis"
 
 	"gdemo/conf"
-
-	"github.com/goinbox/redis"
 )
 
-var redisPool *redis.Pool
+const (
+	dbRedisKey = "main"
+)
 
 func InitRedis(config *conf.RedisConf) {
-	redisPool = redis.NewPool(&redis.PConfig{
-		Config: pool.Config{
-			Size:              config.PoolSize,
-			MaxIdleTime:       config.PoolClientMaxIdleTime,
-			KeepAliveInterval: config.PoolKeepAliveInterval,
-		},
-		NewClientFunc: newRedisClientFunc(config),
-	})
+	rconfig := redis.NewConfig(config.Host, config.Pass, config.Port)
+	rconfig.DialTimeout = config.ConnectTimeout
+	rconfig.ReadTimeout = config.RWTimeout
+	rconfig.WriteTimeout = config.RWTimeout
+
+	redis.RegisterDB(dbRedisKey, rconfig)
 }
 
 func RedisClient(logger golog.Logger) *redis.Client {
-	client, _ := redisPool.Get(logger)
+	client, _ := redis.NewClientFromPool(dbRedisKey, logger)
 
 	return client
-}
-
-func newRedisClientFunc(config *conf.RedisConf) func() (*redis.Client, error) {
-	return func() (*redis.Client, error) {
-		rconfig := redis.NewConfig(config.Host, config.Pass, config.Port)
-		rconfig.ConnectTimeout = config.ConnectTimeout
-		rconfig.ReadTimeout = config.RWTimeout
-		rconfig.WriteTimeout = config.RWTimeout
-
-		return redis.NewClient(rconfig, nil), nil
-	}
 }
