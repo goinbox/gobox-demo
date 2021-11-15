@@ -13,25 +13,26 @@ func init() {
 }
 
 func TestCacheLogicGetSet(t *testing.T) {
-	logic := cache.NewLogic(test.Context())
+	ctx := test.Context()
+	logic := cache.NewLogic()
 
 	key := "test"
-	err := logic.Set(key, "cache logic", 2)
+	err := logic.Set(ctx, key, "cache logic", 2)
 	t.Log("set", err)
 
 	var v string
-	exist, err := logic.Get(key, &v)
+	exist, err := logic.Get(ctx, key, &v)
 	t.Log("get before expire", exist, err, v)
 
 	time.Sleep(time.Second * 3)
-	exist, err = logic.Get(key, &v)
+	exist, err = logic.Get(ctx, key, &v)
 	t.Log("get after expire", exist, err)
 
-	_ = logic.Set(key, "cache logic", 3)
-	err = logic.Del(key)
+	_ = logic.Set(ctx, key, "cache logic", 3)
+	err = logic.Del(ctx, key)
 	t.Log("del", err)
 
-	exist, err = logic.Get(key, &v)
+	exist, err = logic.Get(ctx, key, &v)
 	t.Log("get after del", exist, err)
 }
 
@@ -41,10 +42,11 @@ func TestCacheLogicGetSetStruct(t *testing.T) {
 		Age  int
 	}
 
-	logic := cache.NewLogic(test.Context())
+	ctx := test.Context()
+	logic := cache.NewLogic()
 
 	key := "test"
-	err := logic.SetStruct(key, &person{
+	err := logic.SetStruct(ctx, key, &person{
 		Name: "zhangsan",
 		Age:  10,
 	}, 0)
@@ -52,6 +54,6 @@ func TestCacheLogicGetSetStruct(t *testing.T) {
 
 	item := new(person)
 
-	exist, err := logic.GetStruct(key, item)
+	exist, err := logic.GetStruct(ctx, key, item)
 	t.Log("get struct", exist, err, item)
 }

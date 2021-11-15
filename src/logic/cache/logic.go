@@ -12,24 +12,23 @@ import (
 )
 
 type Logic interface {
-	Set(key string, value interface{}, expireSeconds int64) error
-	Get(key string, value interface{}) (bool, error)
-	Del(key string) error
+	Set(ctx *pcontext.Context, key string, value interface{}, expireSeconds int64) error
+	Get(ctx *pcontext.Context, key string, value interface{}) (bool, error)
+	Del(ctx *pcontext.Context, key string) error
 
-	SetStruct(key string, value interface{}, expireSeconds int64) error
-	GetStruct(key string, value interface{}) (bool, error)
+	SetStruct(ctx *pcontext.Context, key string, value interface{}, expireSeconds int64) error
+	GetStruct(ctx *pcontext.Context, key string, value interface{}) (bool, error)
 }
 
 type logic struct {
-	ctx *pcontext.Context
 }
 
-func NewLogic(ctx *pcontext.Context) *logic {
-	return &logic{ctx: ctx}
+func NewLogic() *logic {
+	return &logic{}
 }
 
-func (l *logic) Set(key string, value interface{}, expireSeconds int64) error {
-	client := l.client()
+func (l *logic) Set(ctx *pcontext.Context, key string, value interface{}, expireSeconds int64) error {
+	client := l.client(ctx)
 
 	var err error
 	if expireSeconds > 0 {
@@ -45,8 +44,8 @@ func (l *logic) Set(key string, value interface{}, expireSeconds int64) error {
 	return nil
 }
 
-func (l *logic) Get(key string, value interface{}) (bool, error) {
-	reply := l.get(key)
+func (l *logic) Get(ctx *pcontext.Context, key string, value interface{}) (bool, error) {
+	reply := l.get(ctx, key)
 	if reply.Err != nil {
 		if reply.Nil() {
 			return false, nil
@@ -60,12 +59,12 @@ func (l *logic) Get(key string, value interface{}) (bool, error) {
 	return true, nil
 }
 
-func (l *logic) get(key string) *redis.Reply {
-	return l.client().Do("get", key)
+func (l *logic) get(ctx *pcontext.Context, key string) *redis.Reply {
+	return l.client(ctx).Do("get", key)
 }
 
-func (l *logic) Del(key string) error {
-	client := l.client()
+func (l *logic) Del(ctx *pcontext.Context, key string) error {
+	client := l.client(ctx)
 
 	reply := client.Do("del", key)
 	if reply.Err != nil {
@@ -75,17 +74,17 @@ func (l *logic) Del(key string) error {
 	return nil
 }
 
-func (l *logic) SetStruct(key string, value interface{}, expireSeconds int64) error {
+func (l *logic) SetStruct(ctx *pcontext.Context, key string, value interface{}, expireSeconds int64) error {
 	content, err := json.Marshal(value)
 	if err != nil {
 		return fmt.Errorf("CacheLogic.SetStruct json.Marshal error: %w", err)
 	}
 
-	return l.Set(key, content, expireSeconds)
+	return l.Set(ctx, key, content, expireSeconds)
 }
 
-func (l *logic) GetStruct(key string, value interface{}) (bool, error) {
-	reply := l.get(key)
+func (l *logic) GetStruct(ctx *pcontext.Context, key string, value interface{}) (bool, error) {
+	reply := l.get(ctx, key)
 	if reply.Err != nil {
 		if reply.Nil() {
 			return false, nil
@@ -106,6 +105,6 @@ func (l *logic) GetStruct(key string, value interface{}) (bool, error) {
 	return true, nil
 }
 
-func (l *logic) client() *redis.Client {
-	return resource.RedisClient(l.ctx.Logger)
+func (l *logic) client(ctx *pcontext.Context) *redis.Client {
+	return resource.RedisClient(ctx.Logger)
 }
