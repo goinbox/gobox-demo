@@ -1,4 +1,4 @@
-package misc
+package api
 
 import (
 	"net/url"

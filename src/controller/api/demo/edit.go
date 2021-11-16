@@ -1,17 +1,22 @@
 package demo
 
 import (
-	"gdemo/perror"
-	"github.com/goinbox/gohttp/query"
+	"github.com/goinbox/golog"
 
-	"gdemo/define/entity"
+	"gdemo/controller/query"
 	"gdemo/perror"
 )
 
-func (d *DemoController) EditAction(context *DemoContext) {
-	ap, exists, e := d.parseEditActionParams(context)
+type editActionParams struct {
+	id     int64
+	name   string
+	status int
+}
+
+func (c *DemoController) EditAction(ctx *DemoContext) {
+	ap, exists, e := c.parseEditActionParams(ctx)
 	if e != nil {
-		context.ApiData.Err = e
+		ctx.ApiData.Err = e
 		return
 	}
 
@@ -22,36 +27,39 @@ func (d *DemoController) EditAction(context *DemoContext) {
 	updateFields := make(map[string]interface{})
 	_, ok := exists["name"]
 	if ok {
-		updateFields["name"] = ap.Name
+		updateFields["name"] = ap.name
 	}
 	_, ok = exists["status"]
 	if ok {
-		updateFields["status"] = ap.Status
+		updateFields["status"] = ap.status
 	}
 
-	updated, err := context.demoSvc.UpdateById(ap.Id, updateFields)
+	err := c.demoLogic().UpdateByIDs(ctx.Ctx, updateFields, ap.id)
 	if err != nil {
-		context.ApiData.Err = perror.Error(perror.ECommonUpdateEntityFailed, err.Error())
+		ctx.Ctx.Logger.Error("demoLogic.UpdateByIDs error", &golog.Field{
+			Key:   "err",
+			Value: err,
+		})
+
+		ctx.ApiData.Err = perror.New(perror.ECommonSysError, "edit error")
 		return
 	}
-
-	context.ApiData.Data = updated
 }
 
-func (d *DemoController) parseEditActionParams(context *DemoContext) (*entity.DemoEntity, map[string]bool, *perror.Error) {
-	ap := new(entity.DemoEntity)
+func (c *DemoController) parseEditActionParams(context *DemoContext) (*editActionParams, map[string]bool, *perror.Error) {
+	ap := new(editActionParams)
 
 	qs := query.NewQuerySet()
-	qs.Int64Var(&ap.Id, "id", true, perror.ECommonInvalidArg, "invalid id", query.CheckInt64IsPositive)
-	qs.StringVar(&ap.Name, "name", false, perror.ECommonInvalidArg, "invalid name", query.CheckStringNotEmpty)
-	qs.IntVar(&ap.Status, "status", false, perror.ECommonInvalidArg, "invalid status", nil)
+	qs.Int64Var(&ap.id, "id", true, perror.ECommonInvalidArg, "invalid id", query.CheckInt64IsPositive)
+	qs.StringVar(&ap.name, "name", false, perror.ECommonInvalidArg, "invalid name", query.CheckStringNotEmpty)
+	qs.IntVar(&ap.status, "status", false, perror.ECommonInvalidArg, "invalid status", nil)
 	e := qs.Parse(context.QueryValues)
 	if e != nil {
 		return ap, nil, e
 	}
 
-	if ap.Status < 0 {
-		return ap, nil, perror.Error(perror.ECommonInvalidArg, "invalid status")
+	if ap.status < 0 {
+		return ap, nil, perror.New(perror.ECommonInvalidArg, "invalid status")
 	}
 
 	return ap, qs.ExistsInfo(), nil

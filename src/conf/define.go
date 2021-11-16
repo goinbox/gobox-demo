@@ -40,6 +40,17 @@ type MySQLConf struct {
 	RWTimeout time.Duration
 }
 
+type PprofConf struct {
+	Enable bool
+	Port   int
+}
+
+type ApiConf struct {
+	Host    string
+	Port    int
+	PidFile string `toml:"pid_file"`
+}
+
 var ServerConf struct {
 	Hostname string
 	Username string
@@ -49,15 +60,8 @@ var ServerConf struct {
 	Idc     string
 
 	Log   map[string]*LogConf
-	Pprof struct {
-		Enable bool
-		Port   int
-	}
-	Api struct {
-		Host    string
-		Port    int
-		PidFile string `toml:"pid_file"`
-	}
+	Pprof *PprofConf
+	Api   *ApiConf
 
 	Redis *RedisConf
 	MySQL *MySQLConf

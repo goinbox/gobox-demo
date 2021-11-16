@@ -6,7 +6,6 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	"os"
-	"strconv"
 	"strings"
 
 	"github.com/goinbox/gohttp/gracehttp"
@@ -16,69 +15,86 @@ import (
 
 	"gdemo/conf"
 	"gdemo/controller/api/demo"
-	"gdemo/controller/api/mongodemo"
 	"gdemo/perror"
 	"gdemo/resource"
 )
 
+var args struct {
+	prjHome string
+}
+
 func main() {
-	var prjHome string
+	parseArgs()
 
-	flag.StringVar(&prjHome, "prj-home", "", "prj-home absolute path")
-	flag.Parse()
-
-	prjHome = strings.TrimRight(prjHome, "/")
-	if prjHome == "" {
-		fmt.Println("missing flag prj-home: ")
-		flag.PrintDefaults()
-		os.Exit(perror.ESysInvalidPrjHome)
+	err := conf.Init(args.prjHome + "/conf/server")
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(perror.ESysInitConfError)
 	}
 
-	e := conf.Init(prjHome)
-	if e != nil {
-		fmt.Println(e.Error())
-		os.Exit(e.Errno())
-	}
-
-	if conf.PprofConf.Enable {
-		go func() {
-			_ = http.ListenAndServe("127.0.0.1:"+conf.PprofConf.Port, nil)
-		}()
-	}
-
-	e = resource.InitLog("api")
-	if e != nil {
-		fmt.Println(e.Error())
-		os.Exit(e.Errno())
+	err = resource.InitLog(conf.ServerConf.Log["api"])
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(perror.ESysInitLogFail)
 	}
 	defer func() {
 		resource.FreeLog()
 	}()
 
-	resource.InitMysql()
-	resource.InitRedis()
-	resource.InitMongo()
-
-	pf, err := pidfile.CreatePidFile(conf.BaseConf.ApiPidFile)
+	err = resource.InitMySQL(conf.ServerConf.MySQL)
 	if err != nil {
-		fmt.Printf("create pid file %s failed, error: %s\n", conf.BaseConf.ApiPidFile, err.Error())
-		os.Exit(perror.ESysSavePidFileFail)
+		fmt.Println(err.Error())
+		os.Exit(perror.ESysMysqlError)
+	}
+
+	resource.InitRedis(conf.ServerConf.Redis)
+
+	pprof(conf.ServerConf.Pprof)
+	runServer(conf.ServerConf.Api)
+}
+
+func parseArgs() {
+	flag.StringVar(&args.prjHome, "prj-home", "", "prj-home absolute path")
+	flag.Parse()
+
+	args.prjHome = strings.TrimRight(args.prjHome, "/")
+	if args.prjHome == "" {
+		fmt.Println("missing flag prj-home: ")
+		flag.PrintDefaults()
+		os.Exit(perror.ESysInvalidPrjHome)
+	}
+}
+
+func pprof(config *conf.PprofConf) {
+	if config.Enable {
+		go func() {
+			addr := fmt.Sprintf("127.0.0.1:%d", config.Port)
+			_ = http.ListenAndServe(addr, nil)
+		}()
+	}
+}
+
+func runServer(config *conf.ApiConf) {
+	pf, err := pidfile.CreatePidFile(config.PidFile)
+	if err != nil {
+		fmt.Printf("create pid file %s failed, error: %v\n", config.PidFile, err)
+		os.Exit(perror.ESysFileIOError)
 	}
 
 	r := router.NewSimpleRouter()
 	r.MapRouteItems(
 		new(demo.DemoController),
-		new(mongodemo.MongoDemoController),
 	)
 
 	sys := system.NewSystem(r)
 
-	err = gracehttp.ListenAndServe(conf.ApiHttpConf.GoHttpHost+":"+conf.ApiHttpConf.GoHttpPort, sys)
+	addr := fmt.Sprintf("%s:%d", config.Host, config.Port)
+	err = gracehttp.ListenAndServe(addr, sys)
 	if err != nil {
-		fmt.Println("pid:" + strconv.Itoa(os.Getpid()) + ", err:" + err.Error())
+		fmt.Printf("pid:%d error: %v", os.Getpid(), err)
 	}
 
 	if err := pidfile.ClearPidFile(pf); err != nil {
-		fmt.Printf("clear pid file failed, error: %s\n", err.Error())
+		fmt.Printf("clear pid file failed, error: %v\n", err)
 	}
 }

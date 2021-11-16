@@ -1,9 +1,9 @@
 package demo
 
 import (
-	"gdemo/perror"
-	"github.com/goinbox/gohttp/query"
+	"github.com/goinbox/golog"
 
+	"gdemo/controller/query"
 	"gdemo/perror"
 )
 
@@ -11,23 +11,28 @@ type getActionParams struct {
 	id int64
 }
 
-func (d *DemoController) GetAction(context *DemoContext) {
-	ap, e := d.parseGetActionParams(context)
+func (c *DemoController) GetAction(ctx *DemoContext) {
+	ap, e := c.parseGetActionParams(ctx)
 	if e != nil {
-		context.ApiData.Err = e
+		ctx.ApiData.Err = e
 		return
 	}
 
-	entity, err := context.demoSvc.GetById(ap.id)
+	entity, err := c.demoLogic().SelectByID(ctx.Ctx, ap.id)
 	if err != nil {
-		context.ApiData.Err = perror.Error(perror.ESysMysqlError, err.Error())
+		ctx.Ctx.Logger.Error("demoLogic.SelectByID error", &golog.Field{
+			Key:   "err",
+			Value: err,
+		})
+
+		ctx.ApiData.Err = perror.New(perror.ECommonSysError, "get error")
 		return
 	}
 
-	context.ApiData.Data = entity
+	ctx.ApiData.Data = entity
 }
 
-func (d *DemoController) parseGetActionParams(context *DemoContext) (*getActionParams, *perror.Error) {
+func (c *DemoController) parseGetActionParams(context *DemoContext) (*getActionParams, *perror.Error) {
 	ap := new(getActionParams)
 
 	qs := query.NewQuerySet()

@@ -1,4 +1,4 @@
-package validate
+package query
 
 type CheckString func(v string) bool
 

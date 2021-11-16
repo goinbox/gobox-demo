@@ -1,60 +1,86 @@
 package demo
 
 import (
-	"gdemo/perror"
-	"github.com/goinbox/gohttp/query"
-	"github.com/goinbox/mysql"
+	"github.com/goinbox/golog"
 
-	"gdemo/define"
+	"gdemo/controller/query"
+	"gdemo/model/demo"
 	"gdemo/perror"
+
+	"github.com/goinbox/mysql"
 )
 
-type indexActionParams struct {
-	Status int `mysql:"status"`
+type indexActionRequestParams struct {
+	status int
 
 	offset int64
 	cnt    int64
 }
 
-var indexQueryConditions map[string]string = map[string]string{
-	"status": mysql.SqlCondEqual,
+type indexActionResponseData struct {
+	Total    int64
+	DemoList []*demo.Entity
 }
 
-func (d *DemoController) IndexAction(context *DemoContext) {
-	ap, _, e := d.parseIndexActionParams(context)
+func (c *DemoController) IndexAction(ctx *DemoContext) {
+	ap, exists, e := c.parseIndexActionParams(ctx)
 	if e != nil {
-		context.ApiData.Err = e
+		ctx.ApiData.Err = e
 		return
 	}
 
-	sqp := &define.SqlQueryParams{
-		CondItems: []*mysql.SqlColQueryItem{
-			{
-				Name:      "status",
-				Condition: mysql.SqlCondEqual,
-				Value:     ap.Status,
-			},
-		},
+	var conds []*mysql.SqlColQueryItem
+	if exists["status"] {
+		conds = append(conds, &mysql.SqlColQueryItem{
+			Name:      "status",
+			Condition: mysql.SqlCondEqual,
+			Value:     ap.status,
+		})
+	}
+
+	params := &mysql.SqlQueryParams{
+		CondItems: conds,
 
 		OrderBy: "id desc",
 		Offset:  ap.offset,
 		Cnt:     ap.cnt,
 	}
 
-	entities, err := context.demoSvc.SimpleQueryAnd(sqp)
+	logic := c.demoLogic()
+
+	entities, err := logic.SimpleQueryAnd(ctx.Ctx, params)
 	if err != nil {
-		context.ApiData.Err = perror.Error(perror.ESysMysqlError, err.Error())
+		ctx.Ctx.Logger.Error("demoLogic.SimpleQueryAnd error", &golog.Field{
+			Key:   "err",
+			Value: err,
+		})
+
+		ctx.ApiData.Err = perror.New(perror.ECommonSysError, "query error")
 		return
 	}
 
-	context.ApiData.Data = entities
+	total, err := logic.SimpleTotalAnd(ctx.Ctx, conds...)
+	if err != nil {
+		ctx.Ctx.Logger.Error("demoLogic.SimpleTotalAnd error", &golog.Field{
+			Key:   "err",
+			Value: err,
+		})
+
+		ctx.ApiData.Err = perror.New(perror.ECommonSysError, "query error")
+		return
+	}
+
+	ctx.ApiData.Data = &indexActionResponseData{
+		Total:    total,
+		DemoList: entities,
+	}
 }
 
-func (d *DemoController) parseIndexActionParams(context *DemoContext) (*indexActionParams, map[string]bool, *perror.Error) {
-	ap := new(indexActionParams)
+func (c *DemoController) parseIndexActionParams(context *DemoContext) (*indexActionRequestParams, map[string]bool, *perror.Error) {
+	ap := new(indexActionRequestParams)
 
 	qs := query.NewQuerySet()
-	qs.IntVar(&ap.Status, "status", false, perror.ECommonInvalidArg, "invalid status", nil)
+	qs.IntVar(&ap.status, "status", false, perror.ECommonInvalidArg, "invalid status", nil)
 	qs.Int64Var(&ap.offset, "offset", false, perror.ECommonInvalidArg, "invalid offset", nil)
 	qs.Int64Var(&ap.cnt, "cnt", false, perror.ECommonInvalidArg, "invalid cnt", nil)
 	e := qs.Parse(context.QueryValues)
@@ -62,14 +88,14 @@ func (d *DemoController) parseIndexActionParams(context *DemoContext) (*indexAct
 		return ap, nil, e
 	}
 
-	if ap.Status < 0 {
-		return ap, nil, perror.Error(perror.ECommonInvalidArg, "invalid status")
+	if ap.status < 0 {
+		return ap, nil, perror.New(perror.ECommonInvalidArg, "invalid status")
 	}
 	if ap.offset < 0 {
-		return ap, nil, perror.Error(perror.ECommonInvalidArg, "invalid offset")
+		return ap, nil, perror.New(perror.ECommonInvalidArg, "invalid offset")
 	}
 	if ap.cnt < 0 {
-		return ap, nil, perror.Error(perror.ECommonInvalidArg, "invalid cnt")
+		return ap, nil, perror.New(perror.ECommonInvalidArg, "invalid cnt")
 	}
 
 	return ap, qs.ExistsInfo(), nil

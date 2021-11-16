@@ -1,11 +1,10 @@
-package misc
+package api
 
 import (
+	"gdemo/controller/query"
 	"gdemo/perror"
 
 	"github.com/goinbox/crypto"
-	"gdemo/perror"
-	"github.com/goinbox/gohttp/query"
 	"github.com/goinbox/gomisc"
 
 	"encoding/json"
@@ -18,16 +17,14 @@ import (
 type ApiData struct {
 	Errno int    `json:"errno"`
 	Msg   string `json:"msg"`
-	V     string `json:"v"`
 
 	Data interface{} `json:"data"`
 }
 
-func ApiJson(v string, data interface{}, e *perror.Error) []byte {
+func ApiJson(data interface{}, e *perror.Error) []byte {
 	result := &ApiData{
 		Errno: perror.Success,
 		Msg:   "",
-		V:     v,
 
 		Data: data,
 	}
@@ -36,24 +33,17 @@ func ApiJson(v string, data interface{}, e *perror.Error) []byte {
 		result.Msg = e.Msg()
 	}
 
-	aj, err := json.Marshal(result)
-	if err != nil {
-		result.Errno = perror.ECommonJsonEncodeError
-		result.Msg = err.Error()
-		result.Data = nil
-
-		aj, _ = json.Marshal(result)
-	}
+	aj, _ := json.Marshal(result)
 
 	return aj
 }
 
-func ApiJsonp(v string, data interface{}, e *perror.Error, callback string) []byte {
+func ApiJsonp(data interface{}, e *perror.Error, callback string) []byte {
 	return gomisc.AppendBytes(
 		[]byte(" "),
 		[]byte(callback),
 		[]byte("("),
-		ApiJson(v, data, e),
+		ApiJson(data, e),
 		[]byte(");"),
 	)
 }
@@ -76,12 +66,12 @@ func SetApiSignParams(qs *query.QuerySet, asp *ApiSignParams) {
 
 func VerifyApiSign(asp *ApiSignParams, queryValues url.Values, signQueryNames []string, token string) *perror.Error {
 	if time.Now().Unix()-asp.T > 600 {
-		return perror.Error(perror.ECommonInvalidArg, "verify sign failed, invalid sign t")
+		return perror.New(perror.ECommonInvalidArg, "verify sign failed, invalid sign t")
 	}
 
 	sign := CalApiSign(queryValues, signQueryNames, token)
 	if sign != asp.Sign {
-		return perror.Error(perror.ECommonInvalidArg, "verify sign failed, invalid sign sign")
+		return perror.New(perror.ECommonInvalidArg, "verify sign failed, invalid sign sign")
 	}
 
 	return nil

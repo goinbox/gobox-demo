@@ -1,44 +1,55 @@
 package demo
 
 import (
-	"gdemo/perror"
-	"github.com/goinbox/gohttp/query"
+	"github.com/goinbox/golog"
 
-	"gdemo/define/entity"
+	"gdemo/controller/query"
+	"gdemo/model"
+	"gdemo/model/demo"
 	"gdemo/perror"
 )
 
-func (d *DemoController) AddAction(context *DemoContext) {
-	ap, e := d.parseAddActionParams(context)
+type addActionParams struct {
+	name   string
+	status int
+}
+
+func (c *DemoController) AddAction(actx *DemoContext) {
+	ap, e := c.parseAddActionParams(actx)
 	if e != nil {
-		context.ApiData.Err = e
+		actx.ApiData.Err = e
 		return
 	}
 
-	ids, err := context.demoSvc.Insert(ap)
+	err := c.demoLogic().Insert(actx.Ctx, &demo.Entity{
+		BaseEntity: model.BaseEntity{},
+		Name:       ap.name,
+		Status:     ap.status,
+	})
 	if err != nil {
-		context.ApiData.Err = perror.Error(perror.ECommonInsertEntityFailed, err.Error())
-		return
-	}
+		actx.Ctx.Logger.Error("demoLogic.Insert error", &golog.Field{
+			Key:   "err",
+			Value: err,
+		})
 
-	context.ApiData.Data = map[string]interface{}{
-		"id": ids[0],
+		actx.ApiData.Err = perror.New(perror.ECommonSysError, "add error")
+		return
 	}
 }
 
-func (d *DemoController) parseAddActionParams(context *DemoContext) (*entity.DemoEntity, *perror.Error) {
-	ap := new(entity.DemoEntity)
+func (c *DemoController) parseAddActionParams(context *DemoContext) (*addActionParams, *perror.Error) {
+	ap := new(addActionParams)
 
 	qs := query.NewQuerySet()
-	qs.StringVar(&ap.Name, "name", true, perror.ECommonInvalidArg, "invalid name", query.CheckStringNotEmpty)
-	qs.IntVar(&ap.Status, "status", true, perror.ECommonInvalidArg, "invalid status", nil)
+	qs.StringVar(&ap.name, "name", true, perror.ECommonInvalidArg, "invalid name", query.CheckStringNotEmpty)
+	qs.IntVar(&ap.status, "status", true, perror.ECommonInvalidArg, "invalid status", nil)
 	e := qs.Parse(context.QueryValues)
 	if e != nil {
 		return ap, e
 	}
 
-	if ap.Status < 0 {
-		return ap, perror.Error(perror.ECommonInvalidArg, "invalid status")
+	if ap.status < 0 {
+		return ap, perror.New(perror.ECommonInvalidArg, "invalid status")
 	}
 
 	return ap, nil

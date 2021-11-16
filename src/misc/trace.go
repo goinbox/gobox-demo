@@ -32,13 +32,13 @@ func (t *TraceIDGenter) SetIncrementLen(incrementLen int) *TraceIDGenter {
 	return t
 }
 
-func (t *TraceIDGenter) GenID(ip string, port int) ([]byte, error) {
+func (t *TraceIDGenter) GenID(ip string, port int) (string, error) {
 	var id string
 
 	for _, item := range strings.Split(ip, ".") {
 		v, err := strconv.Atoi(item)
 		if err != nil {
-			return nil, err
+			return "", fmt.Errorf("strconv.Atoi error: %w", err)
 		}
 		id += fmt.Sprintf("%02x", v)
 	}
@@ -53,5 +53,5 @@ func (t *TraceIDGenter) GenID(ip string, port int) ([]byte, error) {
 
 	id += fmt.Sprintf(t.incrementFormat, increment)
 
-	return []byte(id), nil
+	return id, nil
 }
