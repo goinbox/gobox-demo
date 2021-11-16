@@ -5,3 +5,11 @@ type BaseEntity struct {
 	AddTime  *string
 	EditTime *string
 }
+
+func (e *BaseEntity) Nil() bool {
+	if *e.ID > 0 {
+		return false
+	}
+
+	return true
+}

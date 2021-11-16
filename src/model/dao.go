@@ -4,7 +4,6 @@ import "github.com/goinbox/mysql"
 
 type Dao interface {
 	Insert(entities ...interface{}) *mysql.SqlExecResult
-
 	DeleteByIDs(ids ...int64) *mysql.SqlExecResult
 	UpdateByIDs(fields map[string]interface{}, ids ...int64) *mysql.SqlExecResult
 	SelectByID(id int64, dest interface{}) error

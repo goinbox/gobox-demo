@@ -12,11 +12,14 @@ import (
 )
 
 func InitMysql() {
-	_ = mysql.RegisterDB("test", mysql.NewDefaultConfig("root",
-		"123",
-		"127.0.0.1",
-		"gobox-demo", 3306),
-	)
+	_ = resource.InitMySQL(&conf.MySQLConf{
+		Host:      "127.0.0.1",
+		User:      "root",
+		Pass:      "123",
+		Port:      3306,
+		Name:      "gobox-demo",
+		RWTimeout: 10 * time.Second,
+	})
 }
 
 func Logger() golog.Logger {
@@ -26,9 +29,7 @@ func Logger() golog.Logger {
 }
 
 func MysqlClient() *mysql.Client {
-	client, _ := mysql.NewClientFromPool("test", Logger())
-
-	return client
+	return resource.MySQLClient(Logger())
 }
 
 func InitRedis() {

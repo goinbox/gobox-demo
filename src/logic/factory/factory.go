@@ -2,17 +2,23 @@ package factory
 
 import (
 	"gdemo/logic/cache"
+	"gdemo/logic/demo"
 )
 
-type Factory interface {
+type LogicFactory interface {
 	CacheLogic() cache.Logic
+	DemoLogic() demo.Logic
 }
 
-var DefaultFactory Factory = new(factory)
+var DefaultLogicFactory LogicFactory = new(logicFactory)
 
-type factory struct {
+type logicFactory struct {
 }
 
-func (f *factory) CacheLogic() cache.Logic {
+func (f *logicFactory) CacheLogic() cache.Logic {
 	return cache.NewLogic()
+}
+
+func (f *logicFactory) DemoLogic() demo.Logic {
+	return demo.NewLogic()
 }
