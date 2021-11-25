@@ -36,10 +36,7 @@ func (c *DemoController) EditAction(ctx *DemoContext) {
 
 	err := c.demoLogic().UpdateByIDs(ctx.Ctx, updateFields, ap.id)
 	if err != nil {
-		ctx.Ctx.Logger.Error("demoLogic.UpdateByIDs error", &golog.Field{
-			Key:   "err",
-			Value: err,
-		})
+		ctx.Ctx.Logger.Error("demoLogic.UpdateByIDs error", golog.ErrorField(err))
 
 		ctx.ApiData.Err = perror.New(perror.ECommonSysError, "edit error")
 		return

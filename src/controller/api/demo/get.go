@@ -20,10 +20,7 @@ func (c *DemoController) GetAction(ctx *DemoContext) {
 
 	entity, err := c.demoLogic().SelectByID(ctx.Ctx, ap.id)
 	if err != nil {
-		ctx.Ctx.Logger.Error("demoLogic.SelectByID error", &golog.Field{
-			Key:   "err",
-			Value: err,
-		})
+		ctx.Ctx.Logger.Error("demoLogic.SelectByID error", golog.ErrorField(err))
 
 		ctx.ApiData.Err = perror.New(perror.ECommonSysError, "get error")
 		return

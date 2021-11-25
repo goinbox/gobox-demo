@@ -27,10 +27,7 @@ func (c *DemoController) AddAction(actx *DemoContext) {
 		Status:     ap.status,
 	})
 	if err != nil {
-		actx.Ctx.Logger.Error("demoLogic.Insert error", &golog.Field{
-			Key:   "err",
-			Value: err,
-		})
+		actx.Ctx.Logger.Error("demoLogic.Insert error", golog.ErrorField(err))
 
 		actx.ApiData.Err = perror.New(perror.ECommonSysError, "add error")
 		return

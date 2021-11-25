@@ -50,10 +50,7 @@ func (c *DemoController) IndexAction(ctx *DemoContext) {
 
 	entities, err := logic.SimpleQueryAnd(ctx.Ctx, params)
 	if err != nil {
-		ctx.Ctx.Logger.Error("demoLogic.SimpleQueryAnd error", &golog.Field{
-			Key:   "err",
-			Value: err,
-		})
+		ctx.Ctx.Logger.Error("demoLogic.SimpleQueryAnd error", golog.ErrorField(err))
 
 		ctx.ApiData.Err = perror.New(perror.ECommonSysError, "query error")
 		return
@@ -61,10 +58,7 @@ func (c *DemoController) IndexAction(ctx *DemoContext) {
 
 	total, err := logic.SimpleTotalAnd(ctx.Ctx, conds...)
 	if err != nil {
-		ctx.Ctx.Logger.Error("demoLogic.SimpleTotalAnd error", &golog.Field{
-			Key:   "err",
-			Value: err,
-		})
+		ctx.Ctx.Logger.Error("demoLogic.SimpleTotalAnd error", golog.ErrorField(err))
 
 		ctx.ApiData.Err = perror.New(perror.ECommonSysError, "query error")
 		return
