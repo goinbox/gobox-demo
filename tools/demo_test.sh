@@ -5,7 +5,7 @@ headerHost="Host: ${USER}.gdemo.com"
 
 echo "====== test index ======"
 
-curl "$urlPrefix/index?status=1&tid=abc" -H "$headerHost" -H "TRACE-ID: 12345"
+echo curl "$urlPrefix/index?status=1&tid=abc" -H "$headerHost" -H "TRACE-ID: 12345"
 
 echo ""
 echo "====== test add ======"

@@ -11,41 +11,29 @@ import (
 	"gdemo/controller"
 )
 
-type ApiContext interface {
-	gcontroller.ActionContext
-
-	Data() interface{}
-	Err() *perror.Error
+type ApiData struct {
+	Err  *perror.Error
+	Tid  string
+	Data interface{}
 }
 
-type BaseApiContext struct {
+type ApiContext struct {
 	*controller.BaseContext
 
-	ApiData struct {
-		Data interface{}
-		Err  *perror.Error
-	}
+	ApiData *ApiData
 }
 
-func (a *BaseApiContext) Data() interface{} {
-	return a.ApiData.Data
-}
-
-func (a *BaseApiContext) Err() *perror.Error {
-	return a.ApiData.Err
-}
-
-func (a *BaseApiContext) AfterAction() {
+func (a *ApiContext) AfterAction() {
 	f := a.QueryValues.Get("fmt")
 	if f == "jsonp" {
 		callback := a.QueryValues.Get("_callback")
 		if callback != "" {
-			a.SetResponseBody(ApiJsonp(a.ApiData.Data, a.ApiData.Err, html.EscapeString(callback)))
+			a.SetResponseBody(ApiJsonp(a.ApiData, html.EscapeString(callback)))
 			return
 		}
 	}
 
-	a.SetResponseBody(ApiJson(a.ApiData.Data, a.ApiData.Err))
+	a.SetResponseBody(ApiJson(a.ApiData))
 	a.BaseContext.AfterAction()
 }
 
@@ -54,14 +42,12 @@ type ApiController struct {
 }
 
 func (c *ApiController) NewActionContext(req *http.Request, respWriter http.ResponseWriter) gcontroller.ActionContext {
-	context := new(BaseApiContext)
-	context.BaseContext = c.BaseController.NewActionContext(req, respWriter).(*controller.BaseContext)
+	bctx := c.BaseController.NewActionContext(req, respWriter).(*controller.BaseContext)
 
-	return context
-}
-
-func JumpToApiError(context gcontroller.ActionContext, args ...interface{}) {
-	acontext := context.(ApiContext)
-
-	acontext.SetResponseBody(ApiJson(acontext.Data(), acontext.Err()))
+	return &ApiContext{
+		BaseContext: bctx,
+		ApiData: &ApiData{
+			Tid: bctx.Ctx.TraceID,
+		},
+	}
 }

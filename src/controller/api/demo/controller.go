@@ -11,11 +11,11 @@ import (
 )
 
 type DemoContext struct {
-	*api.BaseApiContext
+	*api.ApiContext
 }
 
 func (d *DemoContext) BeforeAction() {
-	d.BaseApiContext.BeforeAction()
+	d.ApiContext.BeforeAction()
 }
 
 type DemoController struct {
@@ -24,7 +24,7 @@ type DemoController struct {
 
 func (c *DemoController) NewActionContext(req *http.Request, respWriter http.ResponseWriter) gcontroller.ActionContext {
 	context := new(DemoContext)
-	context.BaseApiContext = c.ApiController.NewActionContext(req, respWriter).(*api.BaseApiContext)
+	context.ApiContext = c.ApiController.NewActionContext(req, respWriter).(*api.ApiContext)
 
 	return context
 }

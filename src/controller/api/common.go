@@ -14,23 +14,25 @@ import (
 	"time"
 )
 
-type ApiData struct {
+type Response struct {
 	Errno int    `json:"errno"`
 	Msg   string `json:"msg"`
+	Tid   string `json:"tid"`
 
 	Data interface{} `json:"data"`
 }
 
-func ApiJson(data interface{}, e *perror.Error) []byte {
-	result := &ApiData{
+func ApiJson(data *ApiData) []byte {
+	result := &Response{
 		Errno: perror.Success,
 		Msg:   "",
+		Tid:   data.Tid,
 
-		Data: data,
+		Data: data.Data,
 	}
-	if e != nil {
-		result.Errno = e.Errno()
-		result.Msg = e.Msg()
+	if data.Err != nil {
+		result.Errno = data.Err.Errno()
+		result.Msg = data.Err.Msg()
 	}
 
 	aj, _ := json.Marshal(result)
@@ -38,12 +40,12 @@ func ApiJson(data interface{}, e *perror.Error) []byte {
 	return aj
 }
 
-func ApiJsonp(data interface{}, e *perror.Error, callback string) []byte {
+func ApiJsonp(data *ApiData, callback string) []byte {
 	return gomisc.AppendBytes(
 		[]byte(" "),
 		[]byte(callback),
 		[]byte("("),
-		ApiJson(data, e),
+		ApiJson(data),
 		[]byte(");"),
 	)
 }

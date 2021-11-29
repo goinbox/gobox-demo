@@ -4,6 +4,7 @@ import (
 	"github.com/goinbox/golog"
 
 	"gdemo/controller/query"
+	"gdemo/model"
 	"gdemo/perror"
 )
 
@@ -20,6 +21,10 @@ func (c *DemoController) GetAction(ctx *DemoContext) {
 
 	entity, err := c.demoLogic().SelectByID(ctx.Ctx, ap.id)
 	if err != nil {
+		if model.RecordNotFound(err) {
+			return
+		}
+
 		ctx.Ctx.Logger.Error("demoLogic.SelectByID error", golog.ErrorField(err))
 
 		ctx.ApiData.Err = perror.New(perror.ECommonSysError, "get error")

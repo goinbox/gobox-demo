@@ -27,6 +27,11 @@ func (c *DemoController) AddAction(actx *DemoContext) {
 		Status:     ap.status,
 	})
 	if err != nil {
+		if model.DuplicateError(err) {
+			actx.ApiData.Err = perror.New(perror.ECommonDataAlreadyExist, "data already exist")
+			return
+		}
+
 		actx.Ctx.Logger.Error("demoLogic.Insert error", golog.ErrorField(err))
 
 		actx.ApiData.Err = perror.New(perror.ECommonSysError, "add error")

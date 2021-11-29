@@ -10,6 +10,7 @@ const (
 	ESysMysqlError     = 15
 	ESysRedisError     = 16
 
-	ECommonSysError   = 101
-	ECommonInvalidArg = 102
+	ECommonSysError         = 101
+	ECommonInvalidArg       = 102
+	ECommonDataAlreadyExist = 103
 )
