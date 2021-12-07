@@ -1,34 +1,28 @@
 package demo
 
 import (
-	"gdemo/controller/api"
-	"gdemo/logic/demo"
-	"gdemo/logic/factory"
-
-	gcontroller "github.com/goinbox/gohttp/controller"
-
 	"net/http"
 )
 
-type DemoContext struct {
-	*api.ApiContext
+type Controller struct {
 }
 
-func (d *DemoContext) BeforeAction() {
-	d.ApiContext.BeforeAction()
+func (c *Controller) Name() string {
+	return "demo"
 }
 
-type DemoController struct {
-	api.ApiController
+func (c *Controller) IndexAction(r *http.Request, w http.ResponseWriter, args []string) *indexAction {
+	return newIndexAction(r, w, args)
 }
 
-func (c *DemoController) NewActionContext(req *http.Request, respWriter http.ResponseWriter) gcontroller.ActionContext {
-	context := new(DemoContext)
-	context.ApiContext = c.ApiController.NewActionContext(req, respWriter).(*api.ApiContext)
-
-	return context
+func (c *Controller) AddAction(r *http.Request, w http.ResponseWriter, args []string) *addAction {
+	return newAddAction(r, w, args)
 }
 
-func (c *DemoController) demoLogic() demo.Logic {
-	return factory.DefaultLogicFactory.DemoLogic()
+func (c *Controller) EditAction(r *http.Request, w http.ResponseWriter, args []string) *editAction {
+	return newEditAction(r, w, args)
+}
+
+func (c *Controller) DelAction(r *http.Request, w http.ResponseWriter, args []string) *delAction {
+	return newDelAction(r, w, args)
 }

@@ -9,12 +9,12 @@ import (
 	"strings"
 
 	"github.com/goinbox/gohttp/gracehttp"
+	"github.com/goinbox/gohttp/httpserver"
 	"github.com/goinbox/gohttp/router"
-	"github.com/goinbox/gohttp/system"
-	"github.com/goinbox/pidfile"
 
 	"gdemo/conf"
 	"gdemo/controller/api/demo"
+	"gdemo/controller/api/validate"
 	"gdemo/perror"
 	"gdemo/resource"
 )
@@ -32,7 +32,7 @@ func main() {
 		os.Exit(perror.ESysInitConfError)
 	}
 
-	err = resource.InitLog(conf.ServerConf.Log["api"])
+	err = resource.InitLog(conf.ServerConf.Log.Api)
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(perror.ESysInitLogFail)
@@ -50,7 +50,11 @@ func main() {
 	resource.InitRedis(conf.ServerConf.Redis)
 
 	pprof(conf.ServerConf.Pprof)
-	runServer(conf.ServerConf.Api)
+	err = runServer(conf.ServerConf.Api)
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(perror.ESysRunServerError)
+	}
 }
 
 func parseArgs() {
@@ -74,27 +78,22 @@ func pprof(config *conf.PprofConf) {
 	}
 }
 
-func runServer(config *conf.ApiConf) {
-	pf, err := pidfile.CreatePidFile(config.PidFile)
-	if err != nil {
-		fmt.Printf("create pid file %s failed, error: %v\n", config.PidFile, err)
-		os.Exit(perror.ESysFileIOError)
-	}
-
-	r := router.NewSimpleRouter()
+func runServer(config *conf.ApiConf) error {
+	r := router.NewRouter()
 	r.MapRouteItems(
-		new(demo.DemoController),
+		new(demo.Controller),
 	)
 
-	sys := system.NewSystem(r)
+	err := validate.Init()
+	if err != nil {
+		return fmt.Errorf("validate.Init error: %w", err)
+	}
 
 	addr := fmt.Sprintf("%s:%d", config.Host, config.Port)
-	err = gracehttp.ListenAndServe(addr, sys)
+	err = gracehttp.ListenAndServe(addr, httpserver.NewServer(r))
 	if err != nil {
-		fmt.Printf("pid:%d error: %v", os.Getpid(), err)
+		return fmt.Errorf("ListenAndServe error: %w", err)
 	}
 
-	if err := pidfile.ClearPidFile(pf); err != nil {
-		fmt.Printf("clear pid file failed, error: %v\n", err)
-	}
+	return nil
 }

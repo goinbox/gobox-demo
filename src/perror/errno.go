@@ -9,6 +9,7 @@ const (
 	ESysFileIOError    = 14
 	ESysMysqlError     = 15
 	ESysRedisError     = 16
+	ESysRunServerError = 17
 
 	ECommonSysError         = 101
 	ECommonInvalidArg       = 102

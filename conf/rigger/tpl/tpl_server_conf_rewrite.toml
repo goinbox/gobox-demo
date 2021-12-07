@@ -11,14 +11,6 @@ formater = "simple"
 enable_color = true
 
 
-[pprof]
-enable = true
-port = ${PPROF_PORT}
-
-[api]
-port = ${API_GOHTTP_PORT}
-pid_file = "${PRJ_HOME}/tmp/api.pid"
-
 [redis]
 host = "127.0.0.1"
 pass = "123"

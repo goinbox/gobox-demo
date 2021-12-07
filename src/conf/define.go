@@ -46,9 +46,8 @@ type PprofConf struct {
 }
 
 type ApiConf struct {
-	Host    string
-	Port    int
-	PidFile string `toml:"pid_file"`
+	Host string
+	Port int
 }
 
 var ServerConf struct {
@@ -59,7 +58,10 @@ var ServerConf struct {
 	IsDev   bool   `toml:"is_dev"`
 	Idc     string
 
-	Log   map[string]*LogConf
+	Log struct {
+		Api *LogConf
+	}
+
 	Pprof *PprofConf
 	Api   *ApiConf
 

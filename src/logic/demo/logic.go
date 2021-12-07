@@ -55,7 +55,7 @@ func (l *logic) SelectByID(ctx *pcontext.Context, id int64) (*demo.Entity, error
 }
 
 func (l *logic) SimpleQueryAnd(ctx *pcontext.Context, params *mysql.SqlQueryParams) ([]*demo.Entity, error) {
-	var entities []*demo.Entity
+	entities := make([]*demo.Entity, 0)
 
 	err := l.dao(ctx).SimpleQueryAnd(params, &entities)
 

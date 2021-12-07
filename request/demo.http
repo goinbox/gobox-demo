@@ -1,0 +1,35 @@
+POST http://{{host}}:{{port}}/demo/del
+Content-Type: application/json
+
+{
+  "IDs": [
+    79
+  ]
+}
+
+###
+POST http://{{host}}:{{port}}/demo/edit
+Content-Type: application/json
+
+{
+  "ID": 82,
+  "Status": 0
+}
+
+###
+POST http://{{host}}:{{port}}/demo/add
+Content-Type: application/json
+
+{
+  "Name": "b"
+}
+
+###
+POST http://{{host}}:{{port}}/demo/index
+Content-Type: application/json
+
+{
+  "Status": 1
+}
+
+###

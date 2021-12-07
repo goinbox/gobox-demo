@@ -23,12 +23,9 @@ func init() {
 func TestConf(t *testing.T) {
 	printComplexObjectForTest(&ServerConf)
 
-	for k, item := range ServerConf.Log {
-		t.Log(k, item)
-	}
-
-	printComplexObjectForTest(&ServerConf.Pprof)
-	printComplexObjectForTest(&ServerConf.Api)
+	printComplexObjectForTest(ServerConf.Log.Api)
+	printComplexObjectForTest(ServerConf.Pprof)
+	printComplexObjectForTest(ServerConf.Api)
 	printComplexObjectForTest(ServerConf.Redis)
 	printComplexObjectForTest(ServerConf.MySQL)
 }
