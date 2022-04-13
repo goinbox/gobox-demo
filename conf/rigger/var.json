@@ -4,8 +4,7 @@
     "RIGGER_TPL_ROOT": "${PRJ_HOME}/conf/rigger/tpl",
 
     "SERVER_CONF_TPL": "${RIGGER_TPL_ROOT}/tpl_server_conf_rewrite.toml",
-    "SERVER_CONF_DST": "${PRJ_HOME}/conf/server/${USER}_server_conf_rewrite.toml",
-    "SERVER_CONF_LN": "${PRJ_HOME}/conf/server/server_conf_rewrite.toml",
+    "SERVER_CONF_DST": "${PRJ_HOME}/conf/server/rewrite/server_conf_rewrite.toml",
 
     "NGX_HTTP_PORT": "80",
     "NGX_HTTPS_PORT": "443",

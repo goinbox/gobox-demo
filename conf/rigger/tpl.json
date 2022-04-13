@@ -2,7 +2,7 @@
     "server_conf": {
         "tpl": "${SERVER_CONF_TPL}",
         "dst": "${SERVER_CONF_DST}",
-        "ln": "${SERVER_CONF_LN}",
+        "ln": "",
         "sudo": false
     },
     "api_http_conf": {

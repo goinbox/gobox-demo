@@ -31,12 +31,12 @@ func Init(confDir string) error {
 }
 
 func parseServerConf(confDir string) error {
-	err := parseConfFile(confDir + "/server_conf.toml")
+	err := parseConfFile(confDir + "/common/server_conf.toml")
 	if err != nil {
 		return fmt.Errorf("parse server_conf.toml error: %w", err)
 	}
 
-	err = parseConfFile(confDir + "/server_conf_rewrite.toml")
+	err = parseConfFile(confDir + "/rewrite/server_conf_rewrite.toml")
 	if err != nil {
 		return fmt.Errorf("parse server_conf_rewrite.toml error: %w", err)
 	}

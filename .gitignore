@@ -11,5 +11,5 @@ pkg
 *DS_Store
 .vscode
 
-conf/server/*server_conf_rewrite.toml
+conf/server/rewrite/server_conf_rewrite.toml
 conf/http/*_http_ngx.conf*

@@ -1,6 +1,8 @@
 package idgen
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 
 	"gdemo/model/idgen"
@@ -8,7 +10,12 @@ import (
 )
 
 func init() {
-	test.InitMysql()
+	dir, _ := os.Getwd()
+	for i := 0; i < 4; i++ {
+		dir = filepath.Dir(dir)
+	}
+
+	test.InitTestResource(dir)
 }
 
 func TestGenID(t *testing.T) {

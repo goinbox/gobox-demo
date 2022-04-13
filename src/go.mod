@@ -12,7 +12,7 @@ require (
 	github.com/goinbox/gohttp v5.0.1+incompatible
 	github.com/goinbox/golog v4.2.2+incompatible
 	github.com/goinbox/gomisc v1.2.1
-	github.com/goinbox/mysql v2.7.0+incompatible
+	github.com/goinbox/mysql v2.8.0+incompatible
 	github.com/goinbox/redis v2.0.0+incompatible
 	github.com/google/uuid v1.3.0
 	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3 // indirect
