@@ -14,4 +14,5 @@ const (
 	ECommonSysError         = 101
 	ECommonInvalidArg       = 102
 	ECommonDataAlreadyExist = 103
+	ECommonAuthFailure      = 104
 )

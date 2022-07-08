@@ -22,3 +22,7 @@ host = "127.0.0.1"
 user = "root"
 pass = "123"
 port = 3306
+
+
+[misc]
+apps_data_dir = "${APPS_DATA_DIR}"

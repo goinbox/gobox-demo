@@ -7,13 +7,13 @@ import (
 
 	"gdemo/controller/api"
 	"gdemo/logic/factory"
+	"gdemo/misc"
 	"gdemo/model"
-	"gdemo/model/demo"
 	"gdemo/perror"
 )
 
 type editRequest struct {
-	ID     int64   `validate:"required,min=1"`
+	ID     int64   `validate:"required,min=1" mysql_update_column:"omit"`
 	Name   *string `validate:"omitempty,min=1"`
 	Status *int    `validate:"omitempty,demo_status"`
 }
@@ -37,23 +37,17 @@ func newEditAction(r *http.Request, w http.ResponseWriter, args []string) *editA
 }
 
 func (a *editAction) Name() string {
-	return "edit"
+	return "Edit"
 }
 
 func (a *editAction) Run() {
-	fields := make(map[string]interface{})
-	if a.req.Name != nil {
-		fields[demo.ColumnName] = *a.req.Name
-	}
-	if a.req.Status != nil {
-		fields[demo.ColumnStatus] = *a.req.Status
-	}
-	if len(fields) == 0 {
+	updateColumns := misc.MakeMysqlUpdateColumns(a.req)
+	if len(updateColumns) == 0 {
 		return
 	}
 
 	logic := factory.DefaultLogicFactory.DemoLogic()
-	err := logic.UpdateByIDs(a.Ctx, fields, a.req.ID)
+	err := logic.UpdateByIDs(a.Ctx, updateColumns, a.req.ID)
 	if err == nil {
 		return
 	}

@@ -8,7 +8,7 @@ type Controller struct {
 }
 
 func (c *Controller) Name() string {
-	return "demo"
+	return "Demo"
 }
 
 func (c *Controller) IndexAction(r *http.Request, w http.ResponseWriter, args []string) *indexAction {

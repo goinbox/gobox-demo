@@ -33,7 +33,7 @@ func newDelAction(r *http.Request, w http.ResponseWriter, args []string) *delAct
 }
 
 func (a *delAction) Name() string {
-	return "del"
+	return "Del"
 }
 
 func (a *delAction) Run() {

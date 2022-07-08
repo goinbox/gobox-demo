@@ -52,7 +52,7 @@ func newIndexAction(r *http.Request, w http.ResponseWriter, args []string) *inde
 }
 
 func (a *indexAction) Name() string {
-	return "index"
+	return "Index"
 }
 
 func (a *indexAction) Run() {

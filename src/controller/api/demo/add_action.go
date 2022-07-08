@@ -35,7 +35,7 @@ func newAddAction(r *http.Request, w http.ResponseWriter, args []string) *addAct
 }
 
 func (a *addAction) Name() string {
-	return "add"
+	return "Add"
 }
 
 func (a *addAction) Run() {

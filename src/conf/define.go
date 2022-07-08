@@ -46,8 +46,9 @@ type PprofConf struct {
 }
 
 type ApiConf struct {
-	Host string
-	Port int
+	Host       string
+	Port       int
+	EnableSign bool `toml:"enable_sign"`
 }
 
 var ServerConf struct {
@@ -67,4 +68,8 @@ var ServerConf struct {
 
 	Redis *RedisConf
 	MySQL *MySQLConf
+
+	Misc struct {
+		AppsDataDir string `toml:"apps_data_dir"`
+	}
 }

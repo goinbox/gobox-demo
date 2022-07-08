@@ -18,6 +18,7 @@ port = 6060
 [api]
 host = "127.0.0.1"
 port = 9001
+enable_sign = true
 
 [redis]
 host = ""
@@ -36,3 +37,7 @@ pass = ""
 port = 0
 name = "gobox-demo"
 rw_timeout_seconds = 3
+
+[misc]
+apps_data_dir = ""
+

@@ -5,6 +5,7 @@ import (
 	"github.com/goinbox/mysql"
 
 	"gdemo/conf"
+	"gdemo/logic/app"
 	"gdemo/pcontext"
 	"gdemo/resource"
 )
@@ -18,6 +19,8 @@ func InitTestResource(prjHome string) {
 	resource.AccessLogger = Logger()
 	resource.InitRedis(conf.ServerConf.Redis)
 	_ = resource.InitMySQL(conf.ServerConf.MySQL)
+
+	_ = app.InitAppsCacheData(conf.ServerConf.Misc.AppsDataDir)
 }
 
 func Logger() golog.Logger {

@@ -11,7 +11,7 @@ import (
 type Logic interface {
 	Insert(ctx *pcontext.Context, entities ...*demo.Entity) error
 	DeleteByIDs(ctx *pcontext.Context, ids ...int64) error
-	UpdateByIDs(ctx *pcontext.Context, fields map[string]interface{}, ids ...int64) error
+	UpdateByIDs(ctx *pcontext.Context, updateColumns []*mysql.SqlUpdateColumn, ids ...int64) error
 	SelectByID(ctx *pcontext.Context, id int64) (*demo.Entity, error)
 
 	SimpleQueryAnd(ctx *pcontext.Context, params *mysql.SqlQueryParams) ([]*demo.Entity, error)
@@ -42,8 +42,8 @@ func (l *logic) DeleteByIDs(ctx *pcontext.Context, ids ...int64) error {
 	return l.dao(ctx).DeleteByIDs(ids...).Err
 }
 
-func (l *logic) UpdateByIDs(ctx *pcontext.Context, fields map[string]interface{}, ids ...int64) error {
-	return l.dao(ctx).UpdateByIDs(fields, ids...).Err
+func (l *logic) UpdateByIDs(ctx *pcontext.Context, updateColumns []*mysql.SqlUpdateColumn, ids ...int64) error {
+	return l.dao(ctx).UpdateByIDs(updateColumns, ids...).Err
 }
 
 func (l *logic) SelectByID(ctx *pcontext.Context, id int64) (*demo.Entity, error) {

@@ -1,6 +1,9 @@
 package misc
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
 	"net/smtp"
 	"reflect"
 	"strings"
@@ -49,4 +52,13 @@ func StructSimpleFieldAssign(sou, dst interface{}) {
 			rdstv.Set(rsouv)
 		}
 	}
+}
+
+func Sha256(s string) string {
+	b := sha256.Sum256([]byte(s))
+	return hex.EncodeToString(b[:])
+}
+
+func ApiSign(token string, ts int64, body []byte) string {
+	return Sha256(fmt.Sprintf("%s%d%s", token, ts, body))
 }

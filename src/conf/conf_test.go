@@ -28,6 +28,7 @@ func TestConf(t *testing.T) {
 	printComplexObjectForTest(ServerConf.Api)
 	printComplexObjectForTest(ServerConf.Redis)
 	printComplexObjectForTest(ServerConf.MySQL)
+	printComplexObjectForTest(&ServerConf.Misc)
 }
 
 func printComplexObjectForTest(v interface{}) {
