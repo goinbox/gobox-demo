@@ -59,6 +59,6 @@ func Sha256(s string) string {
 	return hex.EncodeToString(b[:])
 }
 
-func ApiSign(token string, ts int64, body []byte) string {
-	return Sha256(fmt.Sprintf("%s%d%s", token, ts, body))
+func ApiSign(token string, ts int64, payload []byte) string {
+	return Sha256(fmt.Sprintf("%s%d%s", token, ts, payload))
 }
