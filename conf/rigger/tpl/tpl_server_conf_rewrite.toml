@@ -1,4 +1,3 @@
-is_dev = true
 idc = "dev"
 
 [log]

@@ -2,7 +2,6 @@ package conf
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/user"
 	"time"
@@ -45,7 +44,7 @@ func parseServerConf(confDir string) error {
 }
 
 func parseConfFile(path string) error {
-	content, err := ioutil.ReadFile(path)
+	content, err := os.ReadFile(path)
 	if err != nil {
 		return err
 	}

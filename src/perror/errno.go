@@ -3,7 +3,7 @@ package perror
 const (
 	Success = 0
 
-	ESysInvalidPrjHome = 11
+	ESysInvalidConfDir = 11
 	ESysInitConfError  = 12
 	ESysInitLogFail    = 13
 	ESysFileIOError    = 14

@@ -10,8 +10,5 @@
             "mask": "777",
             "sudo": false
         }
-    ],
-    "exec": [
-        "${NGX_EXEC_PREFIX} -s reload"
     ]
 }

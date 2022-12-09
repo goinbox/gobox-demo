@@ -1,14 +1,8 @@
 {
     "server_conf": {
-        "tpl": "${SERVER_CONF_TPL}",
-        "dst": "${SERVER_CONF_DST}",
+        "tpl": "${RIGGER_TPL_ROOT}/tpl_server_conf_rewrite.toml",
+        "dst": "${PRJ_HOME}/conf/server/rewrite/server_conf_rewrite.toml",
         "ln": "",
         "sudo": false
-    },
-    "api_http_conf": {
-        "tpl": "${API_HTTP_CONF_TPL}",
-        "dst": "${API_HTTP_CONF_DST}",
-        "ln": "${API_HTTP_CONF_LN}",
-        "sudo": true
     }
 }

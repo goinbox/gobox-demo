@@ -56,7 +56,6 @@ var ServerConf struct {
 	Username string
 
 	PrjName string `toml:"prj_name"`
-	IsDev   bool   `toml:"is_dev"`
 	Idc     string
 
 	Log struct {

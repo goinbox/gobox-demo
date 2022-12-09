@@ -20,21 +20,21 @@ import (
 )
 
 var args struct {
-	prjHome string
+	confDir string
 }
 
 func main() {
 	parseArgs()
 
-	err := conf.Init(args.prjHome + "/conf/server")
+	err := conf.Init(args.confDir)
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Println("conf.Init error:", err)
 		os.Exit(perror.ESysInitConfError)
 	}
 
 	err = resource.InitLog(conf.ServerConf.Log.Api)
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Println("resource.InitLog error:", err)
 		os.Exit(perror.ESysInitLogFail)
 	}
 	defer func() {
@@ -43,7 +43,7 @@ func main() {
 
 	err = resource.InitMySQL(conf.ServerConf.MySQL)
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Println("resource.InitMySQL error:", err)
 		os.Exit(perror.ESysMysqlError)
 	}
 
@@ -52,20 +52,20 @@ func main() {
 	pprof(conf.ServerConf.Pprof)
 	err = runServer(conf.ServerConf.Api)
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Println("runServer error:", err)
 		os.Exit(perror.ESysRunServerError)
 	}
 }
 
 func parseArgs() {
-	flag.StringVar(&args.prjHome, "prj-home", "", "prj-home absolute path")
+	flag.StringVar(&args.confDir, "conf-dir", "", "conf-dir absolute path")
 	flag.Parse()
 
-	args.prjHome = strings.TrimRight(args.prjHome, "/")
-	if args.prjHome == "" {
-		fmt.Println("missing flag prj-home: ")
+	args.confDir = strings.TrimRight(args.confDir, "/")
+	if args.confDir == "" {
+		fmt.Println("missing flag conf-dir")
 		flag.PrintDefaults()
-		os.Exit(perror.ESysInvalidPrjHome)
+		os.Exit(perror.ESysInvalidConfDir)
 	}
 }
 
@@ -90,6 +90,7 @@ func runServer(config *conf.ApiConf) error {
 	}
 
 	addr := fmt.Sprintf("%s:%d", config.Host, config.Port)
+	resource.AccessLogger.Notice(fmt.Sprintf("runServer %s", addr))
 	err = gracehttp.ListenAndServe(addr, httpserver.NewServer(r))
 	if err != nil {
 		return fmt.Errorf("ListenAndServe error: %w", err)
