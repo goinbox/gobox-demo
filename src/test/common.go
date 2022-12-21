@@ -1,6 +1,8 @@
 package test
 
 import (
+	"fmt"
+
 	"github.com/goinbox/golog"
 	"github.com/goinbox/mysql"
 
@@ -8,6 +10,7 @@ import (
 	"gdemo/logic/app"
 	"gdemo/pcontext"
 	"gdemo/resource"
+	"gdemo/validate"
 )
 
 func InitTestResource(prjHome string) {
@@ -21,6 +24,11 @@ func InitTestResource(prjHome string) {
 	_ = resource.InitMySQL(conf.ServerConf.MySQL)
 
 	_ = app.InitAppsCacheData(conf.ServerConf.Misc.AppsDataDir)
+
+	err = validate.Init()
+	if err != nil {
+		panic(fmt.Errorf("validate.InitTestServer error: %w", err))
+	}
 }
 
 func Logger() golog.Logger {

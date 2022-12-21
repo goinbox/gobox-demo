@@ -14,9 +14,9 @@ import (
 
 	"gdemo/conf"
 	"gdemo/controller/api/demo"
-	"gdemo/controller/api/validate"
 	"gdemo/perror"
 	"gdemo/resource"
+	"gdemo/validate"
 )
 
 var args struct {

@@ -12,10 +12,10 @@ import (
 
 	"gdemo/conf"
 	"gdemo/controller"
-	"gdemo/controller/api/validate"
 	"gdemo/logic/factory"
 	"gdemo/misc"
 	"gdemo/perror"
+	"gdemo/validate"
 )
 
 type Response struct {

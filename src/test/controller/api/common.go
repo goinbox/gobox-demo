@@ -12,7 +12,6 @@ import (
 	"github.com/goinbox/gohttp/httpserver"
 	"github.com/goinbox/gohttp/router"
 
-	"gdemo/controller/api/validate"
 	"gdemo/logic/app"
 	"gdemo/logic/factory"
 	"gdemo/misc"
@@ -25,11 +24,6 @@ var appItem *app.App
 func InitTestServer(cs ...router.Controller) {
 	r := router.NewRouter()
 	r.MapRouteItems(cs...)
-
-	err := validate.Init()
-	if err != nil {
-		panic(fmt.Errorf("validate.InitTestServer error: %w", err))
-	}
 
 	server = httpserver.NewServer(r)
 
