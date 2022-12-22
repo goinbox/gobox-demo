@@ -33,6 +33,10 @@ github.com/goinbox/mysql v2.8.4+incompatible h1:Xq61zRvRiZpLG5BDU6DuOjOfkbx99CLl
 github.com/goinbox/mysql v2.8.4+incompatible/go.mod h1:dZ8/2cy1ieZoGNtHesR4sZOc6MWQQGpHXUHKEm8hd+A=
 github.com/goinbox/redis v2.1.1+incompatible h1:fYjWuDGu7Dp1p6hjzVXt/MSCr4r0cS4roETTL8D55Eg=
 github.com/goinbox/redis v2.1.1+incompatible/go.mod h1:/1wqRYeOAQYNdnX5y2F2W6dMx10+4v5qQgOXI3Djrwo=
+github.com/goinbox/taskflow v1.0.0 h1:mgYCwNgAg2ySKcSifFgRN20lO+XONS46FMKml0EnRVA=
+github.com/goinbox/taskflow v1.0.0/go.mod h1:vV66Tw2FfjuO3vsE8TsjDrpubTI8qnOY2q+VeytY8os=
+github.com/goinbox/taskflow v1.1.0 h1:8rjrJ2GbUXhWxDq62PPtwVQSEzrrdhWkpJmvTt4HS/U=
+github.com/goinbox/taskflow v1.1.0/go.mod h1:vV66Tw2FfjuO3vsE8TsjDrpubTI8qnOY2q+VeytY8os=
 github.com/google/uuid v1.3.0 h1:t6JiXgmwXMjEs8VusXIJk2BXHsn+wx8BZdTaoZ5fu7I=
 github.com/google/uuid v1.3.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORNo=
