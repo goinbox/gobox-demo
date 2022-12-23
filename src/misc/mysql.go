@@ -18,7 +18,10 @@ var MysqlUpdateColumnValueConvertFuncMap = map[string]MysqlUpdateColumnValueConv
 func MakeMysqlUpdateColumns(params interface{}) []*mysql.SqlUpdateColumn {
 	var result []*mysql.SqlUpdateColumn
 
-	rev := reflect.ValueOf(params).Elem()
+	rev := reflect.ValueOf(params)
+	if rev.Kind() == reflect.Ptr {
+		rev = rev.Elem()
+	}
 	ret := rev.Type()
 	for i := 0; i < rev.NumField(); i++ {
 		revf := rev.Field(i)

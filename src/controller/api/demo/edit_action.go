@@ -3,13 +3,10 @@ package demo
 import (
 	"net/http"
 
-	"github.com/goinbox/golog"
-
 	"gdemo/controller/api"
-	"gdemo/logic/factory"
-	"gdemo/misc"
 	"gdemo/model"
 	"gdemo/perror"
+	"gdemo/task/api/demo/edit"
 )
 
 type editRequest struct {
@@ -18,20 +15,27 @@ type editRequest struct {
 	Status *int    `validate:"omitempty,demo_status"`
 }
 
+type editResponse struct {
+	RowsAffected int64
+}
+
 type editAction struct {
 	*api.ApiAction
 
-	req *editRequest
+	req  *editRequest
+	resp *editResponse
 }
 
 func newEditAction(r *http.Request, w http.ResponseWriter, args []string) *editAction {
 	a := &editAction{
 		ApiAction: api.NewApiAction(r, w, args),
 
-		req: new(editRequest),
+		req:  new(editRequest),
+		resp: new(editResponse),
 	}
 
 	a.RequestData = a.req
+	a.ResponseData = a.resp
 
 	return a
 }
@@ -41,18 +45,15 @@ func (a *editAction) Name() string {
 }
 
 func (a *editAction) Run() {
-	updateColumns := misc.MakeMysqlUpdateColumns(a.req)
-	if len(updateColumns) == 0 {
-		return
-	}
-
-	logic := factory.DefaultLogicFactory.DemoLogic()
-	err := logic.UpdateByIDs(a.Ctx, updateColumns, a.req.ID)
+	out := &edit.TaskOut{}
+	err := api.RunTask(a.Ctx, edit.NewTask(a.Ctx), &edit.TaskIn{
+		ID:           a.req.ID,
+		UpdateParams: a.req,
+	}, out)
 	if err == nil {
+		a.resp.RowsAffected = out.RowsAffected
 		return
 	}
-
-	a.Ctx.Logger.Error("logic.UpdateByIDs error", golog.ErrorField(err))
 
 	if model.DuplicateError(err) {
 		a.Err = perror.New(perror.ECommonDataAlreadyExist, "data already exist")

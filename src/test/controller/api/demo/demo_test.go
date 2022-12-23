@@ -40,7 +40,8 @@ func TestIndex(t *testing.T) {
 func TestEdit(t *testing.T) {
 	api.HandleRequest("/Demo/Edit", `
 {
-  "ID": 13,
+  "ID": 21,
+  "Name": "b",
   "Status": 0
 }
 `)
