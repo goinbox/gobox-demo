@@ -51,7 +51,7 @@ func TestDel(t *testing.T) {
 	api.HandleRequest("/Demo/Del", `
 {
   "IDs": [
-    13
+    13,27
   ]
 }
 `)

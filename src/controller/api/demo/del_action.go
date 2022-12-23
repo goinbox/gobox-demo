@@ -3,31 +3,36 @@ package demo
 import (
 	"net/http"
 
-	"github.com/goinbox/golog"
-
 	"gdemo/controller/api"
-	"gdemo/logic/factory"
 	"gdemo/perror"
+	"gdemo/task/api/demo/del"
 )
 
 type delRequest struct {
 	IDs []int64 `validate:"required,min=1,dive,min=1"`
 }
 
+type delResponse struct {
+	RowsAffected int64
+}
+
 type delAction struct {
 	*api.ApiAction
 
-	req *delRequest
+	req  *delRequest
+	resp *delResponse
 }
 
 func newDelAction(r *http.Request, w http.ResponseWriter, args []string) *delAction {
 	a := &delAction{
 		ApiAction: api.NewApiAction(r, w, args),
 
-		req: new(delRequest),
+		req:  new(delRequest),
+		resp: new(delResponse),
 	}
 
 	a.RequestData = a.req
+	a.ResponseData = a.resp
 
 	return a
 }
@@ -37,12 +42,14 @@ func (a *delAction) Name() string {
 }
 
 func (a *delAction) Run() {
-	logic := factory.DefaultLogicFactory.DemoLogic()
-	err := logic.DeleteByIDs(a.Ctx, a.req.IDs...)
+	out := &del.TaskOut{}
+	err := api.RunTask(a.Ctx, del.NewTask(a.Ctx), &del.TaskIn{
+		IDs: a.req.IDs,
+	}, out)
 	if err == nil {
+		a.resp.RowsAffected = out.RowsAffected
 		return
 	}
 
-	a.Ctx.Logger.Error("logic.DeleteByIDs error", golog.ErrorField(err))
 	a.Err = perror.New(perror.ECommonSysError, "sys error")
 }
