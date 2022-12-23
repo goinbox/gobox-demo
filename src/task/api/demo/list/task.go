@@ -1,18 +1,25 @@
-package add
+package list
 
 import (
+	"github.com/goinbox/mysql"
+
+	"gdemo/misc"
 	"gdemo/model/demo"
 	"gdemo/pcontext"
 	"gdemo/task"
 )
 
 type TaskIn struct {
-	Name   string
-	Status int
+	IDs    []int64
+	Status *int
+
+	ListParams       *misc.CommonListParams
+	ExtSqlQueryItems []*mysql.SqlColQueryItem
 }
 
 type TaskOut struct {
-	ID int64
+	Total    int64
+	DemoList []*demo.Entity
 }
 
 type Task struct {
@@ -22,7 +29,7 @@ type Task struct {
 	out *TaskOut
 
 	data struct {
-		demoEntity *demo.Entity
+		queryParams *mysql.SqlQueryParams
 	}
 }
 
@@ -35,7 +42,7 @@ func NewTask(ctx *pcontext.Context) *Task {
 }
 
 func (t *Task) Name() string {
-	return "api.demo.add"
+	return "api.demo.list"
 }
 
 func (t *Task) Init(in, out interface{}) error {

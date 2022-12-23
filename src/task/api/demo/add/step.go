@@ -7,6 +7,7 @@ import (
 
 	"gdemo/model"
 	"gdemo/model/demo"
+	"gdemo/model/factory"
 )
 
 func (t *Task) genEntity() (string, error) {
@@ -20,7 +21,7 @@ func (t *Task) genEntity() (string, error) {
 }
 
 func (t *Task) saveEntity() (string, error) {
-	result := t.demoDao.Insert(t.data.demoEntity)
+	result := factory.DefaultDaoFactory.DemoDao(t.Context()).Insert(t.data.demoEntity)
 	if result.Err != nil {
 		return "", fmt.Errorf("demoDao.Insert error: %w", result.Err)
 	}

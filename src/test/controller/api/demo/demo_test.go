@@ -32,7 +32,11 @@ func TestAdd(t *testing.T) {
 func TestIndex(t *testing.T) {
 	api.HandleRequest("/Demo/Index", `
 {
-  "Status": 1
+  "Status": 1,
+  "Offset": 0,
+  "Limit": 10,
+  "OrderBy": "name",
+  "Order": "asc"
 }
 `)
 }

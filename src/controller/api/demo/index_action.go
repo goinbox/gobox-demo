@@ -3,22 +3,18 @@ package demo
 import (
 	"net/http"
 
-	"github.com/goinbox/golog"
-	"github.com/goinbox/mysql"
-
 	"gdemo/controller/api"
-	"gdemo/logic/factory"
-	"gdemo/model"
+	"gdemo/misc"
 	"gdemo/model/demo"
 	"gdemo/perror"
+	"gdemo/task/api/demo/list"
 )
 
 type indexRequest struct {
 	IDs    []int64 `validate:"omitempty,min=1,max=100,dive,min=1"`
 	Status *int    `validate:"omitempty,demo_status"`
 
-	Offset int64
-	Cnt    int64
+	*misc.CommonListParams
 }
 
 type indexResponse struct {
@@ -39,10 +35,11 @@ func newIndexAction(r *http.Request, w http.ResponseWriter, args []string) *inde
 		ApiAction: api.NewApiAction(r, w, args),
 
 		req: &indexRequest{
-			Offset: 0,
-			Cnt:    10,
+			CommonListParams: misc.NewDefaultCommonListParams(),
 		},
-		resp: new(indexResponse),
+		resp: &indexResponse{
+			DemoList: []*demo.Entity{},
+		},
 	}
 
 	a.RequestData = a.req
@@ -56,49 +53,18 @@ func (a *indexAction) Name() string {
 }
 
 func (a *indexAction) Run() {
-	logic := factory.DefaultLogicFactory.DemoLogic()
-
-	conds := a.sqlConds()
-
-	total, err := logic.SimpleTotalAnd(a.Ctx, conds...)
-	if err != nil {
-		a.Ctx.Logger.Error("logic.SimpleTotalAnd error", golog.ErrorField(err))
+	out := &list.TaskOut{}
+	err := api.RunTask(a.Ctx, list.NewTask(a.Ctx), &list.TaskIn{
+		IDs:        a.req.IDs,
+		Status:     a.req.Status,
+		ListParams: a.req.CommonListParams,
+	}, out)
+	if err == nil {
+		a.resp.Total = out.Total
+		if out.DemoList != nil {
+			a.resp.DemoList = out.DemoList
+		}
+	} else {
 		a.Err = perror.New(perror.ECommonSysError, "sys error")
-		return
 	}
-
-	params := &mysql.SqlQueryParams{
-		CondItems: conds,
-
-		OrderBy: "id desc",
-		Offset:  a.req.Offset,
-		Cnt:     a.req.Cnt,
-	}
-	entities, err := logic.SimpleQueryAnd(a.Ctx, params)
-	if err != nil {
-		a.Ctx.Logger.Error("logic.SimpleQueryAnd error", golog.ErrorField(err))
-		a.Err = perror.New(perror.ECommonSysError, "sys error")
-		return
-	}
-
-	a.resp.Total = total
-	a.resp.DemoList = entities
-}
-
-func (a *indexAction) sqlConds() []*mysql.SqlColQueryItem {
-	var conds []*mysql.SqlColQueryItem
-
-	item := model.MakeInt64SliceSqlColQueryItem(demo.ColumnID, a.req.IDs)
-	if item != nil {
-		conds = append(conds, item)
-	}
-	if a.req.Status != nil {
-		conds = append(conds, &mysql.SqlColQueryItem{
-			Name:      demo.ColumnStatus,
-			Condition: mysql.SqlCondEqual,
-			Value:     *a.req.Status,
-		})
-	}
-
-	return conds
 }
