@@ -19,9 +19,11 @@ func (a *ErrorAction) Name() string {
 
 func (a *ErrorAction) Run() {
 	resp := &Response{
-		Errno: a.Err.Errno(),
-		Msg:   a.Err.Msg(),
-		Tid:   a.Ctx.TraceID,
+		BaseResponse: &BaseResponse{
+			Errno: a.Err.Errno(),
+			Msg:   a.Err.Msg(),
+			Tid:   a.Ctx.TraceID,
+		},
 	}
 
 	body, _ := json.Marshal(resp)

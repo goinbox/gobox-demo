@@ -12,7 +12,7 @@ type delRequest struct {
 	IDs []int64 `validate:"required,min=1,dive,min=1"`
 }
 
-type delResponse struct {
+type DelResponse struct {
 	RowsAffected int64
 }
 
@@ -20,7 +20,7 @@ type delAction struct {
 	*api.ApiAction
 
 	req  *delRequest
-	resp *delResponse
+	resp *DelResponse
 }
 
 func newDelAction(r *http.Request, w http.ResponseWriter, args []string) *delAction {
@@ -28,7 +28,7 @@ func newDelAction(r *http.Request, w http.ResponseWriter, args []string) *delAct
 		ApiAction: api.NewApiAction(r, w, args),
 
 		req:  new(delRequest),
-		resp: new(delResponse),
+		resp: new(DelResponse),
 	}
 
 	a.RequestData = a.req

@@ -15,7 +15,7 @@ type editRequest struct {
 	Status *int    `validate:"omitempty,demo_status"`
 }
 
-type editResponse struct {
+type EditResponse struct {
 	RowsAffected int64
 }
 
@@ -23,7 +23,7 @@ type editAction struct {
 	*api.ApiAction
 
 	req  *editRequest
-	resp *editResponse
+	resp *EditResponse
 }
 
 func newEditAction(r *http.Request, w http.ResponseWriter, args []string) *editAction {
@@ -31,7 +31,7 @@ func newEditAction(r *http.Request, w http.ResponseWriter, args []string) *editA
 		ApiAction: api.NewApiAction(r, w, args),
 
 		req:  new(editRequest),
-		resp: new(editResponse),
+		resp: new(EditResponse),
 	}
 
 	a.RequestData = a.req

@@ -14,7 +14,7 @@ type addRequest struct {
 	Name string `validate:"required,min=1"`
 }
 
-type addResponse struct {
+type AddResponse struct {
 	ID int64
 }
 
@@ -22,7 +22,7 @@ type addAction struct {
 	*api.ApiAction
 
 	req  *addRequest
-	resp *addResponse
+	resp *AddResponse
 }
 
 func newAddAction(r *http.Request, w http.ResponseWriter, args []string) *addAction {
@@ -30,7 +30,7 @@ func newAddAction(r *http.Request, w http.ResponseWriter, args []string) *addAct
 		ApiAction: api.NewApiAction(r, w, args),
 
 		req:  new(addRequest),
-		resp: new(addResponse),
+		resp: new(AddResponse),
 	}
 
 	a.RequestData = a.req

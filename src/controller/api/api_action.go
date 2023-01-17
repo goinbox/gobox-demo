@@ -18,10 +18,14 @@ import (
 	"gdemo/validate"
 )
 
-type Response struct {
+type BaseResponse struct {
 	Errno int
 	Msg   string
 	Tid   string
+}
+
+type Response struct {
+	*BaseResponse
 
 	Data interface{} `json:",omitempty"`
 }
@@ -63,9 +67,11 @@ func (a *ApiAction) Before() {
 
 func (a *ApiAction) After() {
 	resp := &Response{
-		Errno: perror.Success,
-		Msg:   "",
-		Tid:   a.Ctx.TraceID,
+		BaseResponse: &BaseResponse{
+			Errno: perror.Success,
+			Msg:   "",
+			Tid:   a.Ctx.TraceID,
+		},
 	}
 
 	if a.Err != nil {

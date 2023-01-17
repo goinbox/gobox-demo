@@ -17,7 +17,7 @@ type indexRequest struct {
 	*misc.CommonListParams
 }
 
-type indexResponse struct {
+type IndexResponse struct {
 	Total int64
 
 	DemoList []*demo.Entity
@@ -27,7 +27,7 @@ type indexAction struct {
 	*api.ApiAction
 
 	req  *indexRequest
-	resp *indexResponse
+	resp *IndexResponse
 }
 
 func newIndexAction(r *http.Request, w http.ResponseWriter, args []string) *indexAction {
@@ -37,7 +37,7 @@ func newIndexAction(r *http.Request, w http.ResponseWriter, args []string) *inde
 		req: &indexRequest{
 			CommonListParams: misc.NewDefaultCommonListParams(),
 		},
-		resp: &indexResponse{
+		resp: &IndexResponse{
 			DemoList: []*demo.Entity{},
 		},
 	}
