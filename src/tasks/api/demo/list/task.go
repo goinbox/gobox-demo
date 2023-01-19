@@ -1,42 +1,48 @@
-package edit
+package list
 
 import (
 	"github.com/goinbox/mysql"
 
+	"gdemo/misc"
+	"gdemo/model/demo"
 	"gdemo/pcontext"
-	"gdemo/task"
+	"gdemo/tasks"
 )
 
 type TaskIn struct {
-	ID           int64
-	UpdateParams interface{}
+	IDs    []int64
+	Status *int
+
+	ListParams       *misc.CommonListParams
+	ExtSqlQueryItems []*mysql.SqlColQueryItem
 }
 
 type TaskOut struct {
-	RowsAffected int64
+	Total    int64
+	DemoList []*demo.Entity
 }
 
 type Task struct {
-	*task.BaseTask
+	*tasks.BaseTask
 
 	in  *TaskIn
 	out *TaskOut
 
 	data struct {
-		updateColumns []*mysql.SqlUpdateColumn
+		queryParams *mysql.SqlQueryParams
 	}
 }
 
 func NewTask(ctx *pcontext.Context) *Task {
 	t := &Task{
-		BaseTask: task.NewBaseTask(ctx),
+		BaseTask: tasks.NewBaseTask(ctx),
 	}
 
 	return t
 }
 
 func (t *Task) Name() string {
-	return "api.demo.edit"
+	return "api.demo.list"
 }
 
 func (t *Task) Init(in, out interface{}) error {

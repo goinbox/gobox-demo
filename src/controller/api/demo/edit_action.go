@@ -6,7 +6,7 @@ import (
 	"gdemo/controller/api"
 	"gdemo/model"
 	"gdemo/perror"
-	"gdemo/task/api/demo/edit"
+	"gdemo/tasks/api/demo/edit"
 )
 
 type editRequest struct {

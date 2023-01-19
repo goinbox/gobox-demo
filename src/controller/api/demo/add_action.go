@@ -7,7 +7,7 @@ import (
 	"gdemo/model"
 	"gdemo/model/demo"
 	"gdemo/perror"
-	"gdemo/task/api/demo/add"
+	"gdemo/tasks/api/demo/add"
 )
 
 type addRequest struct {

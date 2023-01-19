@@ -3,7 +3,7 @@ package add
 import (
 	"gdemo/model/demo"
 	"gdemo/pcontext"
-	"gdemo/task"
+	"gdemo/tasks"
 )
 
 type TaskIn struct {
@@ -16,7 +16,7 @@ type TaskOut struct {
 }
 
 type Task struct {
-	*task.BaseTask
+	*tasks.BaseTask
 
 	in  *TaskIn
 	out *TaskOut
@@ -28,7 +28,7 @@ type Task struct {
 
 func NewTask(ctx *pcontext.Context) *Task {
 	t := &Task{
-		BaseTask: task.NewBaseTask(ctx),
+		BaseTask: tasks.NewBaseTask(ctx),
 	}
 
 	return t

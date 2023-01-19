@@ -5,7 +5,7 @@ import (
 
 	"gdemo/controller/api"
 	"gdemo/perror"
-	"gdemo/task/api/demo/del"
+	"gdemo/tasks/api/demo/del"
 )
 
 type delRequest struct {

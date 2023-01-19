@@ -7,7 +7,7 @@ import (
 	"gdemo/misc"
 	"gdemo/model/demo"
 	"gdemo/perror"
-	"gdemo/task/api/demo/list"
+	"gdemo/tasks/api/demo/list"
 )
 
 type indexRequest struct {

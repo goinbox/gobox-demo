@@ -1,12 +1,15 @@
-package del
+package edit
 
 import (
+	"github.com/goinbox/mysql"
+
 	"gdemo/pcontext"
-	"gdemo/task"
+	"gdemo/tasks"
 )
 
 type TaskIn struct {
-	IDs []int64
+	ID           int64
+	UpdateParams interface{}
 }
 
 type TaskOut struct {
@@ -14,25 +17,26 @@ type TaskOut struct {
 }
 
 type Task struct {
-	*task.BaseTask
+	*tasks.BaseTask
 
 	in  *TaskIn
 	out *TaskOut
 
 	data struct {
+		updateColumns []*mysql.SqlUpdateColumn
 	}
 }
 
 func NewTask(ctx *pcontext.Context) *Task {
 	t := &Task{
-		BaseTask: task.NewBaseTask(ctx),
+		BaseTask: tasks.NewBaseTask(ctx),
 	}
 
 	return t
 }
 
 func (t *Task) Name() string {
-	return "api.demo.del"
+	return "api.demo.edit"
 }
 
 func (t *Task) Init(in, out interface{}) error {
