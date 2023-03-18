@@ -35,8 +35,8 @@ github.com/goinbox/mysql v2.8.4+incompatible h1:Xq61zRvRiZpLG5BDU6DuOjOfkbx99CLl
 github.com/goinbox/mysql v2.8.4+incompatible/go.mod h1:dZ8/2cy1ieZoGNtHesR4sZOc6MWQQGpHXUHKEm8hd+A=
 github.com/goinbox/redis v2.1.1+incompatible h1:fYjWuDGu7Dp1p6hjzVXt/MSCr4r0cS4roETTL8D55Eg=
 github.com/goinbox/redis v2.1.1+incompatible/go.mod h1:/1wqRYeOAQYNdnX5y2F2W6dMx10+4v5qQgOXI3Djrwo=
-github.com/goinbox/taskflow v1.1.1 h1:N5Vop2qfLdYOy06zFfBU3AoqoLcSNl/S0uOC6qTdHN0=
-github.com/goinbox/taskflow v1.1.1/go.mod h1:vV66Tw2FfjuO3vsE8TsjDrpubTI8qnOY2q+VeytY8os=
+github.com/goinbox/taskflow v1.2.1 h1:51GjG/ewgeX8ZJzmV+ey8zawOzV00EH5hoLUJU11CmI=
+github.com/goinbox/taskflow v1.2.1/go.mod h1:vV66Tw2FfjuO3vsE8TsjDrpubTI8qnOY2q+VeytY8os=
 github.com/golang/protobuf v1.5.2 h1:ROPKBNFfQgOUMifHyP+KYbvpjbdoFNs+aK7DXlji0Tw=
 github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=
 github.com/google/go-cmp v0.5.9/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=

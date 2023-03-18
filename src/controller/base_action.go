@@ -2,7 +2,7 @@ package controller
 
 import (
 	"bytes"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -48,8 +48,8 @@ func NewBaseAction(r *http.Request, w http.ResponseWriter, args []string) *BaseA
 	}
 
 	if r.ContentLength < MaxAutoParseBodyLen {
-		a.ReqRawBody, _ = ioutil.ReadAll(r.Body)
-		r.Body = ioutil.NopCloser(bytes.NewBuffer(a.ReqRawBody))
+		a.ReqRawBody, _ = io.ReadAll(r.Body)
+		r.Body = io.NopCloser(bytes.NewBuffer(a.ReqRawBody))
 	}
 
 	a.RemoteRealAddr.IP, a.RemoteRealAddr.Port = a.parseRemoteAddr(r)

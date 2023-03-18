@@ -12,7 +12,7 @@ require (
 	github.com/goinbox/gomisc v1.2.2
 	github.com/goinbox/mysql v2.8.4+incompatible
 	github.com/goinbox/redis v2.1.1+incompatible
-	github.com/goinbox/taskflow v1.1.1
+	github.com/goinbox/taskflow v1.2.1
 	github.com/google/uuid v1.3.0
 	github.com/onsi/ginkgo/v2 v2.7.0
 	github.com/onsi/gomega v1.24.1

@@ -23,7 +23,7 @@ type Logic interface {
 type logic struct {
 }
 
-func NewLogic() *logic {
+func NewLogic() Logic {
 	return &logic{}
 }
 
