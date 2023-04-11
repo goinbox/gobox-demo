@@ -1,13 +1,11 @@
 package conf
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
-	"reflect"
 	"testing"
-
-	"github.com/goinbox/color"
 )
 
 func init() {
@@ -21,25 +19,6 @@ func init() {
 }
 
 func TestConf(t *testing.T) {
-	printComplexObjectForTest(&ServerConf)
-
-	printComplexObjectForTest(ServerConf.Log.Api)
-	printComplexObjectForTest(ServerConf.Pprof)
-	printComplexObjectForTest(ServerConf.Api)
-	printComplexObjectForTest(ServerConf.Redis)
-	printComplexObjectForTest(ServerConf.MySQL)
-	printComplexObjectForTest(&ServerConf.Misc)
-}
-
-func printComplexObjectForTest(v interface{}) {
-	vo := reflect.ValueOf(v)
-	elems := vo.Elem()
-	ts := elems.Type()
-
-	c := color.Yellow([]byte("Print detail: "))
-	fmt.Println(string(c), vo.Type())
-	for i := 0; i < elems.NumField(); i++ {
-		field := elems.Field(i)
-		fmt.Println(ts.Field(i).Name, field.Type(), field.Interface())
-	}
+	pretty, _ := json.MarshalIndent(ServerConf, "", "    ")
+	t.Log(string(pretty))
 }
