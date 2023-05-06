@@ -29,8 +29,8 @@ github.com/goinbox/gohttp v5.0.2+incompatible h1:RtzFzkCm3f0OHgizfhUjcODEfk71QQA
 github.com/goinbox/gohttp v5.0.2+incompatible/go.mod h1:Cfz21nVkHAQ0FgKq8TGgqWIVhgBDSMHwm2JlxfTANj8=
 github.com/goinbox/golog v4.2.2+incompatible h1:0KPzy5vyGdtwSGh3nzqRzjT+2IYW+Y0yXqtL+QN723Q=
 github.com/goinbox/golog v4.2.2+incompatible/go.mod h1:LpDh2j8NT1DzCFjkpE3joekJWaVxUt+BolHh52GJqtA=
-github.com/goinbox/gomisc v1.2.2 h1:v4SRoKsX/8heLJHRsoJphOFjNRN4cULT/UnpgZcJj+o=
-github.com/goinbox/gomisc v1.2.2/go.mod h1:SPnA6bKoY+HIxNBbO2zRX0jBHu0lmi3nCLbZR40aiSs=
+github.com/goinbox/gomisc v1.3.0 h1:g+QehygUxWZxYxljyVaRxEAxZfok4GJZBeHnFtgwcDk=
+github.com/goinbox/gomisc v1.3.0/go.mod h1:SPnA6bKoY+HIxNBbO2zRX0jBHu0lmi3nCLbZR40aiSs=
 github.com/goinbox/mysql v2.8.4+incompatible h1:Xq61zRvRiZpLG5BDU6DuOjOfkbx99CLlrV1stMLYUNI=
 github.com/goinbox/mysql v2.8.4+incompatible/go.mod h1:dZ8/2cy1ieZoGNtHesR4sZOc6MWQQGpHXUHKEm8hd+A=
 github.com/goinbox/redis v2.1.1+incompatible h1:fYjWuDGu7Dp1p6hjzVXt/MSCr4r0cS4roETTL8D55Eg=

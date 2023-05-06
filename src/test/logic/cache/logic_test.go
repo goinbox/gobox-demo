@@ -1,6 +1,8 @@
 package cache
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -9,7 +11,12 @@ import (
 )
 
 func init() {
-	test.InitRedis()
+	dir, _ := os.Getwd()
+	for i := 0; i < 4; i++ {
+		dir = filepath.Dir(dir)
+	}
+
+	test.InitTestResource(dir)
 }
 
 func TestCacheLogicGetSet(t *testing.T) {

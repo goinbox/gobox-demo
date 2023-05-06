@@ -8,6 +8,7 @@ import (
 
 	"gdemo/conf"
 	"gdemo/logic/app"
+	"gdemo/logic/idgen"
 	"gdemo/pcontext"
 	"gdemo/resource"
 	"gdemo/validate"
@@ -28,6 +29,11 @@ func InitTestResource(prjHome string) {
 	err = validate.Init()
 	if err != nil {
 		panic(fmt.Errorf("validate.InitTestServer error: %w", err))
+	}
+
+	err = idgen.Init("snowflake")
+	if err != nil {
+		panic(fmt.Errorf("idgen.Init error: %w", err))
 	}
 }
 
