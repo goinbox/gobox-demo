@@ -27,7 +27,7 @@ func Init(idgenName string) error {
 		return fmt.Errorf("dao.GenID error: %w", err)
 	}
 
-	snowflake = gomisc.NewSnowflake(machineID)
+	snowflake = gomisc.NewSnowflake(machineID % 1024) // machineIDMax = 1023
 
 	return nil
 }
