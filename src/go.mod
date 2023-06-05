@@ -8,7 +8,7 @@ require (
 	github.com/go-sql-driver/mysql v1.7.0
 	github.com/goinbox/gohttp v5.0.2+incompatible
 	github.com/goinbox/golog v4.2.2+incompatible
-	github.com/goinbox/gomisc v1.3.0
+	github.com/goinbox/gomisc v1.4.0
 	github.com/goinbox/mysql v2.8.4+incompatible
 	github.com/goinbox/redis v2.1.1+incompatible
 	github.com/goinbox/taskflow v1.2.1

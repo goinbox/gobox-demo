@@ -1,11 +1,12 @@
 package conf
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/goinbox/gomisc"
 )
 
 func init() {
@@ -19,6 +20,6 @@ func init() {
 }
 
 func TestConf(t *testing.T) {
-	pretty, _ := json.MarshalIndent(ServerConf, "", "    ")
+	pretty, _ := gomisc.PrettyJson(ServerConf)
 	t.Log(string(pretty))
 }
