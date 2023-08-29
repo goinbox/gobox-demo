@@ -5,6 +5,6 @@ import (
 )
 
 func TestDeleteFromDB(t *testing.T) {
-	code, err := flowTask.deleteFromDB()
+	code, err := flowTask.deleteFromDB(ctx)
 	t.Log(code, err, flowTask.out.RowsAffected)
 }

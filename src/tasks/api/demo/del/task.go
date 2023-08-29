@@ -1,7 +1,6 @@
 package del
 
 import (
-	"gdemo/pcontext"
 	"gdemo/tasks"
 )
 
@@ -23,9 +22,9 @@ type Task struct {
 	}
 }
 
-func NewTask(ctx *pcontext.Context) *Task {
+func NewTask() *Task {
 	t := &Task{
-		BaseTask: tasks.NewBaseTask(ctx),
+		BaseTask: tasks.NewBaseTask(),
 	}
 
 	return t

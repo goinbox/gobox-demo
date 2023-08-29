@@ -79,10 +79,7 @@ func NewBaseAction(r *http.Request, w http.ResponseWriter, args []string) *BaseA
 		},
 	}...)
 
-	a.Ctx = &pcontext.Context{
-		TraceID: tid,
-		Logger:  logger,
-	}
+	a.Ctx = pcontext.NewContext(logger, tid)
 
 	return a
 }
@@ -121,7 +118,7 @@ func (a *BaseAction) parseTraceID() string {
 }
 
 func (a *BaseAction) Destruct() {
-	a.Ctx.Logger.Info("AfterAction", []*golog.Field{
+	a.Ctx.Logger().Info("AfterAction", []*golog.Field{
 		{
 			Key:   "response",
 			Value: string(a.ResponseBody()),

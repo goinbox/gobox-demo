@@ -1,7 +1,8 @@
 package edit
 
 import (
-	"github.com/goinbox/taskflow"
+	"gdemo/pcontext"
+	"github.com/goinbox/taskflow/v2"
 )
 
 const (
@@ -13,8 +14,8 @@ func (t *Task) FirstStepKey() string {
 	return stepKeyMakeUpdateColumns
 }
 
-func (t *Task) StepConfigMap() map[string]*taskflow.StepConfig {
-	return map[string]*taskflow.StepConfig{
+func (t *Task) StepConfigMap() map[string]*taskflow.StepConfig[*pcontext.Context] {
+	return map[string]*taskflow.StepConfig[*pcontext.Context]{
 		stepKeyMakeUpdateColumns: {
 			RetryCnt:       0,
 			RetryDelay:     0,

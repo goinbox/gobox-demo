@@ -56,7 +56,7 @@ func (a *ApiAction) Before() {
 
 	err := json.Unmarshal(a.ReqRawBody, a.RequestData)
 	if err != nil {
-		a.Ctx.Logger.Warning("json.Unmarshal ReqRawBody error", golog.ErrorField(err))
+		a.Ctx.Logger().Warning("json.Unmarshal ReqRawBody error", golog.ErrorField(err))
 	}
 
 	err = validate.Validator().Struct(a.RequestData)
@@ -70,7 +70,7 @@ func (a *ApiAction) After() {
 		BaseResponse: &BaseResponse{
 			Errno: perror.Success,
 			Msg:   "",
-			Tid:   a.Ctx.TraceID,
+			Tid:   a.Ctx.TraceID(),
 		},
 	}
 
@@ -150,7 +150,7 @@ func (a *ApiAction) parseSignParams() (*signParams, error) {
 		return nil, fmt.Errorf("miss header Sign")
 	}
 
-	a.Ctx.Logger.Info("signParams", []*golog.Field{
+	a.Ctx.Logger().Info("signParams", []*golog.Field{
 		{
 			Key:   "token",
 			Value: app.Token,

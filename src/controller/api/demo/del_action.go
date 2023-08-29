@@ -43,7 +43,7 @@ func (a *delAction) Name() string {
 
 func (a *delAction) Run() {
 	out := &del.TaskOut{}
-	err := api.RunTask(a.Ctx, del.NewTask(a.Ctx), &del.TaskIn{
+	err := api.RunTask(a.Ctx, del.NewTask(), &del.TaskIn{
 		IDs: a.req.IDs,
 	}, out)
 	if err == nil {

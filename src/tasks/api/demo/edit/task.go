@@ -3,7 +3,6 @@ package edit
 import (
 	"github.com/goinbox/mysql"
 
-	"gdemo/pcontext"
 	"gdemo/tasks"
 )
 
@@ -27,9 +26,9 @@ type Task struct {
 	}
 }
 
-func NewTask(ctx *pcontext.Context) *Task {
+func NewTask() *Task {
 	t := &Task{
-		BaseTask: tasks.NewBaseTask(ctx),
+		BaseTask: tasks.NewBaseTask(),
 	}
 
 	return t

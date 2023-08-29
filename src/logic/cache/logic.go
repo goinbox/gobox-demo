@@ -106,5 +106,5 @@ func (l *logic) GetStruct(ctx *pcontext.Context, key string, value interface{}) 
 }
 
 func (l *logic) client(ctx *pcontext.Context) *redis.Client {
-	return resource.RedisClient(ctx.Logger)
+	return resource.RedisClient(ctx.Logger())
 }

@@ -54,7 +54,7 @@ func (a *indexAction) Name() string {
 
 func (a *indexAction) Run() {
 	out := &list.TaskOut{}
-	err := api.RunTask(a.Ctx, list.NewTask(a.Ctx), &list.TaskIn{
+	err := api.RunTask(a.Ctx, list.NewTask(), &list.TaskIn{
 		IDs:        a.req.IDs,
 		Status:     a.req.Status,
 		ListParams: a.req.CommonListParams,

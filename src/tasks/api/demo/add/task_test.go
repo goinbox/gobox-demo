@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/goinbox/taskflow"
+	"github.com/goinbox/taskflow/v2"
 
 	"gdemo/model/demo"
 	"gdemo/pcontext"
@@ -16,7 +16,7 @@ import (
 var (
 	ctx      *pcontext.Context
 	flowTask *Task
-	runner   *taskflow.Runner
+	runner   *taskflow.Runner[*pcontext.Context]
 
 	taskIn  *TaskIn
 	taskOut = new(TaskOut)
@@ -36,10 +36,10 @@ func init() {
 		Status: demo.StatusOnline,
 	}
 
-	flowTask = NewTask(test.Context())
+	flowTask = NewTask()
 	_ = flowTask.Init(taskIn, taskOut)
 
-	runner = taskflow.NewRunner(ctx.Logger)
+	runner = taskflow.NewRunner[*pcontext.Context]()
 }
 
 func TestMain(m *testing.M) {
@@ -62,7 +62,7 @@ func teardown() {
 }
 
 func TestRun(t *testing.T) {
-	_ = runner.RunTask(flowTask, taskIn, taskOut)
+	_ = runner.RunTask(ctx, flowTask, taskIn, taskOut)
 
 	t.Log(flowTask.Error(), taskOut)
 	t.Log(runner.TaskGraphRunSteps(flowTask, runner.TaskRunSteps()))

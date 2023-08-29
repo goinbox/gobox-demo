@@ -45,7 +45,7 @@ func (a *addAction) Name() string {
 
 func (a *addAction) Run() {
 	out := &add.TaskOut{}
-	err := api.RunTask(a.Ctx, add.NewTask(a.Ctx), &add.TaskIn{
+	err := api.RunTask(a.Ctx, add.NewTask(), &add.TaskIn{
 		Name:   a.req.Name,
 		Status: demo.StatusOnline,
 	}, out)

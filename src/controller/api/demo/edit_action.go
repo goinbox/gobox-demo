@@ -46,7 +46,7 @@ func (a *editAction) Name() string {
 
 func (a *editAction) Run() {
 	out := &edit.TaskOut{}
-	err := api.RunTask(a.Ctx, edit.NewTask(a.Ctx), &edit.TaskIn{
+	err := api.RunTask(a.Ctx, edit.NewTask(), &edit.TaskIn{
 		ID:           a.req.ID,
 		UpdateParams: a.req,
 	}, out)

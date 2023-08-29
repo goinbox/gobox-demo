@@ -48,8 +48,5 @@ func MysqlClient() *mysql.Client {
 }
 
 func Context() *pcontext.Context {
-	return &pcontext.Context{
-		TraceID: "test",
-		Logger:  Logger(),
-	}
+	return pcontext.NewContext(Logger(), "test-trace-id")
 }

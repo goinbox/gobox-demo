@@ -20,11 +20,13 @@ type daoFactory struct {
 }
 
 func (f *daoFactory) client(ctx *pcontext.Context) *mysql.Client {
-	if ctx.MySQLClient == nil {
-		ctx.MySQLClient = resource.MySQLClient(ctx.Logger)
+	client := ctx.MySQLClient()
+	if client == nil {
+		client = resource.MySQLClient(ctx.Logger())
+		ctx.SetMySQLClient(client)
 	}
 
-	return ctx.MySQLClient
+	return client
 }
 
 func (f *daoFactory) IDGenDao(ctx *pcontext.Context) idgen.Dao {

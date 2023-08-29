@@ -22,7 +22,7 @@ func (a *ErrorAction) Run() {
 		BaseResponse: &BaseResponse{
 			Errno: a.Err.Errno(),
 			Msg:   a.Err.Msg(),
-			Tid:   a.Ctx.TraceID,
+			Tid:   a.Ctx.TraceID(),
 		},
 	}
 
