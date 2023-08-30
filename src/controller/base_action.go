@@ -79,7 +79,7 @@ func NewBaseAction(r *http.Request, w http.ResponseWriter, args []string) *BaseA
 		},
 	}...)
 
-	a.Ctx = pcontext.NewContext(logger, tid)
+	a.Ctx = pcontext.NewContext(logger).SetTraceID(tid)
 
 	return a
 }

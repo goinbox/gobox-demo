@@ -14,15 +14,20 @@ type Context struct {
 	mysqlClient *mysql.Client
 }
 
-func NewContext(logger golog.Logger, tid string) *Context {
+func NewContext(logger golog.Logger) *Context {
 	return &Context{
 		Context: pcontext.NewSimpleContext(logger),
-		tid:     tid,
 	}
 }
 
 func (c *Context) TraceID() string {
 	return c.tid
+}
+
+func (c *Context) SetTraceID(tid string) *Context {
+	c.tid = tid
+
+	return c
 }
 
 func (c *Context) MySQLClient() *mysql.Client {

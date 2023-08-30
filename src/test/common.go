@@ -48,5 +48,5 @@ func MysqlClient() *mysql.Client {
 }
 
 func Context() *pcontext.Context {
-	return pcontext.NewContext(Logger(), "test-trace-id")
+	return pcontext.NewContext(Logger()).SetTraceID("test-trace-id")
 }
