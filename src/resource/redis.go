@@ -1,7 +1,6 @@
 package resource
 
 import (
-	"github.com/goinbox/golog"
 	"github.com/goinbox/redis"
 
 	"gdemo/conf"
@@ -20,8 +19,8 @@ func InitRedis(config *conf.RedisConf) {
 	redis.RegisterDB(dbRedisKey, rconfig)
 }
 
-func RedisClient(logger golog.Logger) *redis.Client {
-	client, _ := redis.NewClientFromPool(dbRedisKey, logger)
+func RedisClient() *redis.Client {
+	client, _ := redis.NewClientFromPool(dbRedisKey)
 
 	return client
 }

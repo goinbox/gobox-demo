@@ -32,9 +32,9 @@ func (l *logic) Set(ctx *pcontext.Context, key string, value interface{}, expire
 
 	var err error
 	if expireSeconds > 0 {
-		err = client.Do("set", key, value, "ex", expireSeconds).Err
+		err = client.Do(ctx, "set", key, value, "ex", expireSeconds).Err
 	} else {
-		err = client.Do("set", key, value).Err
+		err = client.Do(ctx, "set", key, value).Err
 	}
 
 	if err != nil {
@@ -60,13 +60,13 @@ func (l *logic) Get(ctx *pcontext.Context, key string, value interface{}) (bool,
 }
 
 func (l *logic) get(ctx *pcontext.Context, key string) *redis.Reply {
-	return l.client(ctx).Do("get", key)
+	return l.client(ctx).Do(ctx, "get", key)
 }
 
 func (l *logic) Del(ctx *pcontext.Context, key string) error {
 	client := l.client(ctx)
 
-	reply := client.Do("del", key)
+	reply := client.Do(ctx, "del", key)
 	if reply.Err != nil {
 		return fmt.Errorf("CacheLogic.Del client.Do error: %w", reply.Err)
 	}
@@ -106,5 +106,5 @@ func (l *logic) GetStruct(ctx *pcontext.Context, key string, value interface{}) 
 }
 
 func (l *logic) client(ctx *pcontext.Context) *redis.Client {
-	return resource.RedisClient(ctx.Logger())
+	return resource.RedisClient()
 }
