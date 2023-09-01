@@ -10,7 +10,7 @@ import (
 )
 
 func (t *Task) deleteFromDB(ctx *pcontext.Context) (string, error) {
-	result := factory.DefaultDaoFactory.DemoDao(ctx).DeleteByIDs(t.in.IDs...)
+	result := factory.DefaultDaoFactory.DemoDao(ctx).DeleteByIDs(ctx, t.in.IDs...)
 	if result.Err != nil {
 		return "", fmt.Errorf("DemoDao.DeleteByIDs error: %w", result.Err)
 	}

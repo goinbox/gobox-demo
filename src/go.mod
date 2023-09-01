@@ -9,7 +9,7 @@ require (
 	github.com/goinbox/gohttp v5.0.2+incompatible
 	github.com/goinbox/golog v4.2.2+incompatible
 	github.com/goinbox/gomisc v1.4.0
-	github.com/goinbox/mysql v2.10.0+incompatible
+	github.com/goinbox/mysql v3.0.0+incompatible
 	github.com/goinbox/pcontext v1.0.2
 	github.com/goinbox/redis v2.1.1+incompatible
 	github.com/goinbox/taskflow/v2 v2.0.6

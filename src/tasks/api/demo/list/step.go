@@ -41,12 +41,12 @@ func (t *Task) makeSqlQueryParams(ctx *pcontext.Context) (string, error) {
 
 func (t *Task) queryFromDB(ctx *pcontext.Context) (string, error) {
 	dao := factory.DefaultDaoFactory.DemoDao(ctx)
-	total, err := dao.SimpleTotalAnd(t.data.queryParams.CondItems...)
+	total, err := dao.SimpleTotalAnd(ctx, t.data.queryParams.CondItems...)
 	if err != nil {
 		return "", fmt.Errorf("dao.SimpleTotalAnd error: %w", err)
 	}
 	if total > 0 {
-		err = dao.SimpleQueryAnd(t.data.queryParams, &t.out.DemoList)
+		err = dao.SimpleQueryAnd(ctx, t.data.queryParams, &t.out.DemoList)
 		if err != nil {
 			return "", fmt.Errorf("dao.SimpleQueryAnd error: %w", err)
 		}

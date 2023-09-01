@@ -1,19 +1,22 @@
 package model
 
-import "github.com/goinbox/mysql"
+import (
+	"gdemo/pcontext"
+	"github.com/goinbox/mysql"
+)
 
 type Dao interface {
-	Insert(entities ...interface{}) *mysql.SqlExecResult
-	DeleteByIDs(ids ...int64) *mysql.SqlExecResult
-	UpdateByIDs(updateColumns []*mysql.SqlUpdateColumn, ids ...int64) *mysql.SqlExecResult
-	SelectByID(id int64, dest interface{}) error
+	Insert(ctx *pcontext.Context, entities ...interface{}) *mysql.SqlExecResult
+	DeleteByIDs(ctx *pcontext.Context, ids ...int64) *mysql.SqlExecResult
+	UpdateByIDs(ctx *pcontext.Context, updateColumns []*mysql.SqlUpdateColumn, ids ...int64) *mysql.SqlExecResult
+	SelectByID(ctx *pcontext.Context, id int64, dest interface{}) error
 
-	SimpleQueryAnd(params *mysql.SqlQueryParams, dest interface{}) error
-	SimpleTotalAnd(items ...*mysql.SqlColQueryItem) (int64, error)
+	SimpleQueryAnd(ctx *pcontext.Context, params *mysql.SqlQueryParams, dest interface{}) error
+	SimpleTotalAnd(ctx *pcontext.Context, items ...*mysql.SqlColQueryItem) (int64, error)
 
-	Begin() error
-	Commit() error
-	Rollback() error
+	Begin(ctx *pcontext.Context) error
+	Commit(ctx *pcontext.Context) error
+	Rollback(ctx *pcontext.Context) error
 }
 
 type BaseDao struct {
@@ -32,38 +35,39 @@ func NewBaseDao(TableName string, client *mysql.Client) *BaseDao {
 	}
 }
 
-func (d *BaseDao) Insert(entities ...interface{}) *mysql.SqlExecResult {
-	return d.Dao.InsertEntities(d.TableName, entities...)
+func (d *BaseDao) Insert(ctx *pcontext.Context, entities ...interface{}) *mysql.SqlExecResult {
+	return d.Dao.InsertEntities(ctx, d.TableName, entities...)
 }
 
-func (d *BaseDao) DeleteByIDs(ids ...int64) *mysql.SqlExecResult {
-	return d.Dao.DeleteByIDs(d.TableName, ids...)
+func (d *BaseDao) DeleteByIDs(ctx *pcontext.Context, ids ...int64) *mysql.SqlExecResult {
+	return d.Dao.DeleteByIDs(ctx, d.TableName, ids...)
 }
 
-func (d *BaseDao) UpdateByIDs(updateColumns []*mysql.SqlUpdateColumn, ids ...int64) *mysql.SqlExecResult {
-	return d.Dao.UpdateByIDs(d.TableName, updateColumns, ids...)
+func (d *BaseDao) UpdateByIDs(ctx *pcontext.Context,
+	updateColumns []*mysql.SqlUpdateColumn, ids ...int64) *mysql.SqlExecResult {
+	return d.Dao.UpdateByIDs(ctx, d.TableName, updateColumns, ids...)
 }
 
-func (d *BaseDao) SelectByID(id int64, dest interface{}) error {
-	return d.Dao.SelectEntityByID(d.TableName, id, dest)
+func (d *BaseDao) SelectByID(ctx *pcontext.Context, id int64, dest interface{}) error {
+	return d.Dao.SelectEntityByID(ctx, d.TableName, id, dest)
 }
 
-func (d *BaseDao) SimpleQueryAnd(params *mysql.SqlQueryParams, dest interface{}) error {
-	return d.Dao.SimpleQueryEntitiesAnd(d.TableName, params, dest)
+func (d *BaseDao) SimpleQueryAnd(ctx *pcontext.Context, params *mysql.SqlQueryParams, dest interface{}) error {
+	return d.Dao.SimpleQueryEntitiesAnd(ctx, d.TableName, params, dest)
 }
 
-func (d *BaseDao) SimpleTotalAnd(items ...*mysql.SqlColQueryItem) (int64, error) {
-	return d.Dao.SimpleTotalAnd(d.TableName, items...)
+func (d *BaseDao) SimpleTotalAnd(ctx *pcontext.Context, items ...*mysql.SqlColQueryItem) (int64, error) {
+	return d.Dao.SimpleTotalAnd(ctx, d.TableName, items...)
 }
 
-func (d *BaseDao) Begin() error {
-	return d.Dao.Begin()
+func (d *BaseDao) Begin(ctx *pcontext.Context) error {
+	return d.Dao.Begin(ctx)
 }
 
-func (d *BaseDao) Commit() error {
-	return d.Dao.Commit()
+func (d *BaseDao) Commit(ctx *pcontext.Context) error {
+	return d.Dao.Commit(ctx)
 }
 
-func (d *BaseDao) Rollback() error {
-	return d.Dao.Rollback()
+func (d *BaseDao) Rollback(ctx *pcontext.Context) error {
+	return d.Dao.Rollback(ctx)
 }

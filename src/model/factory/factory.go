@@ -22,7 +22,7 @@ type daoFactory struct {
 func (f *daoFactory) client(ctx *pcontext.Context) *mysql.Client {
 	client := ctx.MySQLClient()
 	if client == nil {
-		client = resource.MySQLClient(ctx.Logger())
+		client = resource.MySQLClient()
 		ctx.SetMySQLClient(client)
 	}
 

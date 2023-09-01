@@ -21,7 +21,7 @@ func init() {
 func TestGenID(t *testing.T) {
 	dao := idgen.NewDao(test.MysqlClient())
 	for i := 0; i < 10; i++ {
-		id, err := dao.GenID("demo")
+		id, err := dao.GenID(test.Context(), "demo")
 		t.Log(id, err)
 	}
 }

@@ -36,8 +36,8 @@ github.com/goinbox/golog v4.2.2+incompatible h1:0KPzy5vyGdtwSGh3nzqRzjT+2IYW+Y0y
 github.com/goinbox/golog v4.2.2+incompatible/go.mod h1:LpDh2j8NT1DzCFjkpE3joekJWaVxUt+BolHh52GJqtA=
 github.com/goinbox/gomisc v1.4.0 h1:nxhAuPprXkaoXtRHMW3jABNBIDXPNH/RfCXXDiDRThI=
 github.com/goinbox/gomisc v1.4.0/go.mod h1:SPnA6bKoY+HIxNBbO2zRX0jBHu0lmi3nCLbZR40aiSs=
-github.com/goinbox/mysql v2.10.0+incompatible h1:miwlPQf9ZLLI7dvxw7KWzD3pJ500pJPNSF+BeX886Sk=
-github.com/goinbox/mysql v2.10.0+incompatible/go.mod h1:dZ8/2cy1ieZoGNtHesR4sZOc6MWQQGpHXUHKEm8hd+A=
+github.com/goinbox/mysql v3.0.0+incompatible h1:taToqWUQN+f4DDHxw1V6HZgqRdReylECrvfFFVOpb58=
+github.com/goinbox/mysql v3.0.0+incompatible/go.mod h1:dZ8/2cy1ieZoGNtHesR4sZOc6MWQQGpHXUHKEm8hd+A=
 github.com/goinbox/pcontext v1.0.2 h1:Gi0Hhv05AAawICNZliVz99IYl4nj1UfTmTTzWfVffjA=
 github.com/goinbox/pcontext v1.0.2/go.mod h1:ZRo6NkTSYi7Hy6q4qbkPUarpnPB+gbFewPlMYoAUJKs=
 github.com/goinbox/redis v2.1.1+incompatible h1:fYjWuDGu7Dp1p6hjzVXt/MSCr4r0cS4roETTL8D55Eg=

@@ -21,8 +21,8 @@ func NewLogic() Logic {
 var snowflake *gomisc.Snowflake
 
 func Init(idgenName string) error {
-	dao := idgen.NewDao(resource.MySQLClient(resource.AccessLogger))
-	machineID, err := dao.GenID(idgenName)
+	dao := idgen.NewDao(resource.MySQLClient())
+	machineID, err := dao.GenID(pcontext.NewContext(resource.AccessLogger), idgenName)
 	if err != nil {
 		return fmt.Errorf("dao.GenID error: %w", err)
 	}

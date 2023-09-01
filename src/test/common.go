@@ -44,7 +44,7 @@ func Logger() golog.Logger {
 }
 
 func MysqlClient() *mysql.Client {
-	return resource.MySQLClient(Logger())
+	return resource.MySQLClient()
 }
 
 func Context() *pcontext.Context {

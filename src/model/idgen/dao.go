@@ -1,6 +1,7 @@
 package idgen
 
 import (
+	"gdemo/pcontext"
 	"github.com/goinbox/mysql"
 
 	"gdemo/model"
@@ -13,7 +14,7 @@ const (
 type Dao interface {
 	model.Dao
 
-	GenID(name string) (int64, error)
+	GenID(ctx *pcontext.Context, name string) (int64, error)
 }
 
 type dao struct {
@@ -26,8 +27,8 @@ func NewDao(client *mysql.Client) Dao {
 	}
 }
 
-func (d *dao) GenID(name string) (int64, error) {
-	id, err := d.genID(name)
+func (d *dao) GenID(ctx *pcontext.Context, name string) (int64, error) {
+	id, err := d.genID(ctx, name)
 	if id != 0 {
 		return id, nil
 	}
@@ -36,7 +37,7 @@ func (d *dao) GenID(name string) (int64, error) {
 		return 0, err
 	}
 
-	err = d.Insert(&Entity{
+	err = d.Insert(ctx, &Entity{
 		Name:  name,
 		MaxID: 0,
 	}).Err
@@ -47,11 +48,11 @@ func (d *dao) GenID(name string) (int64, error) {
 		}
 	}
 
-	return d.genID(name)
+	return d.genID(ctx, name)
 }
 
-func (d *dao) genID(name string) (int64, error) {
-	result, err := d.Dao.Exec(genIDSql, name)
+func (d *dao) genID(ctx *pcontext.Context, name string) (int64, error) {
+	result, err := d.Dao.Exec(ctx, genIDSql, name)
 	if err != nil {
 		return 0, err
 	}

@@ -22,7 +22,7 @@ func (t *Task) genEntity(ctx *pcontext.Context) (string, error) {
 }
 
 func (t *Task) saveEntity(ctx *pcontext.Context) (string, error) {
-	result := factory.DefaultDaoFactory.DemoDao(ctx).Insert(t.data.demoEntity)
+	result := factory.DefaultDaoFactory.DemoDao(ctx).Insert(ctx, t.data.demoEntity)
 	if result.Err != nil {
 		return "", fmt.Errorf("demoDao.Insert error: %w", result.Err)
 	}

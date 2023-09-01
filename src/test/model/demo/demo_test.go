@@ -24,6 +24,7 @@ func init() {
 }
 
 func TestDemoCRUD(t *testing.T) {
+	ctx := test.Context()
 	entity := &demo.Entity{
 		BaseEntity: model.BaseEntity{},
 		Name:       "test",
@@ -31,15 +32,15 @@ func TestDemoCRUD(t *testing.T) {
 	}
 
 	d := dao()
-	r := d.Insert(entity)
+	r := d.Insert(ctx, entity)
 	t.Log("insert result", r)
 
 	id := r.LastInsertID
 
-	err := d.SelectByID(id, entity)
+	err := d.SelectByID(ctx, id, entity)
 	t.Log("SelectByID", err, entity, *entity.ID, *entity.AddTime, *entity.EditTime)
 
-	r = d.UpdateByIDs([]*mysql.SqlUpdateColumn{
+	r = d.UpdateByIDs(ctx, []*mysql.SqlUpdateColumn{
 		{
 			Name:  "status",
 			Value: 1,
@@ -60,26 +61,26 @@ func TestDemoCRUD(t *testing.T) {
 		Cnt:     0,
 	}
 
-	cnt, err := d.SimpleTotalAnd(params.CondItems...)
+	cnt, err := d.SimpleTotalAnd(ctx, params.CondItems...)
 	t.Log("total", cnt, err)
 
 	var data []*demo.Entity
-	err = d.SimpleQueryAnd(params, &data)
+	err = d.SimpleQueryAnd(ctx, params, &data)
 	t.Log("SimpleQueryAnd", err)
 	for i, item := range data {
 		t.Log(i, item, *item.ID, *item.AddTime, *item.EditTime)
 	}
 
-	err = d.Begin()
+	err = d.Begin(ctx)
 	t.Log("begin", err)
-	r = d.DeleteByIDs(id)
+	r = d.DeleteByIDs(ctx, id)
 	t.Log("delete result", r)
-	err = d.Rollback()
+	err = d.Rollback(ctx)
 	t.Log("rollback", err)
 
-	_ = d.Begin()
-	_ = d.DeleteByIDs(id)
-	err = d.Commit()
+	_ = d.Begin(ctx)
+	_ = d.DeleteByIDs(ctx, id)
+	err = d.Commit(ctx)
 	t.Log("commit", err)
 }
 
@@ -92,17 +93,17 @@ func TestTrans(t *testing.T) {
 	demoDao := factory.DefaultDaoFactory.DemoDao(ctx)
 	idGenDao := factory.DefaultDaoFactory.IDGenDao(ctx)
 
-	_ = demoDao.Begin()
-	r := demoDao.Insert(&demo.Entity{Name: "a"})
+	_ = demoDao.Begin(ctx)
+	r := demoDao.Insert(ctx, &demo.Entity{Name: "a"})
 	if r.Err != nil {
-		_ = demoDao.Rollback()
+		_ = demoDao.Rollback(ctx)
 		return
 	}
-	r = idGenDao.Insert(&idgen.Entity{Name: "demo"})
+	r = idGenDao.Insert(ctx, &idgen.Entity{Name: "demo"})
 	if r.Err != nil {
-		_ = demoDao.Rollback()
+		_ = demoDao.Rollback(ctx)
 		return
 	}
 
-	_ = demoDao.Commit()
+	_ = demoDao.Commit(ctx)
 }

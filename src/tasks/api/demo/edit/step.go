@@ -20,7 +20,7 @@ func (t *Task) makeUpdateColumns(ctx *pcontext.Context) (string, error) {
 }
 
 func (t *Task) updateDB(ctx *pcontext.Context) (string, error) {
-	result := factory.DefaultDaoFactory.DemoDao(ctx).UpdateByIDs(t.data.updateColumns, t.in.ID)
+	result := factory.DefaultDaoFactory.DemoDao(ctx).UpdateByIDs(ctx, t.data.updateColumns, t.in.ID)
 	if result.Err != nil {
 		return "", fmt.Errorf("DemoDao.UpdateByIDs error: %w", result.Err)
 	}

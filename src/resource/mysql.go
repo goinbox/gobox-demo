@@ -3,7 +3,6 @@ package resource
 import (
 	"fmt"
 
-	"github.com/goinbox/golog"
 	"github.com/goinbox/mysql"
 
 	"gdemo/conf"
@@ -26,8 +25,8 @@ func InitMySQL(config *conf.MySQLConf) error {
 	return nil
 }
 
-func MySQLClient(logger golog.Logger) *mysql.Client {
-	client, _ := mysql.NewClientFromPool(dbMySQLKey, logger)
+func MySQLClient() *mysql.Client {
+	client, _ := mysql.NewClientFromPool(dbMySQLKey)
 
 	return client
 }
