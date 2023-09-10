@@ -8,9 +8,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/goinbox/gohttp/gracehttp"
-	"github.com/goinbox/gohttp/httpserver"
-	"github.com/goinbox/gohttp/router"
+	"gdemo/pcontext"
+	"github.com/goinbox/gohttp/v6/httpserver"
+	"github.com/goinbox/router"
 
 	"gdemo/conf"
 	"gdemo/controller/api/demo"
@@ -91,9 +91,11 @@ func runServer(config *conf.ApiConf) error {
 
 	addr := fmt.Sprintf("%s:%d", config.Host, config.Port)
 	resource.AccessLogger.Notice(fmt.Sprintf("runServer %s", addr))
-	err = gracehttp.ListenAndServe(addr, httpserver.NewServer(r))
+
+	err = httpserver.NewServer(addr, httpserver.NewHandler[*pcontext.Context](r)).
+		ListenAndServe(pcontext.NewContext(resource.AccessLogger))
 	if err != nil {
-		return fmt.Errorf("ListenAndServe error: %w", err)
+		return fmt.Errorf("httpserver.ListenAndServe error: %w", err)
 	}
 
 	return nil

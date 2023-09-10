@@ -1,10 +1,9 @@
 package demo
 
 import (
-	"net/http"
-
 	"gdemo/controller/api"
 	"gdemo/model"
+	"gdemo/pcontext"
 	"gdemo/perror"
 	"gdemo/tasks/api/demo/edit"
 )
@@ -20,16 +19,14 @@ type EditResponse struct {
 }
 
 type editAction struct {
-	*api.ApiAction
+	api.ApiAction
 
 	req  *editRequest
 	resp *EditResponse
 }
 
-func newEditAction(r *http.Request, w http.ResponseWriter, args []string) *editAction {
+func newEditAction() *editAction {
 	a := &editAction{
-		ApiAction: api.NewApiAction(r, w, args),
-
 		req:  new(editRequest),
 		resp: new(EditResponse),
 	}
@@ -44,20 +41,20 @@ func (a *editAction) Name() string {
 	return "Edit"
 }
 
-func (a *editAction) Run() {
+func (a *editAction) Run(ctx *pcontext.Context) error {
 	out := &edit.TaskOut{}
-	err := api.RunTask(a.Ctx, edit.NewTask(), &edit.TaskIn{
+	err := api.RunTask(ctx, edit.NewTask(), &edit.TaskIn{
 		ID:           a.req.ID,
 		UpdateParams: a.req,
 	}, out)
-	if err == nil {
-		a.resp.RowsAffected = out.RowsAffected
-		return
+	if err != nil {
+		if model.DuplicateError(err) {
+			return perror.New(perror.ECommonDataAlreadyExist, "data already exist")
+		} else {
+			return perror.New(perror.ECommonSysError, "sys error")
+		}
 	}
 
-	if model.DuplicateError(err) {
-		a.Err = perror.New(perror.ECommonDataAlreadyExist, "data already exist")
-	} else {
-		a.Err = perror.New(perror.ECommonSysError, "sys error")
-	}
+	a.resp.RowsAffected = out.RowsAffected
+	return nil
 }

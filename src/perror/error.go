@@ -1,6 +1,7 @@
 package perror
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -33,4 +34,12 @@ func (e *Error) Errno() int {
 
 func (e *Error) Msg() string {
 	return e.msg
+}
+
+func ParsePerror(err error) *Error {
+	perr := &Error{}
+	if errors.As(err, &perr) {
+		return perr
+	}
+	return nil
 }

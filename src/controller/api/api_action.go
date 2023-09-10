@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
-	"net/http"
 	"strconv"
 	"time"
 
@@ -14,6 +13,7 @@ import (
 	"gdemo/controller"
 	"gdemo/logic/factory"
 	"gdemo/misc"
+	"gdemo/pcontext"
 	"gdemo/perror"
 	"gdemo/validate"
 )
@@ -31,52 +31,54 @@ type Response struct {
 }
 
 type ApiAction struct {
-	*controller.BaseAction
-
-	Err *perror.Error
+	controller.BaseAction
 
 	RequestData  interface{}
 	ResponseData interface{}
 }
 
-func NewApiAction(r *http.Request, w http.ResponseWriter, args []string) *ApiAction {
-	return &ApiAction{
-		BaseAction: controller.NewBaseAction(r, w, args),
-	}
-}
-
-func (a *ApiAction) Before() {
+func (a *ApiAction) Before(ctx *pcontext.Context) error {
 	if a.needSign() {
-		err := a.checkSign()
+		err := a.checkSign(ctx)
 		if err != nil {
-			JumpToErrorAction(a.BaseAction, perror.NewFromError(perror.ECommonAuthFailure,
-				fmt.Errorf("checkSign error: %w", err)))
+			return perror.NewFromError(perror.ECommonAuthFailure,
+				fmt.Errorf("checkSign error: %w", err))
 		}
 	}
 
 	err := json.Unmarshal(a.ReqRawBody, a.RequestData)
 	if err != nil {
-		a.Ctx.Logger().Warning("json.Unmarshal ReqRawBody error", golog.ErrorField(err))
+		return perror.NewFromError(perror.ECommonInvalidArg,
+			fmt.Errorf("json.Unmarshal ReqRawBody error: %w", err))
 	}
 
 	err = validate.Validator().Struct(a.RequestData)
 	if err != nil {
-		JumpToErrorAction(a.BaseAction, perror.NewFromError(perror.ECommonInvalidArg, err))
+		return perror.NewFromError(perror.ECommonInvalidArg,
+			fmt.Errorf("check args error: %w", err))
 	}
+
+	return nil
 }
 
-func (a *ApiAction) After() {
+func (a *ApiAction) After(ctx *pcontext.Context, err error) {
 	resp := &Response{
 		BaseResponse: &BaseResponse{
 			Errno: perror.Success,
 			Msg:   "",
-			Tid:   a.Ctx.TraceID(),
+			Tid:   ctx.TraceID(),
 		},
 	}
 
-	if a.Err != nil {
-		resp.Errno = a.Err.Errno()
-		resp.Msg = a.Err.Msg()
+	if err != nil {
+		perr := perror.ParsePerror(err)
+		if perr != nil {
+			resp.Errno = perr.Errno()
+			resp.Msg = perr.Msg()
+		} else {
+			resp.Errno = perror.ECommonSysError
+			resp.Msg = err.Error()
+		}
 	} else {
 		resp.Data = a.ResponseData
 	}
@@ -84,7 +86,7 @@ func (a *ApiAction) After() {
 	body, _ := json.Marshal(resp)
 	a.SetResponseBody(body)
 
-	a.BaseAction.After()
+	a.BaseAction.After(ctx, err)
 }
 
 func (a *ApiAction) needSign() bool {
@@ -105,8 +107,8 @@ type signParams struct {
 	sign  string
 }
 
-func (a *ApiAction) checkSign() error {
-	params, err := a.parseSignParams()
+func (a *ApiAction) checkSign(ctx *pcontext.Context) error {
+	params, err := a.parseSignParams(ctx)
 	if err != nil {
 		return fmt.Errorf("parseSignParams error: %w", err)
 	}
@@ -125,13 +127,13 @@ func (a *ApiAction) checkSign() error {
 	return nil
 }
 
-func (a *ApiAction) parseSignParams() (*signParams, error) {
+func (a *ApiAction) parseSignParams(ctx *pcontext.Context) (*signParams, error) {
 	header := a.Request().Header
 	appName := header.Get("App")
 	if appName == "" {
 		return nil, fmt.Errorf("miss header App")
 	}
-	app := factory.DefaultLogicFactory.AppLogic().AppByName(a.Ctx, appName)
+	app := factory.DefaultLogicFactory.AppLogic().AppByName(ctx, appName)
 	if app == nil {
 		return nil, fmt.Errorf("app %s not exist", appName)
 	}
@@ -150,7 +152,7 @@ func (a *ApiAction) parseSignParams() (*signParams, error) {
 		return nil, fmt.Errorf("miss header Sign")
 	}
 
-	a.Ctx.Logger().Info("signParams", []*golog.Field{
+	ctx.Logger().Info("signParams", []*golog.Field{
 		{
 			Key:   "token",
 			Value: app.Token,

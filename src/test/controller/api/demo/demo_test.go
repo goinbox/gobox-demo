@@ -5,8 +5,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/goinbox/gohttp/httpserver"
-	"github.com/goinbox/gohttp/router"
+	"gdemo/pcontext"
+	"github.com/goinbox/gohttp/v6/httpserver"
+	"github.com/goinbox/router"
 
 	"gdemo/controller/api/demo"
 	"gdemo/logic/factory"
@@ -27,8 +28,8 @@ func init() {
 	r.MapRouteItems(new(demo.Controller))
 
 	runner = &test.ApiControllerRunner{
-		Server: httpserver.NewServer(r),
-		App:    factory.DefaultLogicFactory.AppLogic().ListAllApps(test.Context())[0],
+		Handler: httpserver.NewHandler[*pcontext.Context](r),
+		App:     factory.DefaultLogicFactory.AppLogic().ListAllApps(test.Context())[0],
 	}
 }
 

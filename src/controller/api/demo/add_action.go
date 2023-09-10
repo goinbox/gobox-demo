@@ -1,11 +1,10 @@
 package demo
 
 import (
-	"net/http"
-
 	"gdemo/controller/api"
 	"gdemo/model"
 	"gdemo/model/demo"
+	"gdemo/pcontext"
 	"gdemo/perror"
 	"gdemo/tasks/api/demo/add"
 )
@@ -19,16 +18,14 @@ type AddResponse struct {
 }
 
 type addAction struct {
-	*api.ApiAction
+	api.ApiAction
 
 	req  *addRequest
 	resp *AddResponse
 }
 
-func newAddAction(r *http.Request, w http.ResponseWriter, args []string) *addAction {
+func newAddAction() *addAction {
 	a := &addAction{
-		ApiAction: api.NewApiAction(r, w, args),
-
 		req:  new(addRequest),
 		resp: new(AddResponse),
 	}
@@ -43,20 +40,20 @@ func (a *addAction) Name() string {
 	return "Add"
 }
 
-func (a *addAction) Run() {
+func (a *addAction) Run(ctx *pcontext.Context) error {
 	out := &add.TaskOut{}
-	err := api.RunTask(a.Ctx, add.NewTask(), &add.TaskIn{
+	err := api.RunTask(ctx, add.NewTask(), &add.TaskIn{
 		Name:   a.req.Name,
 		Status: demo.StatusOnline,
 	}, out)
-	if err == nil {
-		a.resp.ID = out.ID
-		return
+	if err != nil {
+		if model.DuplicateError(err) {
+			return perror.New(perror.ECommonDataAlreadyExist, "data already exist")
+		} else {
+			return perror.New(perror.ECommonSysError, "sys error")
+		}
 	}
 
-	if model.DuplicateError(err) {
-		a.Err = perror.New(perror.ECommonDataAlreadyExist, "data already exist")
-	} else {
-		a.Err = perror.New(perror.ECommonSysError, "sys error")
-	}
+	a.resp.ID = out.ID
+	return nil
 }

@@ -4,14 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/goinbox/gohttp/httpserver"
-	"github.com/goinbox/gohttp/router"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	"github.com/goinbox/gohttp/v6/httpserver"
+	"github.com/goinbox/router"
 
 	"gdemo/controller/api"
 	"gdemo/controller/api/demo"
 	"gdemo/logic/factory"
+	"gdemo/pcontext"
 	"gdemo/perror"
 	"gdemo/test"
 )
@@ -25,8 +27,8 @@ var _ = Describe("Demo API", Ordered, func() {
 		r.MapRouteItems(new(demo.Controller))
 
 		runner = &test.ApiControllerRunner{
-			Server: httpserver.NewServer(r),
-			App:    factory.DefaultLogicFactory.AppLogic().ListAllApps(test.Context())[0],
+			Handler: httpserver.NewHandler[*pcontext.Context](r),
+			App:     factory.DefaultLogicFactory.AppLogic().ListAllApps(test.Context())[0],
 		}
 	})
 

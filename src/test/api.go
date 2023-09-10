@@ -2,21 +2,19 @@ package test
 
 import (
 	"bytes"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"time"
-
-	"github.com/goinbox/gohttp/httpserver"
 
 	"gdemo/logic/app"
 	"gdemo/misc"
 )
 
 type ApiControllerRunner struct {
-	Server *httpserver.Server
-	App    *app.App
+	Handler http.Handler
+	App     *app.App
 }
 
 func (r *ApiControllerRunner) Run(target, body string) ([]byte, error) {
@@ -28,10 +26,10 @@ func (r *ApiControllerRunner) Run(target, body string) ([]byte, error) {
 	req.Header.Set("Sign", misc.ApiSign(r.App.Token, ts, []byte(body)))
 
 	w := httptest.NewRecorder()
-	r.Server.ServeHTTP(w, req)
+	r.Handler.ServeHTTP(w, req)
 
 	resp := w.Result()
 	defer func() { _ = resp.Body.Close() }()
 
-	return ioutil.ReadAll(resp.Body)
+	return io.ReadAll(resp.Body)
 }

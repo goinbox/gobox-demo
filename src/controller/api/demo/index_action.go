@@ -1,11 +1,10 @@
 package demo
 
 import (
-	"net/http"
-
 	"gdemo/controller/api"
 	"gdemo/misc"
 	"gdemo/model/demo"
+	"gdemo/pcontext"
 	"gdemo/perror"
 	"gdemo/tasks/api/demo/list"
 )
@@ -24,16 +23,14 @@ type IndexResponse struct {
 }
 
 type indexAction struct {
-	*api.ApiAction
+	api.ApiAction
 
 	req  *indexRequest
 	resp *IndexResponse
 }
 
-func newIndexAction(r *http.Request, w http.ResponseWriter, args []string) *indexAction {
+func newIndexAction() *indexAction {
 	a := &indexAction{
-		ApiAction: api.NewApiAction(r, w, args),
-
 		req: &indexRequest{
 			CommonListParams: misc.NewDefaultCommonListParams(),
 		},
@@ -52,19 +49,21 @@ func (a *indexAction) Name() string {
 	return "Index"
 }
 
-func (a *indexAction) Run() {
+func (a *indexAction) Run(ctx *pcontext.Context) error {
 	out := &list.TaskOut{}
-	err := api.RunTask(a.Ctx, list.NewTask(), &list.TaskIn{
+	err := api.RunTask(ctx, list.NewTask(), &list.TaskIn{
 		IDs:        a.req.IDs,
 		Status:     a.req.Status,
 		ListParams: a.req.CommonListParams,
 	}, out)
-	if err == nil {
-		a.resp.Total = out.Total
-		if out.DemoList != nil {
-			a.resp.DemoList = out.DemoList
-		}
-	} else {
-		a.Err = perror.New(perror.ECommonSysError, "sys error")
+	if err != nil {
+		return perror.New(perror.ECommonSysError, "sys error")
 	}
+
+	a.resp.Total = out.Total
+	if out.DemoList != nil {
+		a.resp.DemoList = out.DemoList
+	}
+
+	return nil
 }

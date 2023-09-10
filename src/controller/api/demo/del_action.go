@@ -1,9 +1,8 @@
 package demo
 
 import (
-	"net/http"
-
 	"gdemo/controller/api"
+	"gdemo/pcontext"
 	"gdemo/perror"
 	"gdemo/tasks/api/demo/del"
 )
@@ -17,16 +16,14 @@ type DelResponse struct {
 }
 
 type delAction struct {
-	*api.ApiAction
+	api.ApiAction
 
 	req  *delRequest
 	resp *DelResponse
 }
 
-func newDelAction(r *http.Request, w http.ResponseWriter, args []string) *delAction {
+func newDelAction() *delAction {
 	a := &delAction{
-		ApiAction: api.NewApiAction(r, w, args),
-
 		req:  new(delRequest),
 		resp: new(DelResponse),
 	}
@@ -41,15 +38,15 @@ func (a *delAction) Name() string {
 	return "Del"
 }
 
-func (a *delAction) Run() {
+func (a *delAction) Run(ctx *pcontext.Context) error {
 	out := &del.TaskOut{}
-	err := api.RunTask(a.Ctx, del.NewTask(), &del.TaskIn{
+	err := api.RunTask(ctx, del.NewTask(), &del.TaskIn{
 		IDs: a.req.IDs,
 	}, out)
-	if err == nil {
-		a.resp.RowsAffected = out.RowsAffected
-		return
+	if err != nil {
+		return perror.New(perror.ECommonSysError, "sys error")
 	}
 
-	a.Err = perror.New(perror.ECommonSysError, "sys error")
+	a.resp.RowsAffected = out.RowsAffected
+	return nil
 }

@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/goinbox/gohttp/httpserver"
+	"github.com/goinbox/gohttp/v6/httpserver"
 	"github.com/goinbox/golog"
 	"github.com/google/uuid"
 
@@ -17,19 +17,19 @@ import (
 )
 
 const (
-	RemoteRealIpHeaderKey   = "REMOTE-REAL-IP"
-	RemoteRealPortHeaderKey = "REMOTE-REAL-PORT"
+	remoteRealIpHeaderKey   = "REMOTE-REAL-IP"
+	remoteRealPortHeaderKey = "REMOTE-REAL-PORT"
 
-	DownstreamServerIp = "127.0.0.1"
+	downstreamServerIp = "127.0.0.1"
 
-	MaxAutoParseBodyLen = 4096 * 1024
+	maxAutoParseBodyLen = 4096 * 1024
 
-	TraceIDHeaderKey = "TRACE-ID"
-	TraceIDQueryKey  = "tid"
+	traceIDHeaderKey = "TRACE-ID"
+	traceIDQueryKey  = "tid"
 )
 
 type BaseAction struct {
-	*httpserver.BaseAction
+	httpserver.BaseAction[*pcontext.Context]
 
 	ReqRawBody []byte
 
@@ -38,16 +38,13 @@ type BaseAction struct {
 		Port int
 	}
 
-	Ctx       *pcontext.Context
 	StartTime time.Time
 }
 
-func NewBaseAction(r *http.Request, w http.ResponseWriter, args []string) *BaseAction {
-	a := &BaseAction{
-		BaseAction: httpserver.NewBaseAction(r, w, args),
-	}
+func (a *BaseAction) Init(r *http.Request, w http.ResponseWriter, args []string) *pcontext.Context {
+	a.BaseAction.Init(r, w, args)
 
-	if r.ContentLength < MaxAutoParseBodyLen {
+	if r.ContentLength < maxAutoParseBodyLen {
 		a.ReqRawBody, _ = io.ReadAll(r.Body)
 		r.Body = io.NopCloser(bytes.NewBuffer(a.ReqRawBody))
 	}
@@ -79,16 +76,14 @@ func NewBaseAction(r *http.Request, w http.ResponseWriter, args []string) *BaseA
 		},
 	}...)
 
-	a.Ctx = pcontext.NewContext(logger).SetTraceID(tid)
-
-	return a
+	return pcontext.NewContext(logger).SetTraceID(tid)
 }
 
 func (a *BaseAction) parseRemoteAddr(r *http.Request) (string, int) {
 	rs := strings.Split(r.RemoteAddr, ":")
-	if rs[0] == DownstreamServerIp {
-		ip := strings.TrimSpace(r.Header.Get(RemoteRealIpHeaderKey))
-		portStr := strings.TrimSpace(r.Header.Get(RemoteRealPortHeaderKey))
+	if rs[0] == downstreamServerIp {
+		ip := strings.TrimSpace(r.Header.Get(remoteRealIpHeaderKey))
+		portStr := strings.TrimSpace(r.Header.Get(remoteRealPortHeaderKey))
 		if ip != "" && portStr != "" {
 			port, _ := strconv.Atoi(portStr)
 			return ip, port
@@ -102,12 +97,12 @@ func (a *BaseAction) parseRemoteAddr(r *http.Request) (string, int) {
 func (a *BaseAction) parseTraceID() string {
 	r := a.Request()
 
-	traceID := strings.TrimSpace(r.Header.Get(TraceIDHeaderKey))
+	traceID := strings.TrimSpace(r.Header.Get(traceIDHeaderKey))
 	if len(traceID) != 0 {
 		return traceID
 	}
 
-	traceID = strings.TrimSpace(r.URL.Query().Get(TraceIDQueryKey))
+	traceID = strings.TrimSpace(r.URL.Query().Get(traceIDQueryKey))
 	if len(traceID) != 0 {
 		return traceID
 	}
@@ -117,8 +112,16 @@ func (a *BaseAction) parseTraceID() string {
 	return traceID
 }
 
-func (a *BaseAction) Destruct() {
-	a.Ctx.Logger().Info("AfterAction", []*golog.Field{
+func (a *BaseAction) Before(ctx *pcontext.Context) error {
+	_ = a.BaseAction.Before(ctx)
+
+	a.StartTime = time.Now()
+
+	return nil
+}
+
+func (a *BaseAction) After(ctx *pcontext.Context, err error) {
+	ctx.Logger().Info("AfterAction", []*golog.Field{
 		{
 			Key:   "response",
 			Value: string(a.ResponseBody()),
@@ -129,5 +132,5 @@ func (a *BaseAction) Destruct() {
 		},
 	}...)
 
-	a.BaseAction.After()
+	a.BaseAction.After(ctx, err)
 }
