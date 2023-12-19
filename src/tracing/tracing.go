@@ -11,6 +11,7 @@ import (
 	traceresource "go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
+	"go.opentelemetry.io/otel/trace/noop"
 
 	"gdemo/conf"
 )
@@ -18,6 +19,11 @@ import (
 var tp *sdktrace.TracerProvider
 
 func Init(config *conf.TracingConf, serviceName string) error {
+	if !config.Enable {
+		otel.SetTracerProvider(noop.NewTracerProvider())
+		return nil
+	}
+
 	res, err := traceresource.New(context.Background(),
 		traceresource.WithAttributes(
 			semconv.ServiceNameKey.String(serviceName),
