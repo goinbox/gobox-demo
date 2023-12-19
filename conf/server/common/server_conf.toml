@@ -37,6 +37,13 @@ port = 0
 name = "gobox-demo"
 rw_timeout_seconds = 3
 
+[tracing]
+enable = true
+target = "zipkin"
+async = true
+service_namespace = "release"
+zipkin_url = ""
+
 [misc]
 apps_data_dir = ""
 

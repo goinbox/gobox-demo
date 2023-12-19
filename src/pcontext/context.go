@@ -1,6 +1,8 @@
 package pcontext
 
 import (
+	"context"
+
 	"github.com/goinbox/golog"
 	"github.com/goinbox/mysql"
 	"github.com/goinbox/pcontext"
@@ -38,4 +40,13 @@ func (c *Context) SetMySQLClient(client *mysql.Client) *Context {
 	c.mysqlClient = client
 
 	return c
+}
+
+func (c *Context) WithContext(ctx context.Context) *Context {
+	return &Context{
+		Context: pcontext.NewSimpleContext(ctx, c.Logger()),
+
+		tid:         c.tid,
+		mysqlClient: c.mysqlClient,
+	}
 }

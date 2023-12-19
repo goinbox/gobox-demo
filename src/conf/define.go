@@ -51,6 +51,15 @@ type ApiConf struct {
 	EnableSign bool `toml:"enable_sign"`
 }
 
+type TracingConf struct {
+	Enable           bool
+	Target           string
+	Async            bool
+	ServiceNamespace string `toml:"service_namespace"`
+
+	ZipkinUrl string `toml:"zipkin_url"`
+}
+
 var ServerConf struct {
 	Hostname string
 	Username string
@@ -67,6 +76,8 @@ var ServerConf struct {
 
 	Redis *RedisConf
 	MySQL *MySQLConf
+
+	Tracing *TracingConf
 
 	Misc struct {
 		AppsDataDir string `toml:"apps_data_dir"`
