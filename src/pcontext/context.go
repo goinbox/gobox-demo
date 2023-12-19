@@ -16,7 +16,7 @@ type Context struct {
 
 func NewContext(logger golog.Logger) *Context {
 	return &Context{
-		Context: pcontext.NewSimpleContext(logger),
+		Context: pcontext.NewSimpleContext(nil, logger),
 	}
 }
 

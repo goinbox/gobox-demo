@@ -10,7 +10,7 @@ require (
 	github.com/goinbox/golog v4.2.2+incompatible
 	github.com/goinbox/gomisc v1.4.0
 	github.com/goinbox/mysql v3.0.2+incompatible
-	github.com/goinbox/pcontext v1.2.0
+	github.com/goinbox/pcontext v1.3.0
 	github.com/goinbox/redis v3.1.1+incompatible
 	github.com/goinbox/router v1.4.0
 	github.com/goinbox/taskflow/v2 v2.1.2
