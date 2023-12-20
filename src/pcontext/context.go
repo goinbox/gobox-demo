@@ -43,10 +43,16 @@ func (c *Context) SetMySQLClient(client *mysql.Client) *Context {
 }
 
 func (c *Context) WithContext(ctx context.Context) *Context {
-	return &Context{
-		Context: pcontext.NewSimpleContext(ctx, c.Logger()),
+	return c.copy(ctx)
+}
 
-		tid:         c.tid,
-		mysqlClient: c.mysqlClient,
+func (c *Context) copy(ctx context.Context) *Context {
+	cc := &Context{
+		Context: pcontext.NewSimpleContext(ctx, c.Logger()),
 	}
+
+	cc.tid = c.tid
+	cc.mysqlClient = c.mysqlClient
+
+	return cc
 }

@@ -5,6 +5,7 @@ import (
 	"gdemo/model"
 	"gdemo/pcontext"
 	"gdemo/perror"
+	"gdemo/tasks"
 	"gdemo/tasks/api/demo/edit"
 )
 
@@ -43,7 +44,7 @@ func (a *editAction) Name() string {
 
 func (a *editAction) Run(ctx *pcontext.Context) error {
 	out := &edit.TaskOut{}
-	err := api.RunTask(ctx, edit.NewTask(), &edit.TaskIn{
+	err := tasks.RunTask(ctx, edit.NewTask(), &edit.TaskIn{
 		ID:           a.req.ID,
 		UpdateParams: a.req,
 	}, out)

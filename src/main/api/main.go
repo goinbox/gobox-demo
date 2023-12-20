@@ -8,9 +8,11 @@ import (
 	"os"
 	"strings"
 
-	"gdemo/pcontext"
 	"github.com/goinbox/gohttp/v6/httpserver"
 	"github.com/goinbox/router"
+
+	"gdemo/pcontext"
+	"gdemo/tracing"
 
 	"gdemo/conf"
 	"gdemo/controller/api/demo"
@@ -48,6 +50,18 @@ func main() {
 	}
 
 	resource.InitRedis(conf.ServerConf.Redis)
+
+	err = tracing.Init(conf.ServerConf.Tracing, "gdemo-api")
+	if err != nil {
+		fmt.Println("tracing.Init error:", err)
+		os.Exit(perror.ESysInitTracingFail)
+	}
+	defer func() {
+		err = tracing.Shutdown()
+		if err != nil {
+			fmt.Println("tracing.Shutdown error:", err)
+		}
+	}()
 
 	pprof(conf.ServerConf.Pprof)
 	err = runServer(conf.ServerConf.Api)
@@ -92,7 +106,9 @@ func runServer(config *conf.ApiConf) error {
 	addr := fmt.Sprintf("%s:%d", config.Host, config.Port)
 	resource.AccessLogger.Notice(fmt.Sprintf("runServer %s", addr))
 
-	err = httpserver.NewServer(addr, httpserver.NewHandler[*pcontext.Context](r)).
+	handler := httpserver.NewHandler[*pcontext.Context](r).
+		SetStartTraceFunc(tracing.StartTraceForFramework)
+	err = httpserver.NewServer(addr, handler).
 		ListenAndServe(pcontext.NewContext(resource.AccessLogger))
 	if err != nil {
 		return fmt.Errorf("httpserver.ListenAndServe error: %w", err)

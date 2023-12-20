@@ -6,6 +6,7 @@ import (
 	"gdemo/model/demo"
 	"gdemo/pcontext"
 	"gdemo/perror"
+	"gdemo/tasks"
 	"gdemo/tasks/api/demo/add"
 )
 
@@ -42,7 +43,7 @@ func (a *addAction) Name() string {
 
 func (a *addAction) Run(ctx *pcontext.Context) error {
 	out := &add.TaskOut{}
-	err := api.RunTask(ctx, add.NewTask(), &add.TaskIn{
+	err := tasks.RunTask(ctx, add.NewTask(), &add.TaskIn{
 		Name:   a.req.Name,
 		Status: demo.StatusOnline,
 	}, out)

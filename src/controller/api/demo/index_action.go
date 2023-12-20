@@ -6,6 +6,7 @@ import (
 	"gdemo/model/demo"
 	"gdemo/pcontext"
 	"gdemo/perror"
+	"gdemo/tasks"
 	"gdemo/tasks/api/demo/list"
 )
 
@@ -51,7 +52,7 @@ func (a *indexAction) Name() string {
 
 func (a *indexAction) Run(ctx *pcontext.Context) error {
 	out := &list.TaskOut{}
-	err := api.RunTask(ctx, list.NewTask(), &list.TaskIn{
+	err := tasks.RunTask(ctx, list.NewTask(), &list.TaskIn{
 		IDs:        a.req.IDs,
 		Status:     a.req.Status,
 		ListParams: a.req.CommonListParams,

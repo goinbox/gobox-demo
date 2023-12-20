@@ -4,6 +4,7 @@ import (
 	"gdemo/controller/api"
 	"gdemo/pcontext"
 	"gdemo/perror"
+	"gdemo/tasks"
 	"gdemo/tasks/api/demo/del"
 )
 
@@ -40,7 +41,7 @@ func (a *delAction) Name() string {
 
 func (a *delAction) Run(ctx *pcontext.Context) error {
 	out := &del.TaskOut{}
-	err := api.RunTask(ctx, del.NewTask(), &del.TaskIn{
+	err := tasks.RunTask(ctx, del.NewTask(), &del.TaskIn{
 		IDs: a.req.IDs,
 	}, out)
 	if err != nil {
