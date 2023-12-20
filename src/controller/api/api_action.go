@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/goinbox/golog"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 
 	"gdemo/conf"
 	"gdemo/controller"
@@ -15,6 +17,7 @@ import (
 	"gdemo/misc"
 	"gdemo/pcontext"
 	"gdemo/perror"
+	"gdemo/tracing"
 	"gdemo/validate"
 )
 
@@ -37,16 +40,27 @@ type ApiAction struct {
 	ResponseData interface{}
 }
 
-func (a *ApiAction) Before(ctx *pcontext.Context) error {
+func (a *ApiAction) Before(ctx *pcontext.Context) (err error) {
+	_, span := tracing.StartTrace(ctx, "ApiAction.Before")
+	defer func() { span.EndWithError(err) }()
+
+	span.SetAttributes(
+		attribute.String(tracing.SpanAttributeKeyController, ctx.Controller()),
+		attribute.String(tracing.SpanAttributeKeyAction, ctx.Action()),
+	)
+	span.AddEvent(tracing.SpanEventNameRequest, trace.WithAttributes(
+		attribute.String(tracing.SpanAttributeKeyBody, string(a.ReqRawBody)),
+	))
+
 	if a.needSign() {
-		err := a.checkSign(ctx)
+		err = a.checkSign(ctx)
 		if err != nil {
 			return perror.NewFromError(perror.ECommonAuthFailure,
 				fmt.Errorf("checkSign error: %w", err))
 		}
 	}
 
-	err := json.Unmarshal(a.ReqRawBody, a.RequestData)
+	err = json.Unmarshal(a.ReqRawBody, a.RequestData)
 	if err != nil {
 		return perror.NewFromError(perror.ECommonInvalidArg,
 			fmt.Errorf("json.Unmarshal ReqRawBody error: %w", err))
@@ -62,6 +76,9 @@ func (a *ApiAction) Before(ctx *pcontext.Context) error {
 }
 
 func (a *ApiAction) After(ctx *pcontext.Context, err error) {
+	_, span := tracing.StartTrace(ctx, "ApiAction.After")
+	defer func() { span.EndWithError(err) }()
+
 	resp := &Response{
 		BaseResponse: &BaseResponse{
 			Errno: perror.Success,
@@ -85,6 +102,10 @@ func (a *ApiAction) After(ctx *pcontext.Context, err error) {
 
 	body, _ := json.Marshal(resp)
 	a.SetResponseBody(body)
+
+	span.AddEvent(tracing.SpanEventNameResponse, trace.WithAttributes(
+		attribute.String(tracing.SpanAttributeKeyBody, string(body)),
+	))
 
 	a.BaseAction.After(ctx, err)
 }

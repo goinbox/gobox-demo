@@ -11,7 +11,14 @@ import (
 )
 
 const (
-	spanAttributeKeyTraceID = "TraceID"
+	SpanAttributeKeyTraceID    = "TraceID"
+	SpanAttributeKeyController = "Controller"
+	SpanAttributeKeyAction     = "Action"
+	SpanAttributeKeyBody       = "Body"
+	SpanAttributeKeyHeader     = "Header"
+
+	SpanEventNameRequest  = "Request"
+	SpanEventNameResponse = "Response"
 )
 
 type Span struct {
@@ -29,7 +36,7 @@ func (s *Span) EndWithError(err error) {
 
 func StartTrace(ctx *pcontext.Context, spanName string, opts ...trace.SpanStartOption) (*pcontext.Context, *Span) {
 	c, span := otel.Tracer("").Start(ctx, spanName, opts...)
-	span.SetAttributes(attribute.String(spanAttributeKeyTraceID, ctx.TraceID()))
+	span.SetAttributes(attribute.String(SpanAttributeKeyTraceID, ctx.TraceID()))
 
 	return ctx.WithContext(c), &Span{span}
 }

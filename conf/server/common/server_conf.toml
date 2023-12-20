@@ -38,7 +38,7 @@ name = "gobox-demo"
 rw_timeout_seconds = 3
 
 [tracing]
-enable = false
+enable = true
 target = "zipkin"
 async = true
 service_namespace = "release"

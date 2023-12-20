@@ -30,8 +30,8 @@ github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 h1:tfuBGBXKqDEe
 github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572/go.mod h1:9Pwr4B2jHnOSGXyyzV8ROjYa2ojvAY6HCGYYfMoC3Ls=
 github.com/goinbox/color v1.0.0 h1:w+HhREKjA3rnGdIxcVbp+ssFvPfMocIHjBbXNMH9gGU=
 github.com/goinbox/color v1.0.0/go.mod h1:LKewYUaZLTr4h7G8CUv4Lt6JmOAD0wQePGEIF8faaqk=
-github.com/goinbox/gohttp/v6 v6.4.4 h1:Ji1NIOIeXaFdPGLIAvUukNjSGJX8EdEkz87f2IaPu0I=
-github.com/goinbox/gohttp/v6 v6.4.4/go.mod h1:Kn9fLdZNuTlhnf1bG3SkZfDtBm13RICiV/+1YZHv2Z8=
+github.com/goinbox/gohttp/v6 v6.5.0 h1:uZ9NH94YnBPWqalIakbvy/RFvVvgsNp+s/G4SFGXov0=
+github.com/goinbox/gohttp/v6 v6.5.0/go.mod h1:AVdG4atLnNnrVUYaQEckSPgdlQ4mS6LVKYXguy0JbB8=
 github.com/goinbox/golog v4.2.2+incompatible h1:0KPzy5vyGdtwSGh3nzqRzjT+2IYW+Y0yXqtL+QN723Q=
 github.com/goinbox/golog v4.2.2+incompatible/go.mod h1:LpDh2j8NT1DzCFjkpE3joekJWaVxUt+BolHh52GJqtA=
 github.com/goinbox/gomisc v1.4.0 h1:nxhAuPprXkaoXtRHMW3jABNBIDXPNH/RfCXXDiDRThI=

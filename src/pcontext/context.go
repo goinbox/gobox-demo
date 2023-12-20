@@ -2,6 +2,7 @@ package pcontext
 
 import (
 	"context"
+	"github.com/goinbox/gohttp/v6/httpserver"
 
 	"github.com/goinbox/golog"
 	"github.com/goinbox/mysql"
@@ -9,7 +10,7 @@ import (
 )
 
 type Context struct {
-	pcontext.Context
+	httpserver.Context
 
 	tid string
 
@@ -18,7 +19,9 @@ type Context struct {
 
 func NewContext(logger golog.Logger) *Context {
 	return &Context{
-		Context: pcontext.NewSimpleContext(nil, logger),
+		Context: &httpserver.BaseContext{
+			Context: pcontext.NewSimpleContext(nil, logger),
+		},
 	}
 }
 
@@ -48,8 +51,13 @@ func (c *Context) WithContext(ctx context.Context) *Context {
 
 func (c *Context) copy(ctx context.Context) *Context {
 	cc := &Context{
-		Context: pcontext.NewSimpleContext(ctx, c.Logger()),
+		Context: &httpserver.BaseContext{
+			Context: pcontext.NewSimpleContext(ctx, c.Logger()),
+		},
 	}
+
+	cc.SetController(c.Controller())
+	cc.SetAction(c.Action())
 
 	cc.tid = c.tid
 	cc.mysqlClient = c.mysqlClient

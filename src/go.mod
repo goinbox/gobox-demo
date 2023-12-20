@@ -6,7 +6,7 @@ require (
 	github.com/BurntSushi/toml v1.3.2
 	github.com/go-playground/validator/v10 v10.15.3
 	github.com/go-sql-driver/mysql v1.7.1
-	github.com/goinbox/gohttp/v6 v6.4.4
+	github.com/goinbox/gohttp/v6 v6.5.0
 	github.com/goinbox/golog v4.2.2+incompatible
 	github.com/goinbox/gomisc v1.4.0
 	github.com/goinbox/mysql v3.0.2+incompatible
